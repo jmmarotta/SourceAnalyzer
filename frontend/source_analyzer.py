@@ -1,10 +1,10 @@
-import sys
-sys.path.append('../')
-
-import os
-import tkinter as tk
 from tkinter import filedialog as fd
 from backend.interface import *
+import sys
+import os
+import tkinter as tk
+sys.path.append('../')
+
 
 def remove_spaces(str_remove):
     before = len(str_remove)
@@ -17,11 +17,12 @@ def remove_spaces(str_remove):
 
     return str_remove, spaces_removed
 
+
 class SourceAnalyzer:
 
     def open_file1(self):
-        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("All Files", "*.*"),))
-        print(files)
+        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"), ("Text Files", "*.txt")))
+        # print(files)
         self.files1 = files
         for file in files:
             self.file_name1.insert(tk.END, file)
@@ -31,8 +32,8 @@ class SourceAnalyzer:
         self.file_name1.delete(0, tk.END)
 
     def open_file2(self):
-        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("All Files", "*.*"),))
-        print(files)
+        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"), ("Text Files", "*.txt")))
+        # print(files)
         self.files2 = files
         for file in files:
             self.file_name2.insert(tk.END, file)
@@ -406,7 +407,6 @@ class SourceAnalyzer:
 
         self.next_fp = tk.Button(self.very_bottom, text="Next Fingerprint", command=self.next_fp)
         self.next_fp.grid(row=0, column=4, padx=5, pady=5)
-
 
 
 def main():

@@ -27,12 +27,6 @@ def compare_files_txt(student_file_loc, base_file_loc, k, w):
 
 
 def get_fps_txt(student_filename, base_filename, k, w, num_common_fps, ignore_count):
-    student_file = open(student_filename, "r")
-    student_txt = student_file.read()
-
-    base_file = open(base_filename, "r")
-    base_txt = base_file.read()
-
     if num_common_fps > ignore_count:
         return get_all_fps_txt(student_filename, base_filename, k)
     else:
@@ -79,11 +73,11 @@ def get_winnow_fps_txt(student_filename, base_filename, k, w):
 def get_all_fps_txt(student_filename, base_filename, k):
     student_file = open(student_filename, "r")
     student_txt = student_file.read()
-    student_fingerprints = compute_all(student_txt, k)
+    student_fingerprints = text_compute_all_setup(student_txt, k)
 
     base_file = open(base_filename, "r")
     base_txt = base_file.read()
-    base_fingerprints = compute_all(base_txt, k)
+    base_fingerprints = text_compute_all_setup(base_txt, k)
 
     common = []
     for fp in list(student_fingerprints.keys()):
@@ -93,6 +87,7 @@ def get_all_fps_txt(student_filename, base_filename, k):
             substrings2 = {}
             for pos in student_fingerprints[fp]:
                 substr = get_text_substring(pos, k, student_txt)
+                #print(substr)
                 if substr in substrings1:
                     substrings1[substr] = substrings1[substr] + [pos]
                 else:
@@ -226,9 +221,10 @@ def get_all_fps_py(student_filename, base_filename, k):
 
 
 def main():
-    compare_files_txt("test_files/test.txt", "test_files/test2.txt", 5, 4)
-    get_winnow_fps_txt("test_files/test.txt", "test_files/test2.txt", 5, 4)
+    res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
+    get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
     get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
+    get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
     compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     get_all_fps_py("test_files/test1.py", "test_files/test2.py", 20)

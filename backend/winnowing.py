@@ -113,3 +113,10 @@ def text_winnow_setup(text, k, w):
     text = re.sub(r'\s+', '', text.lower())
     # return the output of the winnow function
     return winnow(text, k, w)
+
+
+def text_compute_all_setup(text, k):
+    # text to lowercase and remove all non-alphanumerics for text
+    text = re.sub(r'\s+', '', text.lower())
+    # return the output of the winnow function
+    return compute_all(text, k)
