@@ -194,6 +194,8 @@ class SourceAnalyzer:
         self.out_text2.configure(state='disabled')
 
         self.fp = []
+        self.index1s = []
+        self.index2s = []
 
     def mult_yview(self, *args):
         self.out_text1.yview(*args)
