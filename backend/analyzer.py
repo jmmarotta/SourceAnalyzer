@@ -132,9 +132,9 @@ def get_text_substring(pos, k, text):
             newlines_pos.append(i)
         i += 1
     for space_pos in spaces_pos + newlines_pos:
-        if space_pos <= pos:
+        if space_pos < pos:
             pos += 1
-        if pos < space_pos <= pos + k:
+        if pos <= space_pos < pos + k:
             k += 1
     return text[pos:pos+k]
 
