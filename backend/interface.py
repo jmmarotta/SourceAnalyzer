@@ -187,6 +187,7 @@ def get_all_fps_py(student_filename, base_filename, k):
     with open(student_filename, "r") as student_source:
         vs = PyAnalyzer(student_source)
     student_fingerprints = compute_all(vs.parsed_code, k)
+    # print(vs.code)
 
     with open(base_filename, "r") as base_source:
         vb = PyAnalyzer(base_source)
@@ -211,8 +212,12 @@ def get_all_fps_py(student_filename, base_filename, k):
                     substrings2[substr] = substrings2[substr] + [pos]
                 else:
                     substrings2[substr] = [pos]
+            # print(str(fp) + ":" + str(substrings1))
+            # print(str(fp) + ":" + str(substrings2))
             for substr in substrings1:
                 if substr in substrings2:
+                    # print(str(fp) + ":" + str(substr))
+                    # print(str(fp) + ":" + str(substr))
                     positions = [substrings1[substr], substrings2[substr]]
                     sfp = Fingerprint(fp, positions, substr)
                     common.append(sfp)
@@ -227,7 +232,7 @@ def main():
     get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
     compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_all_fps_py("test_files/test1.py", "test_files/test2.py", 20)
+    get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
 
 
 if __name__ == "__main__":

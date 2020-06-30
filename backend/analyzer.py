@@ -20,7 +20,6 @@ class PyAnalyzer(ast.NodeVisitor):
         pos = 0
         loop_line = False
         boiler_plate = ['(', ')', ':', 'def']
-        indent = []
         indent_next = False
         for token in tokens:
             replace = re.sub(r"\s+", "", token.string.lower())
@@ -29,12 +28,11 @@ class PyAnalyzer(ast.NodeVisitor):
             pos += diff
             try:
                 if token.type == 5:
-                    indent.append(token.string)
                     parser_tokens.append(ParserTokenInfo(token.type, "", start, end, token.line, "" +
                                                          (" " if token.line[token.end[1]] == " " else "")))
                     continue
                 elif token.type == 6:
-                    indent.pop()
+                    continue
                 elif token.type in [4, 61]:
                     indent_next = True
                     parser_tokens.append(ParserTokenInfo(token.type, replace, start,
@@ -56,8 +54,9 @@ class PyAnalyzer(ast.NodeVisitor):
                         replace = "f"
                     else:
                         replace = "v"
+                indent = len(token.line) - len(token.line.lstrip(" "))
                 parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
-                                                     (build_indent(indent) if indent_next else "") +
+                                                     ((" " * indent) if indent_next else "") +
                                                      token.string + (" " if token.line[token.end[1]] == " " else "")))
                 if indent_next:
                     indent_next = False
