@@ -1,9 +1,10 @@
+import sys
+sys.path.append('../')
 from tkinter import filedialog as fd
 from backend.interface import *
-import sys
 import os
 import tkinter as tk
-sys.path.append('../')
+
 
 
 def remove_spaces(str_remove):
@@ -21,7 +22,10 @@ def remove_spaces(str_remove):
 class SourceAnalyzer:
 
     def open_file1(self):
-        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"), ("Text Files", "*.txt")))
+        if self.language_var.get() == "Python":
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"),("Text Files", "*.txt")))
+        else:
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Text Files", "*.txt"),("Python Files", "*.py")))
         # print(files)
         self.files1 = files
         for file in files:
@@ -32,7 +36,10 @@ class SourceAnalyzer:
         self.file_name1.delete(0, tk.END)
 
     def open_file2(self):
-        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"), ("Text Files", "*.txt")))
+        if self.language_var.get() == "Python":
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"),("Text Files", "*.txt")))
+        else:
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Text Files", "*.txt"),("Python Files", "*.py")))
         # print(files)
         self.files2 = files
         for file in files:
@@ -107,7 +114,7 @@ class SourceAnalyzer:
         if self.view_var.get() == 1:
             for fingerprint in self.fp:
 
-                #print(fingerprint.substring)
+                print(fingerprint.substring)
 
                 index1 = self.out_text1.search(fingerprint.substring, '1.0', tk.END, exact=False)
                 index2 = self.out_text2.search(fingerprint.substring, '1.0', tk.END, exact=False)
@@ -319,7 +326,7 @@ class SourceAnalyzer:
         self.lang_label.config(font=(None, 9))
 
         self.language_var = tk.StringVar(self.button_panel)
-        self.language_var.set("Text")
+        self.language_var.set("Python")
         self.languageMenu = tk.OptionMenu(self.button_panel, self.language_var, "Text", "Python")
         self.languageMenu.grid(row=4, column=1, pady=10, sticky='w')
 
