@@ -2,7 +2,7 @@
 sys.path.append('../')"""
 
 from tkinter import filedialog as fd
-from backend.interface import *
+from source.backend.interface import *
 import os
 import tkinter as tk
 

@@ -1,5 +1,5 @@
-from backend.fingerprint import Fingerprint
-from backend.winnowing import *
+from source.backend.fingerprint import Fingerprint
+from source.backend.winnowing import *
 
 
 def compare_files_txt(student_file_loc, base_file_loc, k, w):
