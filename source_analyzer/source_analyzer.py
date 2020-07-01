@@ -1,5 +1,6 @@
-import sys
-sys.path.append('../')
+"""import sys
+sys.path.append('../')"""
+
 from tkinter import filedialog as fd
 from backend.interface import *
 import os
