@@ -16,7 +16,7 @@ run command
 
 ###### OR
 
-Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/develop/dist)
+Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/master/dist)
 
 
 
