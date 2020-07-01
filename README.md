@@ -22,7 +22,7 @@ Download the latest built compressed file release from [source_analyzer-X.X.X.ta
 
 then run command
 
-    pip3 install /<file_path>/source_analyzer-0.1.18.tar.gz
+    pip3 install /<path_to_file>/source_analyzer-0.1.18.tar.gz
 
 
 #### STEP 2
@@ -34,7 +34,7 @@ run command
 
 
 ## Project Group: Codalyzers
-- Djoni Austin | @dcaustin
+- Djoni Austin | @dcaust1n
 - Jared Dawson | @lukinator1
 - Shane Eising | @seising99
 - Julian Marott | @jmmoratta
