@@ -64,12 +64,10 @@ class SourceAnalyzer:
             #Python
             if self.language_var.get() == "Python":
                 res, num_common_fps = compare_files_py(file1, file2, k, w)
-                print(res)
                 fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
             #Text
             else:
                 res, num_common_fps = compare_files_txt(file1, file2, k, w)
-                print(res)
                 fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
 
             
@@ -80,7 +78,6 @@ class SourceAnalyzer:
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
             if self.language_var.get() == "Python":
-                print(file1[(len(file1) - 4):])
                 if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
                     self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
 
@@ -92,10 +89,6 @@ class SourceAnalyzer:
             self.out_text2.delete('1.0', tk.END)
             self.out_text1.insert(tk.END, file1out)
             self.out_text2.insert(tk.END, file2out)
-
-            for fingerprint in fp:
-                print(fingerprint[0][0].substring)
-                print(fingerprint[1][0].substring)
 
             index_track1 = '1.0'
             index_track2 = '1.0'
