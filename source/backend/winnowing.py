@@ -1,5 +1,5 @@
 import sys
-from backend.analyzer import *
+from source.backend.analyzer import *
 
 
 # Algorithm taken from 'Winnowing: Local Algorithms for Document Fingerprinting'
