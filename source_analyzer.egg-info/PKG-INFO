@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: source-analyzer
-Version: 0.1.0
+Version: 0.1.1
 Summary: Application for analysis of similarities between separate files. Currently with '*.py' and '*.txt' file checking capability
 Home-page: https://github.com/dcaust1n/SourceAnalyzer
 Author: Codalyzers
@@ -8,10 +8,10 @@ Author-email: djoni.austin@gmail.com
 License: UNKNOWN
 Description: # SourceAnalyzer
         
-        - A locally run application that demonstrates different matching algorithms ( winnowing, ... , ... )
-        - Developed as a one to one connection
+        - A locally run application that demonstrates different matching algorithms 
+        - Current release compares files as a one to one connection
         - Outputs given percentage of similarity and highlighted visualization of the matching sections of input documents
-        - Supports, raw text and python currently, with C++ and java planned in the future
+        - Supports, raw text files and python files currently, with C++ and java planned in the future releases
         
         ## Getting Started
         
@@ -19,18 +19,18 @@ Description: # SourceAnalyzer
         
         run command
         
-            pip install
+            pip install source_analyzer
         
         
-        ##### OR
+        ###### OR
         
-        Download
+        Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/develop/dist)
         
         
         
         then run command
         
-            pip3 install /<file_path>/source_analyzer-0.1.18.tar.gz
+            pip3 install /<path_to_file>/source_analyzer-0.1.18.tar.gz
         
         
         #### STEP 2
@@ -42,7 +42,7 @@ Description: # SourceAnalyzer
         
         
         ## Project Group: Codalyzers
-        - Djoni Austin | @dcaustin
+        - Djoni Austin | @dcaust1n
         - Jared Dawson | @lukinator1
         - Shane Eising | @seising99
         - Julian Marott | @jmmoratta
