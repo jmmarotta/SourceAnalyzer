@@ -31,6 +31,12 @@ run command
 
     source_analyzer
 
+## Known Errors/Issues
+Errors- 
+Multiple of the same substring found in file B will return only the first instance of that substring. 
+
+Issues- 
+Python files featuring a heavy amount of print statements may cause skewed data. 
 
 
 ## Project Group: Codalyzers
