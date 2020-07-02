@@ -49,9 +49,9 @@ Issues-
 Python files featuring a heavy amount of print statements may cause skewed data. 
 
 ## Test Files
-Test files can be found in
+Test files can be found in: 
 <dir>/lib/python3.8/site-packages/source/test_files
-There are python files and .txt files, make sure to change the file filter down below to be able to see either of them.
+there are python files and .txt files, make sure to change the file filter down below to be able to see either of them.
 
 ## Project Group: Codalyzers
 - Djoni Austin | @dcaust1n
