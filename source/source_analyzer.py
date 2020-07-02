@@ -93,7 +93,6 @@ class SourceAnalyzer:
             self.out_text2.insert(tk.END, file2out)
 
             index_track1 = '1.0'
-            index_track2 = '1.0'
 
             for fingerprint in fp:
 
@@ -102,6 +101,8 @@ class SourceAnalyzer:
 
                 len1 = []
                 len2 = []
+
+                index_track2 = '1.0'
 
                 for i in range(len(fingerprint[0])):
                     index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False))
@@ -116,15 +117,16 @@ class SourceAnalyzer:
                     if index2[i] != '':
                         self.out_text2.tag_add("found", index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
                         len2.append(len(fingerprint[1][i].substring))
+                        index_track2 = index2[i]
                     else:
                         index2.pop(i)              
 
-                    if len(index1) > 0:
-                        index_track1 = index1[0]
+                if len(index1) > 0:
+                    index_track1 = index1[0]
     
                     
-                    self.index1s.append((index1, len1))
-                    self.index2s.append((index2, len2))
+                self.index1s.append((index1, len1))
+                self.index2s.append((index2, len2))
 
             self.out_result.configure(state='disabled')
             self.out_text1.configure(state='disabled')
@@ -135,7 +137,7 @@ class SourceAnalyzer:
             print(len(self.index1s))
             print(len(self.index2s))
 
-            self.max_fp = len(self.index1s)
+            self.max_fp = len(self.fp)
             self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
             self.show_fp()
