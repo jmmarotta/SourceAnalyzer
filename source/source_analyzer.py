@@ -52,6 +52,8 @@ class SourceAnalyzer:
     def export_files(self):
         if self.file_name1.curselection() and self.file_name2.curselection():
 
+            self.clear_output()
+
             file1 = self.file_name1.get(self.file_name1.curselection()[0])
             file2 = self.file_name2.get(self.file_name2.curselection()[0])
 
@@ -119,8 +121,7 @@ class SourceAnalyzer:
 
                     if len(index1) > 0:
                         index_track1 = index1[0]
-                    if len(index2) > 0:
-                        index_track2 = index2[0]
+    
                     
                     self.index1s.append((index1, len1))
                     self.index2s.append((index2, len2))
@@ -131,7 +132,10 @@ class SourceAnalyzer:
 
             self.fp = fp
 
-            self.max_fp = len(fp)
+            print(len(self.index1s))
+            print(len(self.index2s))
+
+            self.max_fp = len(self.index1s)
             self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
             self.show_fp()
