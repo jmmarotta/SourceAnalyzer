@@ -19,7 +19,7 @@ it is recommended to create and navigate to virtual environemnt using python to 
 #### STEP 2
 
 install source_analyzer python package from Python Package Index.
-**Note:** must be running python version 3.6 or greater
+**Note:** must be running python version 3.8 or greater
 
     pip install source_analyzer
 
@@ -36,7 +36,7 @@ then install downloaded file
 
 
 #### STEP 3
-
+(make sure xlaunch is running)
 run script
 
     source_analyzer
@@ -48,6 +48,10 @@ Multiple of the same substring found in file B will return only the first instan
 Issues- 
 Python files featuring a heavy amount of print statements may cause skewed data. 
 
+## Test Files
+Test files can be found in
+<dir>/lib/python3.8/site-packages/source/test_files
+There are python files and .txt files, make sure to change the file filter down below to be able to see either of them.
 
 ## Project Group: Codalyzers
 - Djoni Austin | @dcaust1n
@@ -57,5 +61,3 @@ Python files featuring a heavy amount of print statements may cause skewed data.
 
 ## References: 
 https://theory.stanford.edu/~aiken/publications/papers/sigmod03.pdf
-
-
