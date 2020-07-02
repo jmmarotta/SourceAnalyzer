@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: source-analyzer
-Version: 0.1.2
+Version: 0.1.4
 Summary: Application for analysis of similarities between separate files. Currently with '*.py' and '*.txt' file checking capability
 Home-page: https://github.com/dcaust1n/SourceAnalyzer
 Author: Codalyzers
