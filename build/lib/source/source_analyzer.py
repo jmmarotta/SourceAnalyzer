@@ -1,8 +1,7 @@
-"""import sys
-sys.path.append('../')"""
-
+import sys
+sys.path.append('../')
 from tkinter import filedialog as fd
-from source.backend.interface import *
+from backend.interface import *
 import os
 import tkinter as tk
 
@@ -194,8 +193,8 @@ class SourceAnalyzer:
                 for i in range(len(self.index2s[self.cur_fp][0])):
                     self.out_text2.tag_add("match", self.index2s[self.cur_fp][0][i], str(self.index2s[self.cur_fp][0][i]) + "+" + str(self.index2s[self.cur_fp][1][i]) + "c")
 
-                self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
-                self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                #self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                #self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
                 
                 self.cur_fp = self.cur_fp + 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -211,8 +210,8 @@ class SourceAnalyzer:
                 for i in range(len(self.index2s[self.cur_fp - 2][0])):
                     self.out_text2.tag_add("match", self.index2s[self.cur_fp - 2][0][i], str(self.index2s[self.cur_fp - 2][0][i]) + "+" + str(self.index2s[self.cur_fp - 2][1][i]) + "c")
 
-                self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
-                self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
+                #self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
+                #self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
                 
                 self.cur_fp = self.cur_fp - 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: source-analyzer
-Version: 0.1.1
+Version: 0.1.2
 Summary: Application for analysis of similarities between separate files. Currently with '*.py' and '*.txt' file checking capability
 Home-page: https://github.com/dcaust1n/SourceAnalyzer
 Author: Codalyzers
@@ -24,7 +24,7 @@ Description: # SourceAnalyzer
         
         ###### OR
         
-        Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/develop/dist)
+        Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/master/dist)
         
         
         
@@ -49,6 +49,7 @@ Description: # SourceAnalyzer
         
         ## References: 
         https://theory.stanford.edu/~aiken/publications/papers/sigmod03.pdf
+        
         
         
 Platform: UNKNOWN
