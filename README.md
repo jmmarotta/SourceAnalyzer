@@ -18,7 +18,8 @@ it is recommended to create and navigate to virtual environemnt using python to 
 
 #### STEP 2
 
-run command
+install source_analyzer python package from Python Package Index
+Note: must be running python version 3.6 or greater
 
     pip install source_analyzer
 
@@ -29,14 +30,14 @@ Download the latest built compressed file release from [source_analyzer-X.X.X.ta
 
 
 
-then run command
+then install downloaded file
 
     pip3 install /<path_to_file>/source_analyzer-0.1.18.tar.gz
 
 
 #### STEP 3
 
-run command
+run script
 
     source_analyzer
 
