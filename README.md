@@ -13,7 +13,7 @@
 
 it is recommended to create and navigate to virtual environemnt using python to run script
 
-    python3 -m venv <dir> 
+    python3.8 -m venv <dir> 
     source <dir>/bin/activate
 
 #### STEP 2
