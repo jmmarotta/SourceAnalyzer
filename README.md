@@ -18,8 +18,8 @@ it is recommended to create and navigate to virtual environemnt using python to 
 
 #### STEP 2
 
-install source_analyzer python package from Python Package Index
-Note: must be running python version 3.6 or greater
+install source_analyzer python package from Python Package Index.
+**Note:** must be running python version 3.6 or greater
 
     pip install source_analyzer
 
