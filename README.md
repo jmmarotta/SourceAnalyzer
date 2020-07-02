@@ -9,7 +9,14 @@
 
 ## Getting Started
 
-#### STEP 1
+#### STEP 1 
+
+it is recommended to create and navigate to virtual environemnt using python to run script
+
+    python3 -m venv <dir> 
+    source <dir>/bin/activate
+
+#### STEP 2
 
 run command
 
@@ -27,7 +34,7 @@ then run command
     pip3 install /<path_to_file>/source_analyzer-0.1.18.tar.gz
 
 
-#### STEP 2
+#### STEP 3
 
 run command
 
