@@ -1,6 +1,6 @@
 # SourceAnalyzer 
 
-[GitHub repo](https://github.com/dcaust1n/SourceAnalyzer.git)
+[GitHub Repo Link](https://github.com/dcaust1n/SourceAnalyzer.git)
 
 - A locally run application that demonstrates different matching algorithms 
 - Current release compares files as a one to one connection
