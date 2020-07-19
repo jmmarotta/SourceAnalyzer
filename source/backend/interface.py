@@ -263,11 +263,6 @@ def compare_files_py(student_filename, base_filename, k, w):
 
 
 def get_fps_py(student_filename, base_filename, k, w, num_common_fps, ignore_count):
-    with open(student_filename, "r") as student_source:
-        vs = PyAnalyzer(student_source)
-    with open(base_filename, "r") as base_source:
-        vb = PyAnalyzer(base_source)
-
     if num_common_fps > ignore_count:
         return get_all_fps_py(student_filename, base_filename, k)
     else:
@@ -425,14 +420,42 @@ def get_all_fps_py(student_filename, base_filename, k):
     return common
 
 
+def compare_files_java(student_filename1, student_filename2, k, w):
+    with open(student_filename1, "r") as student_source1:
+        vs1 = JavaAnalyzer(student_source1)
+
+    with open(student_filename2, "r") as student_source2:
+        vs2 = JavaAnalyzer(student_source2)
+
+    student_fingerprints1 = winnow(vs1.parsed_code, k, w)
+    student_fingerprints2 = winnow(vs2.parsed_code, k, w)
+
+    num_std_fps = 0
+    for val in student_fingerprints1.values():
+        for _ in val:
+            num_std_fps += 1
+
+    num_common_fps = 0
+    for fp in list(student_fingerprints1.keys()):
+        if fp in list(student_fingerprints2.keys()):
+            for _ in student_fingerprints1[fp]:
+                num_common_fps += 1
+
+    similarity = num_common_fps / num_std_fps
+    print(res := similarity * 100)
+    return res, num_common_fps
+
+
+
 def main():
-    res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
+    # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
     # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
     # get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
     # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
     # compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     # get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     # get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
+    compare_files_java('test_files/test1.java', )
 
 
 if __name__ == "__main__":
