@@ -224,15 +224,22 @@ def get_all_fps_py(student_filename, base_filename, k):
 
     return common
 
+def get_java():
+    with open("test_files/Test.java", "r") as student_source:
+        vs = JavaAnalyzer(student_source)
+
+    print(vs.code)
+    print(vs.parsed_code)
 
 def main():
-    res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
-    get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
-    get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
-    get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
-    compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
+    # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
+    # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
+    # get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
+    # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
+    # compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
+    # get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
+    # get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
+    get_java()
 
 
 if __name__ == "__main__":
