@@ -1,9 +1,10 @@
+import sys
+sys.path.append('../')
 from tkinter import filedialog as fd
 from backend.interface import *
-import sys
 import os
 import tkinter as tk
-sys.path.append('../')
+
 
 
 def remove_spaces(str_remove):
@@ -21,7 +22,10 @@ def remove_spaces(str_remove):
 class SourceAnalyzer:
 
     def open_file1(self):
-        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"), ("Text Files", "*.txt")))
+        if self.language_var.get() == "Python":
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"),("Text Files", "*.txt")))
+        else:
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Text Files", "*.txt"),("Python Files", "*.py")))
         # print(files)
         self.files1 = files
         for file in files:
@@ -32,7 +36,10 @@ class SourceAnalyzer:
         self.file_name1.delete(0, tk.END)
 
     def open_file2(self):
-        files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"), ("Text Files", "*.txt")))
+        if self.language_var.get() == "Python":
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Python Files", "*.py"),("Text Files", "*.txt")))
+        else:
+            files = fd.askopenfilenames(initialdir=os.getcwd(), title="Open File", filetypes=(("Text Files", "*.txt"),("Python Files", "*.py")))
         # print(files)
         self.files2 = files
         for file in files:
@@ -44,6 +51,8 @@ class SourceAnalyzer:
 
     def export_files(self):
         if self.file_name1.curselection() and self.file_name2.curselection():
+
+            self.clear_output()
 
             file1 = self.file_name1.get(self.file_name1.curselection()[0])
             file2 = self.file_name2.get(self.file_name2.curselection()[0])
@@ -57,12 +66,10 @@ class SourceAnalyzer:
             #Python
             if self.language_var.get() == "Python":
                 res, num_common_fps = compare_files_py(file1, file2, k, w)
-                print(res)
                 fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
             #Text
             else:
                 res, num_common_fps = compare_files_txt(file1, file2, k, w)
-                print(res)
                 fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
 
             
@@ -71,14 +78,55 @@ class SourceAnalyzer:
             self.out_text2.configure(state='normal')
 
             self.out_result.delete('1.0', tk.END)
-            self.out_result.insert(tk.END, "The two files are " + str(round(res, 2)) + "% similar.\n" + str(len(fp)) + " fingerprints.")
+            self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
+            if self.language_var.get() == "Python":
+                if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
+                    self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
 
             self.out_text1.tag_config("match", background='yellow')
             self.out_text2.tag_config("match", background='yellow')
+            self.out_text1.tag_config("found")
+            self.out_text2.tag_config("found")
             self.out_text1.delete('1.0', tk.END)
             self.out_text2.delete('1.0', tk.END)
             self.out_text1.insert(tk.END, file1out)
             self.out_text2.insert(tk.END, file2out)
+
+            index_track1 = '1.0'
+
+            for fingerprint in fp:
+
+                index1 = []
+                index2 = []
+
+                len1 = []
+                len2 = []
+
+                index_track2 = '1.0'
+
+                for i in range(len(fingerprint[0])):
+                    index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False))
+                    if index1[i] != '':
+                        self.out_text1.tag_add("found", index1[i], str(index1[i]) + "+" + str(len(fingerprint[0][i].substring)) + "c")
+                        len1.append(len(fingerprint[0][i].substring))
+                    else:
+                        index1.pop(i)
+
+                for i in range(len(fingerprint[1])):
+                    index2.append(self.out_text2.search(fingerprint[1][i].substring, index_track2, tk.END, exact=False))
+                    if index2[i] != '':
+                        self.out_text2.tag_add("found", index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
+                        len2.append(len(fingerprint[1][i].substring))
+                        index_track2 = index2[i]
+                    else:
+                        index2.pop(i)              
+
+                if len(index1) > 0:
+                    index_track1 = index1[0]
+    
+                    
+                self.index1s.append((index1, len1))
+                self.index2s.append((index2, len2))
 
             self.out_result.configure(state='disabled')
             self.out_text1.configure(state='disabled')
@@ -86,7 +134,10 @@ class SourceAnalyzer:
 
             self.fp = fp
 
-            self.max_fp = len(fp)
+            print(len(self.index1s))
+            print(len(self.index2s))
+
+            self.max_fp = len(self.fp)
             self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
             self.show_fp()
@@ -105,26 +156,24 @@ class SourceAnalyzer:
         self.out_text2.configure(state='normal')
 
         if self.view_var.get() == 1:
-            for fingerprint in self.fp:
-
-                #print(fingerprint.substring)
-
-                index1 = self.out_text1.search(fingerprint.substring, '1.0', tk.END, exact=False)
-                index2 = self.out_text2.search(fingerprint.substring, '1.0', tk.END, exact=False)
-
-                self.out_text1.tag_add("match", index1, str(index1) + "+" + str(len(fingerprint.substring)) + "c")
-                self.out_text2.tag_add("match", index2, str(index2) + "+" + str(len(fingerprint.substring)) + "c")
+            
+            for i in range(len(self.index1s)):
+                for j in range(len(self.index1s[i][0])):
+                    self.out_text1.tag_add("match", self.index1s[i][0][j], str(self.index1s[i][0][j]) + "+" + str(self.index1s[i][1][j]) + "c")
+                for j in range(len(self.index2s[i][0])):
+                    self.out_text2.tag_add("match", self.index2s[i][0][j], str(self.index2s[i][0][j]) + "+" + str(self.index2s[i][1][j]) + "c")
 
         else:
             self.out_text1.tag_remove("match", '1.0', tk.END)
             self.out_text2.tag_remove("match", '1.0', tk.END)
             if self.max_fp > 0:
                 self.cur_fp = 1
-                index1 = self.out_text1.search(self.fp[0].substring, '1.0', tk.END, exact=False)
-                index2 = self.out_text2.search(self.fp[0].substring, '1.0', tk.END, exact=False)
-
-                self.out_text1.tag_add("match", index1, str(index1) + "+" + str(len(self.fp[0].substring)) + "c")
-                self.out_text2.tag_add("match", index2, str(index2) + "+" + str(len(self.fp[0].substring)) + "c")
+                
+                for i in range(len(self.index1s[0][0])):
+                    self.out_text1.tag_add("match", self.index1s[0][0][i], str(self.index1s[0][0][i]) + "+" + str(self.index1s[0][1][i]) + "c")
+                for i in range(len(self.index2s[0][0])):
+                    self.out_text2.tag_add("match", self.index2s[0][0][i], str(self.index2s[0][0][i]) + "+" + str(self.index2s[0][1][i]) + "c")
+                
             else:
                 self.cur_fp = 0
             self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -138,11 +187,13 @@ class SourceAnalyzer:
                 self.out_text1.tag_remove("match", '1.0', tk.END)
                 self.out_text2.tag_remove("match", '1.0', tk.END)
 
-                index1 = self.out_text1.search(self.fp[self.cur_fp].substring, '1.0', tk.END, exact=False)
-                index2 = self.out_text2.search(self.fp[self.cur_fp].substring, '1.0', tk.END, exact=False)
+                for i in range(len(self.index1s[self.cur_fp][0])):
+                    self.out_text1.tag_add("match", self.index1s[self.cur_fp][0][i], str(self.index1s[self.cur_fp][0][i]) + "+" + str(self.index1s[self.cur_fp][1][i]) + "c")
+                for i in range(len(self.index2s[self.cur_fp][0])):
+                    self.out_text2.tag_add("match", self.index2s[self.cur_fp][0][i], str(self.index2s[self.cur_fp][0][i]) + "+" + str(self.index2s[self.cur_fp][1][i]) + "c")
 
-                self.out_text1.tag_add("match", index1, str(index1) + "+" + str(len(self.fp[self.cur_fp].substring)) + "c")
-                self.out_text2.tag_add("match", index2, str(index2) + "+" + str(len(self.fp[self.cur_fp].substring)) + "c")
+                #self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                #self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
                 
                 self.cur_fp = self.cur_fp + 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -153,11 +204,13 @@ class SourceAnalyzer:
                 self.out_text1.tag_remove("match", '1.0', tk.END)
                 self.out_text2.tag_remove("match", '1.0', tk.END)
 
-                index1 = self.out_text1.search(self.fp[self.cur_fp - 2].substring, '1.0', tk.END, exact=False)
-                index2 = self.out_text2.search(self.fp[self.cur_fp - 2].substring, '1.0', tk.END, exact=False)
+                for i in range(len(self.index1s[self.cur_fp - 2][0])):
+                    self.out_text1.tag_add("match", self.index1s[self.cur_fp - 2][0][i], str(self.index1s[self.cur_fp - 2][0][i]) + "+" + str(self.index1s[self.cur_fp - 2][1][i]) + "c")
+                for i in range(len(self.index2s[self.cur_fp - 2][0])):
+                    self.out_text2.tag_add("match", self.index2s[self.cur_fp - 2][0][i], str(self.index2s[self.cur_fp - 2][0][i]) + "+" + str(self.index2s[self.cur_fp - 2][1][i]) + "c")
 
-                self.out_text1.tag_add("match", index1, str(index1) + "+" + str(len(self.fp[self.cur_fp - 2].substring)) + "c")
-                self.out_text2.tag_add("match", index2, str(index2) + "+" + str(len(self.fp[self.cur_fp - 2].substring)) + "c")
+                #self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
+                #self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
                 
                 self.cur_fp = self.cur_fp - 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -178,6 +231,8 @@ class SourceAnalyzer:
         self.out_text2.configure(state='disabled')
 
         self.fp = []
+        self.index1s = []
+        self.index2s = []
 
     def mult_yview(self, *args):
         self.out_text1.yview(*args)
@@ -205,6 +260,8 @@ class SourceAnalyzer:
         self.cur_fp = 0
         self.max_fp = 0
         self.fp = []
+        self.index1s = []
+        self.index2s = []
 
         self.menubar = tk.Menu(self.master)
         
@@ -226,25 +283,25 @@ class SourceAnalyzer:
         self.very_bottom = tk.Frame(self.output_frame, width=0)
         self.very_bottom.pack(expand=False, fill='none', padx=(0, 125), pady=5, side="bottom")
 
-    #Menubar
+    #Menubar - Currently Non-Functional
 
-        self.filemenu = tk.Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="New Window", command=self.donothing) #newWindow
-        self.filemenu.add_command(label="Save Settings", command=self.donothing)
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=self.master.quit)
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        #self.filemenu = tk.Menu(self.menubar, tearoff=0)
+        #self.filemenu.add_command(label="New Window", command=self.donothing) #newWindow
+        ##self.filemenu.add_command(label="Save Settings", command=self.donothing)
+        #self.filemenu.add_separator()
+        #self.filemenu.add_command(label="Exit", command=self.master.quit)
+        #self.menubar.add_cascade(label="File", menu=self.filemenu)
 
-        self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
-        self.toolsmenu.add_command(label="Check Matches", command=self.donothing)
-        self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
-        self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
+        #self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
+        #self.toolsmenu.add_command(label="Check Matches", command=self.donothing)
+        #self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
+        #self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
 
-        self.helpmenu = tk.Menu(self.menubar, tearoff=0)
-        self.helpmenu.add_command(label="Open Help", command= self.openHelp)
-        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        #self.helpmenu = tk.Menu(self.menubar, tearoff=0)
+        #self.helpmenu.add_command(label="Open Help", command= self.openHelp)
+        #self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
-        self.master.config(menu=self.menubar) 
+        #self.master.config(menu=self.menubar) 
           
     #Filename Display
 
@@ -256,7 +313,7 @@ class SourceAnalyzer:
 
         #Filebox 1
 
-        self.cur_file_label1 = tk.Label(self.file1_frame, text = "Select File A: ")
+        self.cur_file_label1 = tk.Label(self.file1_frame, text = "Click to select File A: ")
         self.cur_file_label1.pack(anchor='w')
         self.cur_file_label1.config(font=(None, 9))
 
@@ -270,7 +327,7 @@ class SourceAnalyzer:
 
         #Filebox 2
 
-        self.cur_file_label2 = tk.Label(self.file2_frame, text = "Select File B: ")
+        self.cur_file_label2 = tk.Label(self.file2_frame, text = "Click to select File B: ")
         self.cur_file_label2.pack(anchor='w')
         self.cur_file_label2.config(font=(None, 9))
 
@@ -286,19 +343,27 @@ class SourceAnalyzer:
 
         #File Selection
 
-        self.filter_label = tk.Label(self.button_panel, text = "Added File Filter: ")
-        self.filter_label.grid(row=0, column=0)
-        self.filter_label.config(font=(None, 9))
+        #self.filter_label = tk.Label(self.button_panel, text = "Added File Filter: ")
+        #self.filter_label.grid(row=0, column=0)
+        #self.filter_label.config(font=(None, 9))
 
-        self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
-        self.file_filter.grid(row=0, column=1, columnspan=4)
+        #self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
+        #self.file_filter.grid(row=0, column=1, columnspan=4)
 
-        self.ignore_label = tk.Label(self.button_panel, text = "Ignore Files: ")
-        self.ignore_label.grid(row=1, column=0)
-        self.ignore_label.config(font=(None, 9))
+        self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
+        self.k_desc_label.grid(row=0, column=0, columnspan=4)
+        self.k_desc_label.config(font=(None, 8))
 
-        self.file_ignore = tk.Text(self.button_panel, height=1, width=30, state='disabled')
-        self.file_ignore.grid(row=1, column=1, columnspan=4)
+        self.w_desc_label = tk.Label(self.button_panel, text = "All values may be left at default.")
+        self.w_desc_label.grid(row=1, column=0, columnspan=4)
+        self.w_desc_label.config(font=(None, 8))
+
+        #self.ignore_label = tk.Label(self.button_panel, text = "Ignore Files: ")
+        #self.ignore_label.grid(row=1, column=0)
+        #self.ignore_label.config(font=(None, 9))
+
+        #self.file_ignore = tk.Text(self.button_panel, height=1, width=30, state='disabled')
+        #self.file_ignore.grid(row=1, column=1, columnspan=4)
 
         self.button1 = tk.Button(self.button_panel, text="Add File A", command=self.open_file1, bg="gray75", width=15)
         self.button1.grid(row = 2, column = 0, padx = 1, pady = 5, columnspan=2)
@@ -319,9 +384,9 @@ class SourceAnalyzer:
         self.lang_label.config(font=(None, 9))
 
         self.language_var = tk.StringVar(self.button_panel)
-        self.language_var.set("Text")
+        self.language_var.set("Python")
         self.languageMenu = tk.OptionMenu(self.button_panel, self.language_var, "Text", "Python")
-        self.languageMenu.grid(row=4, column=1, pady=10, sticky='w')
+        self.languageMenu.grid(row=4, column=1, pady=10, sticky='w', columnspan=2)
 
         self.ignore_count_label = tk.Label(self.button_panel, text = "Ignore Count: ")
         self.ignore_count_label.grid(row = 4, column = 2, pady = 10)
