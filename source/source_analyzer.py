@@ -83,16 +83,17 @@ class SourceAnalyzer:
                 if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
                     self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
 
-            self.out_text1.tag_config("match", background='yellow')
-            self.out_text2.tag_config("match", background='yellow')
-            self.out_text1.tag_config("found")
-            self.out_text2.tag_config("found")
+
+            for i in range(len(fp)):
+                self.out_text1.tag_config("match" + str(i), background='white')
+                self.out_text2.tag_config("match" + str(i), background='white')
             self.out_text1.delete('1.0', tk.END)
             self.out_text2.delete('1.0', tk.END)
             self.out_text1.insert(tk.END, file1out)
             self.out_text2.insert(tk.END, file2out)
 
             index_track1 = '1.0'
+            fp_track = 0
 
             for fingerprint in fp:
 
@@ -105,24 +106,30 @@ class SourceAnalyzer:
                 index_track2 = '1.0'
 
                 for i in range(len(fingerprint[0])):
-                    index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False))
+                    index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END))
+                    print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)
                     if index1[i] != '':
-                        self.out_text1.tag_add("found", index1[i], str(index1[i]) + "+" + str(len(fingerprint[0][i].substring)) + "c")
+                        self.out_text1.tag_add("match" + str(fp_track), index1[i], str(index1[i]) + "+" + str(len(fingerprint[0][i].substring)) + "c")
                         len1.append(len(fingerprint[0][i].substring))
                     else:
                         index1.pop(i)
+                        print("COULD NOT FIND")
 
                 for i in range(len(fingerprint[1])):
-                    index2.append(self.out_text2.search(fingerprint[1][i].substring, index_track2, tk.END, exact=False))
+                    index2.append(self.out_text2.search(fingerprint[1][i].substring, '1.0', tk.END))
+                    print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)
                     if index2[i] != '':
-                        self.out_text2.tag_add("found", index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
+                        self.out_text2.tag_add("match" + str(fp_track), index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
                         len2.append(len(fingerprint[1][i].substring))
                         index_track2 = index2[i]
                     else:
-                        index2.pop(i)              
+                        index2.pop(i)          
+                        print("COULD NOT FIND")    
 
                 if len(index1) > 0:
                     index_track1 = index1[0]
+
+                fp_track += 1
     
                     
                 self.index1s.append((index1, len1))
@@ -156,12 +163,9 @@ class SourceAnalyzer:
         self.out_text2.configure(state='normal')
 
         if self.view_var.get() == 1:
-            
-            for i in range(len(self.index1s)):
-                for j in range(len(self.index1s[i][0])):
-                    self.out_text1.tag_add("match", self.index1s[i][0][j], str(self.index1s[i][0][j]) + "+" + str(self.index1s[i][1][j]) + "c")
-                for j in range(len(self.index2s[i][0])):
-                    self.out_text2.tag_add("match", self.index2s[i][0][j], str(self.index2s[i][0][j]) + "+" + str(self.index2s[i][1][j]) + "c")
+            for i in range(self.max_fp):
+                self.out_text1.tag_config("match" + str(i), background='yellow')
+                self.out_text2.tag_config("match" + str(i), background='yellow')
 
         else:
             self.out_text1.tag_remove("match", '1.0', tk.END)
@@ -169,10 +173,18 @@ class SourceAnalyzer:
             if self.max_fp > 0:
                 self.cur_fp = 1
                 
-                for i in range(len(self.index1s[0][0])):
-                    self.out_text1.tag_add("match", self.index1s[0][0][i], str(self.index1s[0][0][i]) + "+" + str(self.index1s[0][1][i]) + "c")
-                for i in range(len(self.index2s[0][0])):
-                    self.out_text2.tag_add("match", self.index2s[0][0][i], str(self.index2s[0][0][i]) + "+" + str(self.index2s[0][1][i]) + "c")
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
+
+                self.out_text1.tag_config("match0", background='yellow')
+                self.out_text2.tag_config("match0", background='yellow')
+
+                self.out_text1.tag_raise("match0")
+                self.out_text2.tag_raise("match0")
+
+                self.out_text1.see(self.out_text1.tag_ranges("match0")[0])
+                self.out_text2.see(self.out_text2.tag_ranges("match0")[0])
                 
             else:
                 self.cur_fp = 0
@@ -184,16 +196,23 @@ class SourceAnalyzer:
     def next_fp(self):
         if self.view_var.get() == 0:
             if self.cur_fp < self.max_fp:
-                self.out_text1.tag_remove("match", '1.0', tk.END)
-                self.out_text2.tag_remove("match", '1.0', tk.END)
 
-                for i in range(len(self.index1s[self.cur_fp][0])):
-                    self.out_text1.tag_add("match", self.index1s[self.cur_fp][0][i], str(self.index1s[self.cur_fp][0][i]) + "+" + str(self.index1s[self.cur_fp][1][i]) + "c")
-                for i in range(len(self.index2s[self.cur_fp][0])):
-                    self.out_text2.tag_add("match", self.index2s[self.cur_fp][0][i], str(self.index2s[self.cur_fp][0][i]) + "+" + str(self.index2s[self.cur_fp][1][i]) + "c")
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
 
-                #self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
-                #self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
+                self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+
+                self.out_text1.tag_config("match" + str(self.cur_fp), background='yellow')
+                self.out_text2.tag_config("match" + str(self.cur_fp), background='yellow')
+
+                self.out_text1.tag_raise("match" + str(self.cur_fp))
+                self.out_text2.tag_raise("match" + str(self.cur_fp))
+
+                self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp))[1])
+                self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp))[1])
+
                 
                 self.cur_fp = self.cur_fp + 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -201,16 +220,22 @@ class SourceAnalyzer:
     def last_fp(self):
         if self.view_var.get() == 0:
             if self.cur_fp > 1:
-                self.out_text1.tag_remove("match", '1.0', tk.END)
-                self.out_text2.tag_remove("match", '1.0', tk.END)
 
-                for i in range(len(self.index1s[self.cur_fp - 2][0])):
-                    self.out_text1.tag_add("match", self.index1s[self.cur_fp - 2][0][i], str(self.index1s[self.cur_fp - 2][0][i]) + "+" + str(self.index1s[self.cur_fp - 2][1][i]) + "c")
-                for i in range(len(self.index2s[self.cur_fp - 2][0])):
-                    self.out_text2.tag_add("match", self.index2s[self.cur_fp - 2][0][i], str(self.index2s[self.cur_fp - 2][0][i]) + "+" + str(self.index2s[self.cur_fp - 2][1][i]) + "c")
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
 
-                #self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
-                #self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
+                self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
+                self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+
+                self.out_text1.tag_config("match" + str(self.cur_fp - 2), background='yellow')
+                self.out_text2.tag_config("match" + str(self.cur_fp - 2), background='yellow')
+
+                self.out_text1.tag_raise("match" + str(self.cur_fp - 2))
+                self.out_text2.tag_raise("match" + str(self.cur_fp - 2))
+
+                self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp - 2))[0])
+                self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp - 2))[0])
                 
                 self.cur_fp = self.cur_fp - 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
