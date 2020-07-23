@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
 from tkinter import filedialog as fd
-from source.backend.interface import *
+from backend.interface import *
 import os
 import tkinter as tk
 
@@ -67,6 +67,7 @@ class SourceAnalyzer:
             if self.language_var.get() == "Python":
                 res, num_common_fps = compare_files_py(file1, file2, k, w)
                 fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+
             #Text
             else:
                 res, num_common_fps = compare_files_txt(file1, file2, k, w)
@@ -130,7 +131,6 @@ class SourceAnalyzer:
                     index_track1 = index1[0]
 
                 fp_track += 1
-    
                     
                 self.index1s.append((index1, len1))
                 self.index2s.append((index2, len2))
