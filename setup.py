@@ -8,7 +8,7 @@ with open(path.join(here, "README.md"), encoding='utf-8' ) as fh:
 
 setuptools.setup(
     name="source_analyzer",
-    version="0.1.1", 
+    version="0.1.4", 
     author="Codalyzers",
     author_email="djoni.austin@gmail.com",
     description="Application for analysis of similarities between separate files. Currently with '*.py' and '*.txt' file checking capability",
