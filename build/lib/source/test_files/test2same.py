@@ -1,4 +1,4 @@
-#this is exercise 1 taken from this class, the scientific calculator
+#same as test2
 import math
 result = 0.0
 sum = 0.0
