@@ -427,6 +427,8 @@ def compare_files_java(student_filename1, student_filename2, k, w):
     with open(student_filename2, "r") as student_source2:
         vs2 = JavaAnalyzer(student_source2)
 
+    print(vs1.parsed_code)
+
     student_fingerprints1 = winnow(vs1.parsed_code, k, w)
     student_fingerprints2 = winnow(vs2.parsed_code, k, w)
 
@@ -446,7 +448,6 @@ def compare_files_java(student_filename1, student_filename2, k, w):
     return res, num_common_fps
 
 
-
 def main():
     # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
     # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
@@ -455,7 +456,7 @@ def main():
     # compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     # get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     # get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
-    compare_files_java('test_files/test1.java', )
+    compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
 
 
 if __name__ == "__main__":
