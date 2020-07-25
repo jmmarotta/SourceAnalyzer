@@ -1,6 +1,5 @@
-"""import sys
-sys.path.append('../')"""
-
+import sys
+sys.path.append('../')
 from tkinter import filedialog as fd
 from source.backend.interface import *
 import os
@@ -53,6 +52,8 @@ class SourceAnalyzer:
     def export_files(self):
         if self.file_name1.curselection() and self.file_name2.curselection():
 
+            self.clear_output()
+
             file1 = self.file_name1.get(self.file_name1.curselection()[0])
             file2 = self.file_name2.get(self.file_name2.curselection()[0])
 
@@ -65,12 +66,10 @@ class SourceAnalyzer:
             #Python
             if self.language_var.get() == "Python":
                 res, num_common_fps = compare_files_py(file1, file2, k, w)
-                print(res)
                 fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
             #Text
             else:
                 res, num_common_fps = compare_files_txt(file1, file2, k, w)
-                print(res)
                 fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
 
             
@@ -81,7 +80,6 @@ class SourceAnalyzer:
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
             if self.language_var.get() == "Python":
-                print(file1[(len(file1) - 4):])
                 if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
                     self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
 
@@ -94,12 +92,7 @@ class SourceAnalyzer:
             self.out_text1.insert(tk.END, file1out)
             self.out_text2.insert(tk.END, file2out)
 
-            for fingerprint in fp:
-                print(fingerprint[0][0].substring)
-                print(fingerprint[1][0].substring)
-
             index_track1 = '1.0'
-            index_track2 = '1.0'
 
             for fingerprint in fp:
 
@@ -108,6 +101,8 @@ class SourceAnalyzer:
 
                 len1 = []
                 len2 = []
+
+                index_track2 = '1.0'
 
                 for i in range(len(fingerprint[0])):
                     index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False))
@@ -122,16 +117,16 @@ class SourceAnalyzer:
                     if index2[i] != '':
                         self.out_text2.tag_add("found", index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
                         len2.append(len(fingerprint[1][i].substring))
+                        index_track2 = index2[i]
                     else:
                         index2.pop(i)              
 
-                    if len(index1) > 0:
-                        index_track1 = index1[0]
-                    if len(index2) > 0:
-                        index_track2 = index2[0]
+                if len(index1) > 0:
+                    index_track1 = index1[0]
+    
                     
-                    self.index1s.append((index1, len1))
-                    self.index2s.append((index2, len2))
+                self.index1s.append((index1, len1))
+                self.index2s.append((index2, len2))
 
             self.out_result.configure(state='disabled')
             self.out_text1.configure(state='disabled')
@@ -139,7 +134,10 @@ class SourceAnalyzer:
 
             self.fp = fp
 
-            self.max_fp = len(fp)
+            print(len(self.index1s))
+            print(len(self.index2s))
+
+            self.max_fp = len(self.fp)
             self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
             self.show_fp()
@@ -194,8 +192,8 @@ class SourceAnalyzer:
                 for i in range(len(self.index2s[self.cur_fp][0])):
                     self.out_text2.tag_add("match", self.index2s[self.cur_fp][0][i], str(self.index2s[self.cur_fp][0][i]) + "+" + str(self.index2s[self.cur_fp][1][i]) + "c")
 
-                self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
-                self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                #self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                #self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
                 
                 self.cur_fp = self.cur_fp + 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -211,8 +209,8 @@ class SourceAnalyzer:
                 for i in range(len(self.index2s[self.cur_fp - 2][0])):
                     self.out_text2.tag_add("match", self.index2s[self.cur_fp - 2][0][i], str(self.index2s[self.cur_fp - 2][0][i]) + "+" + str(self.index2s[self.cur_fp - 2][1][i]) + "c")
 
-                self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
-                self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
+                #self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
+                #self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
                 
                 self.cur_fp = self.cur_fp - 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -352,7 +350,7 @@ class SourceAnalyzer:
         #self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
-        self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.")
+        self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
         self.k_desc_label.grid(row=0, column=0, columnspan=4)
         self.k_desc_label.config(font=(None, 8))
 

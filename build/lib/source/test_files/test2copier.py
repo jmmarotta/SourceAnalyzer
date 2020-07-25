@@ -1,21 +1,16 @@
-#this is exercise 1 taken from this class, the scientific calculator
+#this version is taken from a theoretical copier who may have cheated from #test2.py, it posseses slight variations
 import math
-result = 0.0
-sum = 0.0
-calcs = 0
-average = 0.0
+res = 0
+summa = 0
+calcor = 0.0
+average = 0
 calculatorrunning = True
 def main():
     while (calculatorrunning):
         handleInput(Menu())
-    print("")
-    print("Thanks for using this calculator. Goodbye!")
-def Menu():
+    print("Thanks for completing my program!")
+def menu():
     global result
-    """if (result == "UNDEFINED"):
-        print("Current Result: UNDEFINED (result is set to 0)", result)
-        result = 0.0
-    else:"""
     print("Current Result:", result)
     print("")
     print("Calculator Menu")
@@ -56,10 +51,10 @@ def handleInput(menuanswer):
     elif (menuanswer == 7):
         print("")
         if (calcs == 0):
-            print("Error: No calculations yet to average!")
+            print("error: No calculations yet to average!")
         else:
-            print("Sum of calculations:", sum)
-            print("Number of calculations:", calcs)
+            print("sum of calculations:", sum)
+            print("number of calculations:", calcs)
             if (isinstance(sum, complex)):
                 print("Average of calculations:", sum/float(calcs))
             else:
@@ -67,27 +62,14 @@ def handleInput(menuanswer):
         print("")
         handleInput(int(input('Enter Menu Selection: ')))
         return
-        """if (op2 == 0):
-                if (op1 == 0):
-                    result = "UNDEFINED"
-                else:
-                    result = 1
-            elif (op2 <= -1):
-                result = 1.0/op1
-                for i in range(absop2 - 1):
-                    result *= op1
-            elif (op2 >= 1):
-                result = op1
-                for i in range(op2 - 1):
-                    result *= op1"""
     else:
         print("")
         print("Error: Invalid selection!")
         print("")
         handleInput(int(input('Enter Menu Selection: ')))
         return
-    sum += result
-    calcs += 1
+    calcor += 1
+    summa += result
     print("")
 
 def getInputs():

@@ -1,4 +1,6 @@
-# SourceAnalyzer
+# SourceAnalyzer 
+
+[GitHub Repo Link](https://github.com/dcaust1n/SourceAnalyzer.git)
 
 - A locally run application that demonstrates different matching algorithms 
 - Current release compares files as a one to one connection
@@ -7,31 +9,49 @@
 
 ## Getting Started
 
-#### STEP 1
+#### STEP 1 
 
-run command
+it is recommended to create and navigate to virtual environemnt using python to run script
+
+    python3.8 -m venv <dir> 
+    source <dir>/bin/activate
+
+#### STEP 2
+
+install source_analyzer python package from Python Package Index.
+**Note:** must be running python version 3.8 or greater
 
     pip install source_analyzer
 
 
 ###### OR
 
-Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/develop/dist)
+Download the latest built compressed file release from [source_analyzer-X.X.X.tar.gz](https://github.com/dcaust1n/SourceAnalyzer/tree/master/dist)
 
 
 
-then run command
+then install downloaded file
 
     pip3 install /<path_to_file>/source_analyzer-0.1.18.tar.gz
 
 
-#### STEP 2
-
-run command
+#### STEP 3
+(make sure xlaunch is running)
+run script
 
     source_analyzer
 
+## Known Errors/Issues
+Errors- 
+Multiple of the same substring found in file B will return only the first instance of that substring. 
 
+Issues- 
+Python files featuring a heavy amount of print statements may cause skewed data. 
+
+## Test Files
+Test files can be found in: 
+    <dir>/lib/python3.8/site-packages/source/test_file
+there are python files and .txt files, make sure to change the file filter down below to be able to see either of them.
 
 ## Project Group: Codalyzers
 - Djoni Austin | @dcaust1n
@@ -41,5 +61,3 @@ run command
 
 ## References: 
 https://theory.stanford.edu/~aiken/publications/papers/sigmod03.pdf
-
-
