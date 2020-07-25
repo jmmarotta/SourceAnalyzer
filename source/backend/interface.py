@@ -4,46 +4,132 @@ from source.backend.analyzer import *
 # ask julian about computing percentages with winnow_setup, how to get parsed positions/substrings
 
 
-def compare_files_txt(student_file_loc, base_file_loc, k, w):
-    student_file = open(student_file_loc, "r")
+# Compares two text files to each other and returns the percent similarity
+def compare_files_txt(std1_filename, std2_filename, k, w):
+    # Open the first file and get fingerprints
+    std1_file = open(std1_filename, "r")
+    std1_txt = std1_file.read()
+    std1_fingerprints = text_winnow_setup(std1_txt, k, w)
+    # Open the second file and get fingerprints
+    std2_file = open(std2_filename, "r")
+    std2_txt = std2_file.read()
+    std2_fingerprints = text_winnow_setup(std2_txt, k, w)
+    return get_percent_similarity(std1_fingerprints, std2_fingerprints)
+
+
+# get the common fingerprints between two text files
+# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
+def get_fps_txt(std1_filename, std2_filename, k, w, num_common_fps, ignore_count):
+    if num_common_fps > ignore_count:
+        return get_winnow_fps_txt(std1_filename, std2_filename, k, 2)
+    else:
+        return get_winnow_fps_txt(std1_filename, std2_filename, k, w)
+
+
+# get the common fingerprints between two text files using the winnowing algorithm
+def get_winnow_fps_txt(std1_filename, std2_filename, k, w):
+    # open the files and get the fingerprints
+    student_file = open(std1_filename, "r")
     student_txt = student_file.read()
-    student_fingerprints = text_winnow_setup(student_txt, k, w)
+    student_txt = re.sub(r'\s+', '', student_txt.lower())
+
+    base_file = open(std2_filename, "r")
+    base_txt = base_file.read()
+    base_txt = re.sub(r'\s+', '', base_txt.lower())
+
+    return get_common_fps_txt(student_txt, base_txt, k, w)
+
+
+# Compares two python files to each other and returns the percent similarity
+def compare_files_py(std1_filename, std2_filename, k, w):
+    # Open the first file and get fingerprints
+    with open(std1_filename, "r") as student_source:
+        vs1 = PyAnalyzer(student_source)
+    std1_fingerprints = winnow(vs1.parsed_code, k, w)
+
+    # Open the second file and get fingerprints
+    with open(std2_filename, "r") as base_source:
+        vs2 = PyAnalyzer(base_source)
+    std2_fingerprints = winnow(vs2.parsed_code, k, w)
+    return get_percent_similarity(std1_fingerprints, std2_fingerprints)
+
+
+# get the common fingerprints between two python files
+# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
+def get_fps_py(std1_filename, std2_filename, k, w, num_common_fps, ignore_count):
+    if num_common_fps > ignore_count:
+        return get_winnow_fps_py(std1_filename, std2_filename, k, 2)
+    else:
+        return get_winnow_fps_py(std1_filename, std2_filename, k, w)
+
+
+# get the common fingerprints between two python files using the winnowing algorithm
+def get_winnow_fps_py(std1_filename, std2_filename, k, w):
+    with open(std1_filename, "r") as student_source:
+        vs1 = PyAnalyzer(student_source)
+
+    with open(std2_filename, "r") as base_source:
+        vs2 = PyAnalyzer(base_source)
+
+    return get_common_fps(vs1, vs2, k, w)
+
+
+# Compares two java files to each other and returns the percent similarity
+def compare_files_java(std1_filename, std2_filename, k, w):
+    # Open the first file and get fingerprints
+    with open(std1_filename, "r") as student_source1:
+        vs1 = JavaAnalyzer(student_source1)
+    std1_fingerprints = winnow(vs1.parsed_code, k, w)
+    # Open the second file and get fingerprints
+    with open(std2_filename, "r") as student_source2:
+        vs2 = JavaAnalyzer(student_source2)
+    std2_fingerprints = winnow(vs2.parsed_code, k, w)
+    return get_percent_similarity(std1_fingerprints, std2_fingerprints)
+
+
+# get the common fingerprints between two java files
+# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
+def get_fps_java(std1_filename, std2_filename, k, w, num_common_fps, ignore_count):
+    if num_common_fps > ignore_count:
+        return get_winnow_fps_java(std1_filename, std2_filename, k, 2)
+    else:
+        return get_winnow_fps_java(std1_filename, std2_filename, k, w)
+
+
+# get the common fingerprints between two java files using the winnowing algorithm
+def get_winnow_fps_java(std1_filename, std2_filename, k, w):
+    with open(std1_filename, "r") as std1_source:
+        vs1 = JavaAnalyzer(std1_source)
+
+    with open(std2_filename, "r") as std2_source:
+        vs2 = JavaAnalyzer(std2_source)
+
+    return get_common_fps(vs1, vs2, k, w)
+
+
+def get_percent_similarity(std1_fingerprints, std2_fingerprints):
+    # Get the number of the first student fingerprints
     num_std_fps = 0
-    for val in student_fingerprints.values():
+    for val in std1_fingerprints.values():
         for _ in val:
             num_std_fps += 1
-
-    base_file = open(base_file_loc, "r")
-    base_txt = base_file.read()
-    base_fingerprints = text_winnow_setup(base_txt, k, w)
-
+    # Get the number of times that the common fingerprints were used in the first file
     num_common_fps = 0
-    for fp in list(student_fingerprints.keys()):
-        if fp in list(base_fingerprints.keys()):
-            for _ in student_fingerprints[fp]:
+    for fp in list(std1_fingerprints.keys()):
+        if fp in list(std2_fingerprints.keys()):
+            for _ in std1_fingerprints[fp]:
                 num_common_fps += 1
-
+    # return previously calculated number divided by the total number of fingerprints
     similarity = num_common_fps / num_std_fps
     print(res := similarity * 100)
     return res, num_common_fps
 
 
-def get_fps_txt(student_filename, base_filename, k, w, num_common_fps, ignore_count):
-    if num_common_fps > ignore_count:
-        return get_all_fps_txt(student_filename, base_filename, k)
-    else:
-        return get_winnow_fps_txt(student_filename, base_filename, k, w)
-
-
-def get_winnow_fps_txt(student_filename, base_filename, k, w):
-    student_file = open(student_filename, "r")
-    student_txt = student_file.read()
-    student_fingerprints = text_winnow_setup(student_txt, k, w)
-
-    base_file = open(base_filename, "r")
-    base_txt = base_file.read()
-    base_fingerprints = text_winnow_setup(base_txt, k, w)
-
+def get_common_fps_txt(std1_txt, std2_txt, k, w):
+    student_fingerprints = text_winnow_setup(std1_txt, k, w)
+    base_fingerprints = text_winnow_setup(std2_txt, k, w)
+    # get the common fingerprints from both files and store them as a list of tuples
+    # of the list of fingerprints from both respective files
     common = []
     for fp in list(student_fingerprints.keys()):
         if fp in list(base_fingerprints.keys()):
@@ -51,34 +137,24 @@ def get_winnow_fps_txt(student_filename, base_filename, k, w):
             fingerprints1 = []
             fingerprints2 = []
             for pos in student_fingerprints[fp]:
-                substr = get_text_substring(pos, k, student_txt)
+                substr = get_text_substring(pos, k, std1_txt)
                 sfp = Fingerprint(fp, pos, substr)
                 fingerprints1.append(sfp)
-                """if substr in substrings1:
-                    substrings1[substr] = substrings1[substr] + [pos]
-                else:
-                    substrings1[substr] = [pos]"""
             # for each position add an object
             for pos in base_fingerprints[fp]:
-                substr = get_text_substring(pos, k, base_txt)
+                substr = get_text_substring(pos, k, std2_txt)
                 bfp = Fingerprint(fp, pos, substr)
                 fingerprints2.append(bfp)
-                """if substr in substrings2:
-                    substrings2[substr] = substrings2[substr] + [pos]
-                else:
-                    substrings2[substr] = [pos]"""
             common.append((fingerprints1, fingerprints2))
+    # return common as a list of tuples of lists
     return common
 
-def get_all_fps_txt(student_filename, base_filename, k):
-    student_file = open(student_filename, "r")
-    student_txt = student_file.read()
-    student_fingerprints = text_compute_all_setup(student_txt, k)
 
-    base_file = open(base_filename, "r")
-    base_txt = base_file.read()
-    base_fingerprints = text_compute_all_setup(base_txt, k)
-
+def get_common_fps(vs1, vs2, k, w):
+    student_fingerprints = winnow(vs1.parsed_code, k, w)
+    base_fingerprints = winnow(vs2.parsed_code, k, w)
+    # get the common fingerprints from both files and store them as a list of tuples
+    # of the list of fingerprints from both respective files
     common = []
     for fp in list(student_fingerprints.keys()):
         if fp in list(base_fingerprints.keys()):
@@ -86,138 +162,18 @@ def get_all_fps_txt(student_filename, base_filename, k):
             fingerprints1 = []
             fingerprints2 = []
             for pos in student_fingerprints[fp]:
-                substr = get_text_substring(pos, k, student_txt)
+                substr = vs1.get_code_from_parsed(k, pos)
                 sfp = Fingerprint(fp, pos, substr)
                 fingerprints1.append(sfp)
-                """if substr in substrings1:
-                    substrings1[substr] = substrings1[substr] + [pos]
-                else:
-                    substrings1[substr] = [pos]"""
             # for each position add an object
             for pos in base_fingerprints[fp]:
-                substr = get_text_substring(pos, k, base_txt)
+                substr = vs2.get_code_from_parsed(k, pos)
                 bfp = Fingerprint(fp, pos, substr)
                 fingerprints2.append(bfp)
-                """if substr in substrings2:
-                    substrings2[substr] = substrings2[substr] + [pos]
-                else:
-                    substrings2[substr] = [pos]"""
             common.append((fingerprints1, fingerprints2))
-    print(len(common), "COMMON LENGTH (ALL)")
-    """for c in common:
-        for a in c[0]:
-            print(a.substring, a.global_pos, end = " ")
-        print(" + ", end = "")
-        for b in c[1]:
-            print(b.substring, b.global_pos, end = " ")
-        print("")"""
+    # return common as a list of tuples of lists
     return common
 
-def compare_files_py(student_filename, base_filename, k, w):
-    with open(student_filename, "r") as student_source:
-        vs = PyAnalyzer(student_source)
-    student_fingerprints = winnow(vs.parsed_code, k, w)
-    num_std_fps = 0
-    for val in student_fingerprints.values():
-        for _ in val:
-            num_std_fps += 1
-    # print(vs.parsed_code)
-    # print(vs.code)
-
-    with open(base_filename, "r") as base_source:
-        vb = PyAnalyzer(base_source)
-    base_fingerprints = winnow(vb.parsed_code, k, w)
-
-    num_common_fps = 0
-    for fp in list(student_fingerprints.keys()):
-        if fp in list(base_fingerprints.keys()):
-            for _ in student_fingerprints[fp]:
-                num_common_fps += 1
-
-    similarity = num_common_fps / num_std_fps
-    print(res := similarity * 100)
-    return res, num_common_fps
-
-
-def get_fps_py(student_filename, base_filename, k, w, num_common_fps, ignore_count):
-    if num_common_fps > ignore_count:
-        return get_all_fps_py(student_filename, base_filename, k)
-    else:
-        return get_winnow_fps_py(student_filename, base_filename, k, w)
-
-
-def get_winnow_fps_py(student_filename, base_filename, k, w):
-    with open(student_filename, "r") as student_source:
-        vs = PyAnalyzer(student_source)
-    student_fingerprints = winnow(vs.parsed_code, k, w)
-
-    with open(base_filename, "r") as base_source:
-        vb = PyAnalyzer(base_source)
-    base_fingerprints = winnow(vb.parsed_code, k, w)
-
-    common = []
-    for fp in list(student_fingerprints.keys()):
-        if fp in list(base_fingerprints.keys()):
-            # for each position add an object
-            fingerprints1 = []
-            fingerprints2 = []
-            for pos in student_fingerprints[fp]:
-                substr = vs.get_code_from_parsed(k, pos)
-                sfp = Fingerprint(fp, pos, substr)
-                fingerprints1.append(sfp)
-                """if substr in substrings1:
-                    substrings1[substr] = substrings1[substr] + [pos]
-                else:
-                    substrings1[substr] = [pos]"""
-            # for each position add an object
-            for pos in base_fingerprints[fp]:
-                substr = vb.get_code_from_parsed(k, pos)
-                bfp = Fingerprint(fp, pos, substr)
-                fingerprints2.append(bfp)
-                """if substr in substrings2:
-                    substrings2[substr] = substrings2[substr] + [pos]
-                else:
-                    substrings2[substr] = [pos]"""
-            common.append((fingerprints1, fingerprints2))
-
-    return common
-
-def get_all_fps_py(student_filename, base_filename, k):
-    with open(student_filename, "r") as student_source:
-        vs = PyAnalyzer(student_source)
-    student_fingerprints = compute_all(vs.parsed_code, k)
-    # print(vs.code)
-
-    with open(base_filename, "r") as base_source:
-        vb = PyAnalyzer(base_source)
-    base_fingerprints = compute_all(vb.parsed_code, k)
-
-    common = []
-    for fp in list(student_fingerprints.keys()):
-        if fp in list(base_fingerprints.keys()):
-            # for each position add an object
-            fingerprints1 = []
-            fingerprints2 = []
-            for pos in student_fingerprints[fp]:
-                substr = vs.get_code_from_parsed(k, pos)
-                sfp = Fingerprint(fp, pos, substr)
-                fingerprints1.append(sfp)
-                """if substr in substrings1:
-                    substrings1[substr] = substrings1[substr] + [pos]
-                else:
-                    substrings1[substr] = [pos]"""
-            # for each position add an object
-            for pos in base_fingerprints[fp]:
-                substr = vb.get_code_from_parsed(k, pos)
-                bfp = Fingerprint(fp, pos, substr)
-                fingerprints2.append(bfp)
-                """if substr in substrings2:
-                    substrings2[substr] = substrings2[substr] + [pos]
-                else:
-                    substrings2[substr] = [pos]"""
-            common.append((fingerprints1, fingerprints2))
-
-    return common
 
 # Takes in a list of multiple filenames, performs the comparison function and
 # returns an array of filetofingerprint objects
@@ -335,6 +291,7 @@ def compare_multiple_files_txt(filenames, k, w, boilerplate, ignorecount):
         file.similarto = newsimilarto"""
     return files
 
+
 def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
     #filetxts = {}
     files = wrap_filenames(filenames)
@@ -436,6 +393,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
 
     return files
 
+
 #gets the most important matches of fileobjects f1 to f2, as determined by the number of blocks of consecutive fingerprints, puts the
 #results into f1's mostimportantmatches property
 #changing blocksize determines how many consecutive fingerprints there have to be before being considered
@@ -536,66 +494,6 @@ def get_most_important_matches_txt(f1, f2, blocksize, offset): #todo: precision 
                 print(f2matchblock[0].substring + "(" + str(f2matchblock[0].global_pos) + ") - " + f2matchblock[1].substring + " (" + str(f2matchblock[1].global_pos) + ") ")
             i += 1
         print("")"""
-
-
-def compare_files_java(student_filename1, student_filename2, k, w):
-    with open(student_filename1, "r") as student_source1:
-        vs1 = JavaAnalyzer(student_source1)
-
-    with open(student_filename2, "r") as student_source2:
-        vs2 = JavaAnalyzer(student_source2)
-
-    print(vs1.parsed_code)
-
-    student_fingerprints1 = winnow(vs1.parsed_code, k, w)
-    student_fingerprints2 = winnow(vs2.parsed_code, k, w)
-
-    num_std_fps = 0
-    for val in student_fingerprints1.values():
-        for _ in val:
-            num_std_fps += 1
-
-    num_common_fps = 0
-    for fp in list(student_fingerprints1.keys()):
-        if fp in list(student_fingerprints2.keys()):
-            for _ in student_fingerprints1[fp]:
-                num_common_fps += 1
-
-    similarity = num_common_fps / num_std_fps
-    print(res := similarity * 100)
-    return res, num_common_fps
-
-
-def get_winnow_fps_java(student1_filename, student2_filename, k, w):
-    with open(student1_filename, "r") as std1_source:
-        vs1 = JavaAnalyzer(std1_source)
-    std1_fingerprints = winnow(vs1.parsed_code, k, w)
-
-    with open(student2_filename, "r") as std2_source:
-        vs2 = JavaAnalyzer(std2_source)
-    std2_fingerprints = winnow(vs2.parsed_code, k, w)
-
-    common = []
-    for fp in list(std1_fingerprints.keys()):
-        if fp in list(std2_fingerprints.keys()):
-
-            # for each position add an object
-            fingerprints1 = []
-            fingerprints2 = []
-            for pos in std1_fingerprints[fp]:
-                substr = vs1.get_code_from_parsed(k, pos)
-                sfp = Fingerprint(fp, pos, substr)
-                fingerprints1.append(sfp)
-
-            # for each position add an object
-            for pos in std2_fingerprints[fp]:
-                substr = vs2.get_code_from_parsed(k, pos)
-                bfp = Fingerprint(fp, pos, substr)
-                fingerprints2.append(bfp)
-
-            common.append((fingerprints1, fingerprints2))
-
-    return common
 
 
 def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision on which part of a smaller block is in a greater block
