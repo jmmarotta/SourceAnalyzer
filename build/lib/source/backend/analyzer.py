@@ -3,6 +3,7 @@ import ast
 import string
 import tokenize
 import collections
+import javalang
 
 
 class PyAnalyzer(ast.NodeVisitor):
@@ -63,8 +64,6 @@ class PyAnalyzer(ast.NodeVisitor):
             except IndexError:
                 parser_tokens.append(ParserTokenInfo(token.type, re.sub(r"\s+", "", token.string.lower()), start,
                                                      end, token.line, token.string))
-        """for p in parser_tokens:
-            print(p)"""
         return parser_tokens
 
     def __get_parsed_code(self, parser_tokens):
@@ -143,3 +142,38 @@ def build_indent(indent):
     for space in indent:
         whitespace += space
     return whitespace
+
+
+class JavaAnalyzer:
+    def __init__(self, source):
+        source.seek(0)
+        self._code = source.read()
+        tokens = javalang.tokenizer.tokenize(self._code)
+        self._parser_tokens = self.__init_tokens(tokens)
+        self._parsed_code = self.__get_parsed_code(self._parser_tokens)
+
+    def __init_tokens(self, tokens):
+        ParserTokenInfo = collections.namedtuple("ParserTokenInfo", ['type', 'string', 'position',
+                                                                     'old_string'], rename=False, defaults=[None])
+        parser_tokens = []
+        """pos = 0
+        loop_line = False
+        boiler_plate = ['(', ')', ':', 'def']
+        indent_next = False"""
+        for token in tokens:
+            parser_tokens.append(ParserTokenInfo(type(token), token.value, token.position, token.value))
+        return parser_tokens
+
+    def __get_parsed_code(self, parser_tokens):
+        parsed_code = ""
+        for token in parser_tokens:
+            parsed_code += token.string
+        return parsed_code
+
+    @property
+    def parsed_code(self):
+        return self._parsed_code
+
+    @property
+    def code(self):
+        return self._code

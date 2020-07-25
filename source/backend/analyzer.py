@@ -3,6 +3,7 @@ import ast
 import string
 import tokenize
 import collections
+import javalang
 
 
 class PyAnalyzer(ast.NodeVisitor):
@@ -120,6 +121,60 @@ class PyAnalyzer(ast.NodeVisitor):
         return self._code[pos:pos+k]
 
 
+class JavaAnalyzer:
+    def __init__(self, source):
+        source.seek(0)
+        self._code = source.read()
+        tokens = javalang.tokenizer.tokenize(self._code)
+        tree = javalang.parse.parse(self._code)
+        self._parser_tokens = self.__init_tokens(tokens, tree)
+        self._parsed_code = self.__get_parsed_code(self._parser_tokens)
+
+    def __init_tokens(self, tokens, tree):
+        ParserTokenInfo = collections.namedtuple("ParserTokenInfo", ['type', 'string', 'position',
+                                                                     'old_string'], rename=False, defaults=[None])
+        parser_tokens = []
+        """pos = 0
+        loop_line = False
+        boiler_plate = ['(', ')', ':', 'def']
+        indent_next = False"""
+        is_class = False
+        index = 0
+        for token in tokens:
+            if is_class:
+                parser_tokens.append(ParserTokenInfo(type(token), 'C', token.position, token.value))
+                is_class = False
+            elif type(token) == javalang.tokenizer.Identifier:
+                print(token)
+                if token.value == 'print' or token.value == 'println':
+                    parser_tokens.append(ParserTokenInfo(type(token), 'P', token.position, token.value))
+                elif token.value == 'String':
+                    parser_tokens.append(ParserTokenInfo(type(token), 'S', token.position, token.value))
+                else:
+                    parser_tokens.append(ParserTokenInfo(type(token), 'I', token.position, token.value))
+            elif token.value == 'class':
+                parser_tokens.append(ParserTokenInfo(type(token), '', token.position, token.value))
+                is_class = True
+            else:
+                parser_tokens.append(ParserTokenInfo(type(token), token.value, token.position, token.value))
+            index += 1
+        return parser_tokens
+
+    def __get_parsed_code(self, parser_tokens):
+        parsed_code = ""
+        for token in parser_tokens:
+            parsed_code += token.string
+        return parsed_code
+
+    @property
+    def parsed_code(self):
+        return self._parsed_code
+
+    @property
+    def code(self):
+        return self._code
+
+
 def get_text_substring(pos, k, text):
     i = 0
     spaces_pos = []
@@ -137,9 +192,3 @@ def get_text_substring(pos, k, text):
             k += 1
     return text[pos:pos+k]
 
-
-def build_indent(indent):
-    whitespace = ""
-    for space in indent:
-        whitespace += space
-    return whitespace

@@ -1,6 +1,8 @@
 from source.backend.fingerprint import Fingerprint
 from source.backend.winnowing import *
+from source.backend.analyzer import *
 #ask julian about computing percentages with winnow_setup, how to get parsed positions/substrings
+
 
 def compare_files_txt(student_file_loc, base_file_loc, k, w):
     student_file = open(student_file_loc, "r")
@@ -135,11 +137,6 @@ def compare_files_py(student_filename, base_filename, k, w):
     return res, num_common_fps
 
 def get_fps_py(student_filename, base_filename, k, w, num_common_fps, ignore_count):
-    with open(student_filename, "r") as student_source:
-        vs = PyAnalyzer(student_source)
-    with open(base_filename, "r") as base_source:
-        vb = PyAnalyzer(base_source)
-
     if num_common_fps > ignore_count:
         return get_all_fps_py(student_filename, base_filename, k)
     else:
@@ -536,6 +533,35 @@ def get_most_important_matches_txt(f1, f2, blocksize, offset): #todo: precision 
             i += 1
         print("")"""
 
+
+def compare_files_java(student_filename1, student_filename2, k, w):
+    with open(student_filename1, "r") as student_source1:
+        vs1 = JavaAnalyzer(student_source1)
+
+    with open(student_filename2, "r") as student_source2:
+        vs2 = JavaAnalyzer(student_source2)
+
+    print(vs1.parsed_code)
+
+    student_fingerprints1 = winnow(vs1.parsed_code, k, w)
+    student_fingerprints2 = winnow(vs2.parsed_code, k, w)
+
+    num_std_fps = 0
+    for val in student_fingerprints1.values():
+        for _ in val:
+            num_std_fps += 1
+
+    num_common_fps = 0
+    for fp in list(student_fingerprints1.keys()):
+        if fp in list(student_fingerprints2.keys()):
+            for _ in student_fingerprints1[fp]:
+                num_common_fps += 1
+
+    similarity = num_common_fps / num_std_fps
+    print(res := similarity * 100)
+    return res, num_common_fps
+
+
 def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision on which part of a smaller block is in a greater block
     if f1.similarto.get(f2) == None:
             return
@@ -707,14 +733,16 @@ def print_prototype_test(files, boilerplate):
             print(sim.filename, "by {:.2%}".format(get_similarity(file, sim)))
             print("")
 
+
 def main():
-    res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
-    get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
-    get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
-    get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
-    compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
+    # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
+    # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
+    # get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
+    # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
+    # compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
+    # get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
+    # get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
+    compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
 
     print("Multi-document tests: ")
     # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
