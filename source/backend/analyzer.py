@@ -145,7 +145,6 @@ class JavaAnalyzer:
                 parser_tokens.append(ParserTokenInfo(type(token), 'C', token.position, token.value))
                 is_class = False
             elif type(token) == javalang.tokenizer.Identifier:
-                print(token)
                 if token.value == 'print' or token.value == 'println':
                     parser_tokens.append(ParserTokenInfo(type(token), 'P', token.position, token.value))
                 elif token.value == 'String':
@@ -173,6 +172,38 @@ class JavaAnalyzer:
     @property
     def code(self):
         return self._code
+
+    def get_code_from_parsed(self, k, pos):
+        index = 0
+        for token in self._parser_tokens:
+            if index < pos:
+                # if a token is a string
+                if token.type == 3 and pos < index + len(token.string):
+                    for ch in token.old_string:
+                        if ch == string.whitespace and index <= pos:
+                            pos += 1
+                            index += 1
+                        elif ch == string.whitespace and index <= pos+k:
+                            k += 1
+                            index += 1
+                        else:
+                            index += 1
+                else:
+                    pos += len(token.old_string) - len(token.string)
+            elif pos <= index < pos + k:
+                if token.type == 3 and pos + k < index + len(token.string):
+                    for ch in token.old_string:
+                        if ch == string.whitespace and index <= pos+k:
+                            k += 1
+                            index += 1
+                        else:
+                            index += 1
+                else:
+                    k += len(token.old_string) - len(token.string)
+            else:
+                break
+            index += len(token.old_string)
+        return self._code[pos:pos+k]
 
 
 def get_text_substring(pos, k, text):

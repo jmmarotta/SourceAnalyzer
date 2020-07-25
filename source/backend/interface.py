@@ -1,7 +1,7 @@
 from source.backend.fingerprint import Fingerprint
 from source.backend.winnowing import *
 from source.backend.analyzer import *
-#ask julian about computing percentages with winnow_setup, how to get parsed positions/substrings
+# ask julian about computing percentages with winnow_setup, how to get parsed positions/substrings
 
 
 def compare_files_txt(student_file_loc, base_file_loc, k, w):
@@ -27,11 +27,13 @@ def compare_files_txt(student_file_loc, base_file_loc, k, w):
     print(res := similarity * 100)
     return res, num_common_fps
 
+
 def get_fps_txt(student_filename, base_filename, k, w, num_common_fps, ignore_count):
     if num_common_fps > ignore_count:
         return get_all_fps_txt(student_filename, base_filename, k)
     else:
         return get_winnow_fps_txt(student_filename, base_filename, k, w)
+
 
 def get_winnow_fps_txt(student_filename, base_filename, k, w):
     student_file = open(student_filename, "r")
@@ -136,11 +138,13 @@ def compare_files_py(student_filename, base_filename, k, w):
     print(res := similarity * 100)
     return res, num_common_fps
 
+
 def get_fps_py(student_filename, base_filename, k, w, num_common_fps, ignore_count):
     if num_common_fps > ignore_count:
         return get_all_fps_py(student_filename, base_filename, k)
     else:
         return get_winnow_fps_py(student_filename, base_filename, k, w)
+
 
 def get_winnow_fps_py(student_filename, base_filename, k, w):
     with open(student_filename, "r") as student_source:
@@ -562,12 +566,44 @@ def compare_files_java(student_filename1, student_filename2, k, w):
     return res, num_common_fps
 
 
+def get_winnow_fps_java(student1_filename, student2_filename, k, w):
+    with open(student1_filename, "r") as std1_source:
+        vs1 = JavaAnalyzer(std1_source)
+    std1_fingerprints = winnow(vs1.parsed_code, k, w)
+
+    with open(student2_filename, "r") as std2_source:
+        vs2 = JavaAnalyzer(std2_source)
+    std2_fingerprints = winnow(vs2.parsed_code, k, w)
+
+    common = []
+    for fp in list(std1_fingerprints.keys()):
+        if fp in list(std2_fingerprints.keys()):
+
+            # for each position add an object
+            fingerprints1 = []
+            fingerprints2 = []
+            for pos in std1_fingerprints[fp]:
+                substr = vs1.get_code_from_parsed(k, pos)
+                sfp = Fingerprint(fp, pos, substr)
+                fingerprints1.append(sfp)
+
+            # for each position add an object
+            for pos in std2_fingerprints[fp]:
+                substr = vs2.get_code_from_parsed(k, pos)
+                bfp = Fingerprint(fp, pos, substr)
+                fingerprints2.append(bfp)
+
+            common.append((fingerprints1, fingerprints2))
+
+    return common
+
+
 def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision on which part of a smaller block is in a greater block
     if f1.similarto.get(f2) == None:
             return
     f1_fingerprints = []
     f2_fingerprints = {}
-    for fptuple in f1.similarto[f2]: #order the fingerprint's individually by location
+    for fptuple in f1.similarto[f2]: # order the fingerprint's individually by location
         f2_fingerprints[fptuple[1][0].fp_hash] = fptuple[1]
         for f1_fp in fptuple[0]:
             f1_fingerprints.append(f1_fp)
@@ -575,9 +611,9 @@ def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision o
     blockcounter = 0
     most_important_match_locations = []
     fp2lastpos = []
-    for fp in range(len(f1_fingerprints) - 1): #find if consecutive
+    for fp in range(len(f1_fingerprints) - 1): # find if consecutive
         okay = False
-        if blockcounter == 0: #start of a new block
+        if blockcounter == 0: # start of a new block
             start = f1_fingerprints[fp]
             f2start = f2_fingerprints[f1_fingerprints[fp].fp_hash].copy()
             """print("F1 start:" + start.substring + ",( " + str(start.global_pos) + ")")
@@ -588,7 +624,7 @@ def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision o
         blockcounter +=1
         if ((f1_fingerprints[fp].global_pos + len(f1_fingerprints[fp].substring) + offset) >= f1_fingerprints[fp + 1].global_pos): #f1 fingerprint is consecutive
             i = 0
-            for f2matchpos in fp2lastpos: #check all potential positions, making chains of potential blocks in f2
+            for f2matchpos in fp2lastpos: # check all potential positions, making chains of potential blocks in f2
                 """print("Listprint: ")
                 for fpz in range(len(fp2lastpos)):
                     print(fp2lastpos[fpz].global_pos)
@@ -597,23 +633,28 @@ def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision o
                 if f2matchpos.global_pos == -1:
                     i += 1
                     continue
-                for fp2 in f2_fingerprints[f1_fingerprints[fp].fp_hash]: #check if consecutive in f2, 1st position
+                for fp2 in f2_fingerprints[f1_fingerprints[fp].fp_hash]: # check if consecutive in f2, 1st position
                     if fp2.global_pos == f2matchpos.global_pos:
-                        for fp2prime in f2_fingerprints[f1_fingerprints[fp + 1].fp_hash]: #check if consecutive in f2, second position
-                            if fp2prime.global_pos < f2matchpos.global_pos: #only check locations which can be consecutive
-                                if (blockcounter < blocksize):
-                                    #print("-.-", i)
+                        # check if consecutive in f2, second position
+                        for fp2prime in f2_fingerprints[f1_fingerprints[fp + 1].fp_hash]:
+                            # only check locations which can be consecutive
+                            if fp2prime.global_pos < f2matchpos.global_pos:
+                                if blockcounter < blocksize:
+                                    # print("-.-", i)
                                     fp2lastpos[i] = Fingerprint(-1, -1, "")  # error code
                                 continue
-                            elif (f2matchpos.global_pos + len(f2matchpos.substring) + offset) >= fp2prime.global_pos: #get last consecutive occurence
-                                #print(":D", i)
+                            # get last consecutive occurence
+                            elif (f2matchpos.global_pos + len(f2matchpos.substring) + offset) >= fp2prime.global_pos:
+                                # print(":D", i)
                                 okay = True
                                 fp2lastpos[i] = fp2prime
-                            elif (blockcounter < blocksize) and (okay == False): #the chain is not possibly valid, give an error code to make sure it's not appended, append subloc here maybe
-                                #print("o.0", i)
-                                fp2lastpos[i] = Fingerprint(-1, -1, "") #error code
+                            # t he chain is not possibly valid, give an error code to make sure it's not appended,
+                            # append subloc here maybe
+                            elif (blockcounter < blocksize) and (okay == False):
+                                # print("o.0", i)
+                                fp2lastpos[i] = Fingerprint(-1, -1, "") # error code
                 i += 1
-        if okay == False:   #end of block
+        if okay == False:   # end of block
             if blockcounter >= blocksize:
                 end = f1_fingerprints[fp]
                 templist = []
@@ -627,7 +668,7 @@ def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision o
                     print(ender.substring + ",( " + str(ender.global_pos) + ")")"""
                 most_important_match_locations.append(((start, end), templist))
             blockcounter = 0
-    if blockcounter >= blocksize: #1 more block check to see if the last one was end of a block
+    if blockcounter >= blocksize:  # 1 more block check to see if the last one was end of a block
         end = f1_fingerprints[len(f1_fingerprints) - 1]
         templist = []
         for pos in range(len(fp2lastpos)):
@@ -642,7 +683,7 @@ def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision o
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
 
-    #debug printing
+    # debug printing
     """for mostimportant in most_important_match_locations:
         print("F1: ")
         print(mostimportant[0][0].substring + "(" + str(mostimportant[0][0].global_pos) + ") - " + mostimportant[0][1].substring + "(" + str(mostimportant[0][1].global_pos) + ")")
@@ -658,18 +699,22 @@ def get_most_important_matches_py(f1, f2, blocksize, offset): #todo: precision o
             i += 1
         print("")"""
 
-#the version for multiple files
+
+# the version for multiple files
 def get_most_important_matches_multiple_files_txt(files, blocksize, offset):
     for f1 in files:
         for f2 in files:
             get_most_important_matches_txt(f1, f2, blocksize, offset)
+
 
 def get_most_important_matches_multiple_files_py(files, blocksize, offset):
     for f1 in files:
         for f2 in files:
             get_most_important_matches_py(f1, f2, blocksize, offset)
 
-#gets % similarity between 2 different filetofingerprintobjects that were initialized through compare_multiple_documents
+
+# gets % similarity between 2 different filetofingerprintobjects that were initialized
+# through compare_multiple_documents
 def get_similarity(f1, f2):
     print(f1.filename, f2.filename)
     if f1.similarto.get(f2) == None:
@@ -684,6 +729,7 @@ def get_similarity(f1, f2):
             for loc in fp:
                 totalfps += 1
         return simcount / totalfps
+
 
 # Printing debug results for prototype, accepts filetofingerprint object
 def print_prototype_test(files, boilerplate):
@@ -743,46 +789,10 @@ def main():
     # get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
     # get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
     compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
-
-    print("Multi-document tests: ")
-    # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
-    """multidocumenttesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/javatest1.java", "test_files/lorem.txt", "test_files/ipsum.txt"]
-    filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
-    print_prototype_test(filetofingerprintobjects, [])"""
-    multidocumenttestpy = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py", "test_files/test1same.py"]
-    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 10, 5, [], 0)
-    print_prototype_test(filetofingerprintobjects, [])
-    mixtest = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py", "test_files/test1same.py"]
-    filetofingerprintobjects = compare_multiple_files_txt(mixtest, 10, 5, [], 0)
-    print_prototype_test(filetofingerprintobjects, [])
-    print("")
-
-    print("Boilerplate tests: ")
-    boilerplatepy = ["test_files/test1.py", "test_files/test2same.py", "test_files/test.txt", "test_files/test2.txt"]
-    boilerplatetestpy = ["test_files/test1same.py", "test_files/test1copier.py"]
-    filetofingerprintobjects = compare_multiple_files_py(boilerplatetestpy, 5, 4, boilerplatepy, 0)
-    print_prototype_test(filetofingerprintobjects, boilerplatepy)
-
-    boilerplatetxt = ["test_files/songtest1.txt", "test_files/ipsum.txt"]
-    boilerplatetesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/lorem.txt", "test_files/test.txt", "test_files/test2.txt"]
-    filetofingerprintobjects = compare_multiple_files_txt(boilerplatetesttxt, 10, 5, boilerplatetxt, 0)
-    print_prototype_test(filetofingerprintobjects, boilerplatetxt)
-
-    print("Most important matches:")
-    get_most_important_matches_multiple_files_txt(filetofingerprintobjects, 10, 5)
-    for importanttest in filetofingerprintobjects:
-        print(importanttest.filename + " important matches: ")
-        for matchingfile in list(importanttest.mostimportantmatches.keys()):
-            print(matchingfile.filename + " important")
-            for match in importanttest.mostimportantmatches[matchingfile]:
-                print("F1: " + importanttest.filename)
-                print(match[0][0].substring + " (" + str(match[0][0].global_pos) + ") - " + match[0][
-                    1].substring + " (" + str(match[0][1].global_pos) + ")")
-                print("F2: " + matchingfile.filename)
-                for f2match in match[1]:
-                    print(f2match[0].substring + " (" + str(f2match[0].global_pos) + ") - " + f2match[
-                        1].substring + " (" + str(f2match[1].global_pos) + ")")
-        print("-------------------------------")
+    common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
+    """for c in common:
+        print("FP1:\n" + c[0][0].substring)
+        print("FP2:\n" + c[1][0].substring)"""
 
 
 if __name__ == "__main__":
