@@ -1,12 +1,11 @@
 import re
-import ast
 import string
 import tokenize
 import collections
 import javalang
 
 
-class PyAnalyzer(ast.NodeVisitor):
+class PyAnalyzer:
     def __init__(self, source):
         source.seek(0)
         tokens = tokenize.generate_tokens(source.readline)
