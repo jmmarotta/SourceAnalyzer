@@ -320,7 +320,7 @@ class SourceAnalyzer:
 
     def next_file1(self):
         self.out_result.configure(state='normal')
-        print("REACHED next_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+        #print("REACHED next_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
 
         if (self.curr_index1+1) == self.curr_index2:
             self.curr_index1 = self.curr_index1 + 2
@@ -339,6 +339,7 @@ class SourceAnalyzer:
                 self.curr_index2].filename + " is " + str(percentage))
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
+            #print(f2fpstring)
 
         file1 = self.file_name1.get(0, tk.END)  # student
         self.file1out = open(file1[self.curr_index1], 'r').read()
@@ -350,7 +351,7 @@ class SourceAnalyzer:
 
     def next_file2(self):
         self.out_result.configure(state='normal')
-        print("REACHED next_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+        #print("REACHED next_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
 
 
         if (self.curr_index2+1) == self.curr_index1:
@@ -370,11 +371,10 @@ class SourceAnalyzer:
                 self.curr_index2].filename + " is " + str(percentage))
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
-            print(f2fpstring)
+            #print(f2fpstring)
 
 
         file2 = self.file_name1.get(0, tk.END)  # student
-        print("file2 array" + str(len(file2)))
         self.file2out = open(file2[self.curr_index2], 'r').read()
         self.out_text2.delete('1.0', tk.END)
         self.out_text2.insert(tk.END, self.file2out)
@@ -383,7 +383,7 @@ class SourceAnalyzer:
 
     def prev_file1(self):
         self.out_result.configure(state='normal')
-        print("REACHED prev_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+        #print("REACHED prev_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
 
 
         if (self.curr_index1-1) == self.curr_index2:
@@ -404,7 +404,7 @@ class SourceAnalyzer:
                 self.curr_index2].filename + " is " + str(percentage))
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
-            print(f2fpstring)
+            #print(f2fpstring)
 
         file1 = self.file_name1.get(0, tk.END)  # student
         self.file1out = open(file1[self.curr_index1], 'r').read()
@@ -415,7 +415,7 @@ class SourceAnalyzer:
 
     def prev_file2(self):
         self.out_result.configure(state='normal')
-        print("REACHED prev_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+        #print("REACHED prev_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
 
         if (self.curr_index2-1) == self.curr_index1:
             self.curr_index2 = self.curr_index2 - 2
@@ -434,7 +434,7 @@ class SourceAnalyzer:
                 self.curr_index2].filename + " is " + str(percentage))
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
-            print(f2fpstring)
+            #print(f2fpstring)
 
         file2 = self.file_name1.get(0, tk.END)  # student
         self.file2out = open(file2[self.curr_index2], 'r').read()
