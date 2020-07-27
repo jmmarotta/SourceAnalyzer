@@ -60,7 +60,9 @@ class SourceAnalyzer:
         k = int(self.k_input.get())
         w = int(self.windowSizeInput.get())
 
-        self.fileList =file1
+        self.fileList=file1
+        index1 = 0
+        index2 = 1
 
         if (not (len(file1)<=1)): #student files 1 or empty
             #print("CLEARED: more than one student file")
@@ -73,11 +75,11 @@ class SourceAnalyzer:
             if diff:
                 #print("CLEARED: all files differ between bp and student")
 
-                file1out = open(file1[0], 'r').read()
-                try: #boilerplate allowed to be empty
-                    file2out = open(file2[0], 'r').read()
-                except IndexError as e:
-                    print("no boilerplate files recognized")
+                self.file1out = open(file1[index1], 'r').read()
+#                try: #boilerplate allowed to be empty
+                self.file2out = open(file1[index2], 'r').read()
+#                except IndexError as e:
+#                    print("no boilerplate files recognized")
 
                 #ADDED for boilerplate
 
@@ -142,8 +144,11 @@ class SourceAnalyzer:
                 self.out_text2.tag_config("found")
                 self.out_text1.delete('1.0', tk.END)
                 self.out_text2.delete('1.0', tk.END)
-                self.out_text1.insert(tk.END, file1out)
-                self.out_text2.insert(tk.END, file2out)
+                self.out_text1.insert(tk.END, self.file1out)
+#                try: #boilerplate allowed to be empty
+                self.out_text2.insert(tk.END, self.file2out)
+#                except UnboundLocalError as e:
+ #                   print("Second output is empty")
 
                 index_track1 = '1.0'
 
@@ -249,6 +254,11 @@ class SourceAnalyzer:
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
 
+        file1 = self.file_name1.get(0, tk.END)  # student
+        self.file1out = open(file1[self.curr_index1], 'r').read()
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+
         self.out_result.configure(state='disabled')
 
 
@@ -275,6 +285,13 @@ class SourceAnalyzer:
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
             print(f2fpstring)
+
+
+        file2 = self.file_name1.get(0, tk.END)  # student
+        print("file2 array" + str(len(file2)))
+        self.file2out = open(file2[self.curr_index2], 'r').read()
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text2.insert(tk.END, self.file2out)
 
         self.out_result.configure(state='disabled')
 
@@ -303,6 +320,11 @@ class SourceAnalyzer:
             self.out_result.insert(tk.END, f2fpstring)
             print(f2fpstring)
 
+        file1 = self.file_name1.get(0, tk.END)  # student
+        self.file1out = open(file1[self.curr_index1], 'r').read()
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+
         self.out_result.configure(state='disabled')
 
     def prev_file2(self):
@@ -327,6 +349,11 @@ class SourceAnalyzer:
             self.out_result.delete('1.0', tk.END)
             self.out_result.insert(tk.END, f2fpstring)
             print(f2fpstring)
+
+        file2 = self.file_name1.get(0, tk.END)  # student
+        self.file2out = open(file2[self.curr_index2], 'r').read()
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text2.insert(tk.END, self.file2out)
 
         self.out_result.configure(state='disabled')
 
