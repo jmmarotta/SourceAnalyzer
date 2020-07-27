@@ -60,6 +60,10 @@ class SourceAnalyzer:
         k = int(self.k_input.get())
         w = int(self.windowSizeInput.get())
 
+        self.fileList=file1
+        index1 = 0
+        index2 = 1
+
         if (not (len(file1)<=1)): #student files 1 or empty
             #print("CLEARED: more than one student file")
 
@@ -71,11 +75,11 @@ class SourceAnalyzer:
             if diff:
                 #print("CLEARED: all files differ between bp and student")
 
-                file1out = open(file1[0], 'r').read()
-                try: #boilerplate allowed to be empty
-                    file2out = open(file2[0], 'r').read()
-                except IndexError as e:
-                    print("no boilerplate files recognized")
+                self.file1out = open(file1[index1], 'r').read()
+#                try: #boilerplate allowed to be empty
+                self.file2out = open(file1[index2], 'r').read()
+#                except IndexError as e:
+#                    print("no boilerplate files recognized")
 
                 #ADDED for boilerplate
 
@@ -108,18 +112,27 @@ class SourceAnalyzer:
                     #mimatches = get_most_important_matches_txt(file1, file2, blocksize, offset)
                     #fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
 
-                for bp_fps0 in file2fp_objs:
-                    for bp_fps1 in file2fp_objs:
-                        percentage = "{:.2%}".format(get_similarity(bp_fps0, bp_fps1))
-                        print("Similarity between "+ bp_fps0.filename +" and "+ bp_fps1.filename +" is " + str(percentage))
-                        if bp_fps0 != bp_fps1:
-                            print(str(len(bp_fps0.similarto[bp_fps1])))
 
                 self.out_result.configure(state='normal')
                 self.out_text1.configure(state='normal')
                 self.out_text2.configure(state='normal')
 
+                self.f2fp = file2fp_objs
+
+
+                index1 = 0
+                index2 = 1
+                self.curr_index1 = index1
+                self.curr_index2 = index2
+
+                percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+                f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[self.curr_index2].filename + " is " + str(percentage))
+                print(f2fpstring)
+
                 self.out_result.delete('1.0', tk.END)
+                self.out_result.insert(tk.END, f2fpstring)
+
+
                 #self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
                 if self.language_var.get() == "Python":
                     if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
@@ -131,12 +144,15 @@ class SourceAnalyzer:
                 self.out_text2.tag_config("found")
                 self.out_text1.delete('1.0', tk.END)
                 self.out_text2.delete('1.0', tk.END)
-                self.out_text1.insert(tk.END, file1out)
-                self.out_text2.insert(tk.END, file2out)
+                self.out_text1.insert(tk.END, self.file1out)
+#                try: #boilerplate allowed to be empty
+                self.out_text2.insert(tk.END, self.file2out)
+#                except UnboundLocalError as e:
+ #                   print("Second output is empty")
 
                 index_track1 = '1.0'
 
-                for fingerprint in fp:
+                """for fingerprint in fp:
 
                     index1 = []
                     index2 = []
@@ -183,6 +199,7 @@ class SourceAnalyzer:
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
                 self.show_fp()
+                """
 
                 #Python
                 if self.language_var.get() == "Python":
@@ -277,8 +294,163 @@ class SourceAnalyzer:
             print("Please include more student files to compare!")
             self.out_result.configure(state='normal')
             self.out_result.delete('1.0', tk.END)
-            self.out_result.insert(tk.END, "Please include more studetn files to compare!")
+            self.out_result.insert(tk.END, "Please include more student files to compare!")
             self.out_result.configure(state='disabled')
+
+    def show_file(self):
+
+        self.fileList = self.file_name1.get(0, tk.END)
+        print(self.fileList)
+
+        if self.file_name1 in self.fileList:
+            val = self.fileList.index(self.file_name1)
+            print("val not in tuple")
+            if val in self.fileList:
+                index = self.fileList.index(val)
+                prev_file = self.fileList[index - 1] if index  > 0 else None
+                curr_file = self.fileList[index]
+                next_file = self.fileList[index + 1] if index + 1 < len(self.fileList) else None
+
+    #        next, prev = self.find_next_prev(val, fileList)
+
+        self.curr_index1 = index
+        self.curr_index2 = index
+        print(index)
+        #    return prev_file, curr_file, next_file
+
+    def next_file1(self):
+        self.out_result.configure(state='normal')
+        print("REACHED next_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+        if (self.curr_index1+1) == self.curr_index2:
+            self.curr_index1 = self.curr_index1 + 2
+        else:
+            self.curr_index1 = self.curr_index1 + 1
+
+        if self.curr_index1 >= len(self.f2fp):
+            if self.curr_index2 != 0:
+                self.curr_index1 = 0
+            else:
+                self.curr_index1 = 1
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+
+        file1 = self.file_name1.get(0, tk.END)  # student
+        self.file1out = open(file1[self.curr_index1], 'r').read()
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+
+        self.out_result.configure(state='disabled')
+
+
+    def next_file2(self):
+        self.out_result.configure(state='normal')
+        print("REACHED next_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+
+        if (self.curr_index2+1) == self.curr_index1:
+            self.curr_index2 = self.curr_index2 + 2
+        else:
+            self.curr_index2 = self.curr_index2 + 1
+
+        if self.curr_index2 >= len(self.f2fp):
+            if self.curr_index1 != 0:
+                self.curr_index2 = 0
+            else:
+                self.curr_index2 = 1
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            print(f2fpstring)
+
+
+        file2 = self.file_name1.get(0, tk.END)  # student
+        print("file2 array" + str(len(file2)))
+        self.file2out = open(file2[self.curr_index2], 'r').read()
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text2.insert(tk.END, self.file2out)
+
+        self.out_result.configure(state='disabled')
+
+    def prev_file1(self):
+        self.out_result.configure(state='normal')
+        print("REACHED prev_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+
+        if (self.curr_index1-1) == self.curr_index2:
+            self.curr_index1 = self.curr_index1 - 2
+        else:
+            self.curr_index1 = self.curr_index1 - 1
+
+        if self.curr_index1 < 0:
+            if self.curr_index2 != len(self.f2fp) - 1:
+                self.curr_index1 = len(self.f2fp) - 1
+            else:
+                self.curr_index1 = len(self.f2fp) - 2
+
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            print(f2fpstring)
+
+        file1 = self.file_name1.get(0, tk.END)  # student
+        self.file1out = open(file1[self.curr_index1], 'r').read()
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+
+        self.out_result.configure(state='disabled')
+
+    def prev_file2(self):
+        self.out_result.configure(state='normal')
+        print("REACHED prev_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+        if (self.curr_index2-1) == self.curr_index1:
+            self.curr_index2 = self.curr_index2 - 2
+        else:
+            self.curr_index2 = self.curr_index2 - 1
+
+        if self.curr_index2 < 0:
+            if self.curr_index1 != len(self.f2fp) - 1:
+                self.curr_index2 = len(self.f2fp) - 1
+            else:
+                self.curr_index2 = len(self.f2fp) - 2
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            print(f2fpstring)
+
+        file2 = self.file_name1.get(0, tk.END)  # student
+        self.file2out = open(file2[self.curr_index2], 'r').read()
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text2.insert(tk.END, self.file2out)
+
+        self.out_result.configure(state='disabled')
+
+ #   def find_next_prev(cur_file, fileList):
+ #       next, prev = None, None
+ #       index = fileList.index(cur_file)
+ #       if index > 0:
+ #           prev = fileList[index - 1]
+ #       if index < (len(fileList) - 1):
+ #           next = fileList[index + 1]
+ #       return next, prev
 
     def show_fp(self):
 
@@ -411,6 +583,10 @@ class SourceAnalyzer:
         self.index1s = []
         self.index2s = []
 
+        self.curr_index1 = 0
+        self.curr_index2 = 1
+        self.f2fp = []
+
         self.menubar = tk.Menu(self.master)
         
         self.upper = tk.Frame(self.master)
@@ -427,6 +603,9 @@ class SourceAnalyzer:
 
         self.bottom_frame = tk.Frame(self.output_frame)
         self.bottom_frame.pack(expand=True, fill='both', pady=5)
+
+        self.index_btns = tk.Frame(self.bottom_frame)
+        self.index_btns.pack(expand=False, fill='both', pady=5, side='bottom')
 
         self.very_bottom = tk.Frame(self.output_frame, width=0)
         self.very_bottom.pack(expand=False, fill='none', padx=(0, 125), pady=5, side="bottom")
@@ -605,6 +784,19 @@ class SourceAnalyzer:
 
         self.out_text2.pack(expand=True, fill="both", padx=(10,0),pady=10, side='left')
         self.txt_scroll2.pack(side='left', padx=(0,10), fill='y', pady=10)
+
+        #added
+        self.next_filebtn1 = tk.Button(self.index_btns, text="Compare Next1", command=self.next_file1, bg="gray75", width=15)
+        self.next_filebtn1.grid(row=0, column=0, padx=(10,10),  columnspan=4)
+
+        self.prev_filebtn1 = tk.Button(self.index_btns, text="Compare Prev1", command=self.prev_file1, bg="gray80", width=15)
+        self.prev_filebtn1.grid(row=0, column=5, padx=(0,10),  columnspan=4)
+
+        self.next_filebtn2 = tk.Button(self.index_btns, text="Compare Next2", command=self.next_file2, bg="gray75", width=15)
+        self.next_filebtn2.grid(row=0, column=25, padx=(290,0), columnspan=4)
+
+        self.prev_filebtn2 = tk.Button(self.index_btns, text="Compare Prev2", command=self.prev_file2, bg="gray80", width=15)
+        self.prev_filebtn2.grid(row=0, column=30, padx=(10,0), columnspan=4)
 
     #Very Bottom
         
