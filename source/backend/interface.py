@@ -694,6 +694,8 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
         print("")
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
+    else:
+        f1.mostimportantmatches[f2] = []
 
     #debug printing
     """for mostimportant in most_important_match_locations:
@@ -798,6 +800,8 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
         most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
+    else:
+        f1.mostimportantmatches[f2] = []
 
     #debug printing
     """for mostimportant in most_important_match_locations:
