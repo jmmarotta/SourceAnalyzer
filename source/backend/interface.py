@@ -243,7 +243,7 @@ def compare_multiple_files_txt(filenames, k, w, boilerplate, ignorecount):
         for file in files:
             f = open(file.filename, "r")
             txt = f.read()
-            #filetxts[file.filename] = txt
+            file.base = txt
             file.fingerprintssetup = text_winnow_setup(txt, k, w)
             for fp in list(file.fingerprintssetup.keys()):
                 allfingerprints[fp][file] = []
@@ -258,7 +258,7 @@ def compare_multiple_files_txt(filenames, k, w, boilerplate, ignorecount):
         for file in files:
             f = open(file.filename, "r")
             txt = f.read()
-            #filetxts[file.filename] = txt
+            file.base = txt
             file.fingerprintssetup = text_winnow_setup(txt, k, w)
             for fp in list(file.fingerprintssetup.keys()):
                 if fp in bpfingerprints:
@@ -339,7 +339,6 @@ def compare_multiple_files_txt(filenames, k, w, boilerplate, ignorecount):
     return files
 
 def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
-    #filetxts = {}
     files = wrap_filenames(filenames)
     allfingerprints = collections.defaultdict(dict)
     bpfingerprints = {}
@@ -358,7 +357,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
         for file in files:
             with open(file.filename, "r") as student_source:
                 vs = PyAnalyzer(student_source)
-            #filetxts[file.filename] = txt
+            file.base = vs
             print("PARSED CODE:", vs.parsed_code)
             file.fingerprintssetup = winnow(vs.parsed_code, k, w)
             for fp in list(file.fingerprintssetup.keys()):
@@ -373,7 +372,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
         for file in files:
             with open(file.filename, "r") as student_source:
                 vs = PyAnalyzer(student_source)
-            #filetxts[file.filename] = txt
+            file.base = vs
             file.fingerprintssetup = winnow(vs.parsed_code, k, w)
             print("PARSED CODE:", vs.parsed_code)
             for fp in list(file.fingerprintssetup.keys()):
@@ -453,7 +452,6 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     for bpfile in boilerplate:
         with open(bpfile, "r") as student_source:
             bp = PyAnalyzer(student_source)
-            print("JAVA: ", bp.parse_code)
         if len(bpfingerprints) == 0:
             bpfingerprints = winnow(bp.parsed_code, k, w)
         else:
@@ -464,7 +462,7 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
         for file in files:
             with open(file.filename, "r") as student_source:
                 vs = JavaAnalyzer(student_source)
-            #filetxts[file.filename] = txt
+            file.base = vs
             file.fingerprintssetup = winnow(vs.parsed_code, k, w)
             for fp in list(file.fingerprintssetup.keys()):
                 allfingerprints[fp][file] = []
@@ -477,7 +475,7 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
         for file in files:
             with open(file.filename, "r") as student_source:
                 vs = JavaAnalyzer(student_source)
-            #filetxts[file.filename] = txt
+            file.base = vs
             file.fingerprintssetup = winnow(vs.parsed_code, k, w)
             for fp in list(file.fingerprintssetup.keys()):
                 if fp in bpfingerprints:
@@ -603,7 +601,7 @@ def compare_files_cpp(student_filename1, student_filename2, k, w):
 #changing blocksize determines how many consecutive fingerprints there have to be before being considered
 #a block, changing offset determines the distance that's allowed between each print for it to be considered within the same block
 #the files need to have their similarto attribute filled up through compare_multiple_files first for this to work
-def get_most_important_matches_txt(f1, f2, k, blocksize, offset): #todo: precision on which part of a smaller block is in a greater block
+def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
     if f1.similarto.get(f2) == None:
             return
     f1_fingerprints = []
@@ -658,15 +656,20 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset): #todo: precisi
             if blockcounter >= blocksize:
                 end = f1_fingerprints[fp]
                 templist = []
+                blockstring = ""
                 for pos in range(len(fp2lastpos)):
                     if fp2lastpos[pos].global_pos == -1:
                         continue
-                    templist.append((f2start[pos], fp2lastpos[pos]))
+                    distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
+                    templist.append(get_text_substring(f2start[pos].global_pos, distance + k, f2.base))
+                    #templist.append((f2start[pos], fp2lastpos[pos]))
                 """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
                 print("F2 end:", end ="")
                 for ender in fp2lastpos:
                     print(ender.substring + ",( " + str(ender.global_pos) + ")")"""
-                most_important_match_locations.append(((start, end), templist))
+                #most_important_match_locations.append(((start, end), templist))
+                distance = end.global_pos - start.global_pos
+                most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
             blockcounter = 0
     if blockcounter >= blocksize: #1 more block check to see if the last one was end of a block
         end = f1_fingerprints[len(f1_fingerprints) - 1]
@@ -674,12 +677,21 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset): #todo: precisi
         for pos in range(len(fp2lastpos)):
             if fp2lastpos[pos].global_pos == -1:
                 continue
-            templist.append((f2start[pos], fp2lastpos[pos]))
+            distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
+            templist.append(get_text_substring(f2start[pos].global_pos, distance + k, f2.base))
+            #templist.append((f2start[pos], fp2lastpos[pos]))
         """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
         print("F2 end:", end="")
         for ender in templist:
             print(ender[1].substring + ",( " + str(ender[1].global_pos) + ")")"""
-        most_important_match_locations.append(((start, end), templist))
+        #most_important_match_locations.append(((start, end), templist))
+        distance = end.global_pos - start.global_pos
+        most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
+        print("MOSTY: ")
+        for most in most_important_match_locations:
+            print(most[0])
+            print(most[1])
+        print("")
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
 
@@ -699,7 +711,7 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset): #todo: precisi
             i += 1
         print("")"""
 
-def get_most_important_matches_javpy(f1, f2, k, blocksize, offset): #todo: precision on which part of a smaller block is in a greater block
+def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
     if f1.similarto.get(f2) == None:
             return
     f1_fingerprints = []
@@ -757,12 +769,16 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset): #todo: preci
                 for pos in range(len(fp2lastpos)):
                     if fp2lastpos[pos].global_pos == -1:
                         continue
-                    templist.append((f2start[pos], fp2lastpos[pos]))
+                    #templist.append((f2start[pos], fp2lastpos[pos]))
+                    distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
+                    templist.append(get_text_substring(f2start[pos].global_pos, distance + k, f2.base))
                 """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
                 print("F2 end:", end ="")
                 for ender in fp2lastpos:
                     print(ender.substring + ",( " + str(ender.global_pos) + ")")"""
-                most_important_match_locations.append(((start, end), templist))
+                #most_important_match_locations.append(((start, end), templist))
+                distance = end.global_pos - start.global_pos
+                most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
             blockcounter = 0
     if blockcounter >= blocksize: #1 more block check to see if the last one was end of a block
         end = f1_fingerprints[len(f1_fingerprints) - 1]
@@ -770,12 +786,16 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset): #todo: preci
         for pos in range(len(fp2lastpos)):
             if fp2lastpos[pos].global_pos == -1:
                 continue
-            templist.append((f2start[pos], fp2lastpos[pos]))
+            #templist.append((f2start[pos], fp2lastpos[pos]))
+            distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
+            templist.append(get_text_substring(f2start[pos].global_pos, distance + k, f2.base))
         """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
         print("F2 end:", end="")
         for ender in templist:
             print(ender[1].substring + ",( " + str(ender[1].global_pos) + ")")"""
-        most_important_match_locations.append(((start, end), templist))
+        #most_important_match_locations.append(((start, end), templist))
+        distance = end.global_pos - start.global_pos
+        most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
 
