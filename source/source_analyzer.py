@@ -617,10 +617,10 @@ class SourceAnalyzer:
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
         photo1 = tk.PhotoImage(file="source/SCAM.png")
-        smallerphoto1 = photo1.subsample(4,4)
+        smallerphoto1 = photo1.subsample(6,6)
         imglabel = tk.Label(self.button_panel, image=smallerphoto1)
         imglabel.image = smallerphoto1
-        imglabel.grid(row=0, column=0, columnspan=4, padx=50)
+        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
 
         """
         photo = Image.open("source/SCAM.png")
