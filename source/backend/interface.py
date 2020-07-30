@@ -689,6 +689,48 @@ def main():
     """for c in common:
         print("FP1:\n" + c[0][0].substring)
         print("FP2:\n" + c[1][0].substring)"""
+    print("Multi-document tests: ")
+    # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
+    multidocumenttesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/javatest1.java",
+                            "test_files/lorem.txt", "test_files/ipsum.txt"]
+    filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
+    print_prototype_test(filetofingerprintobjects, [])
+    multidocumenttestpy = ["test_files/test1.py", "test_files/test2.py", "test_files/test1copier.py"]
+    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 10, 5, [], 0)
+    print_prototype_test(filetofingerprintobjects, [])
+    mixtest = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py",
+               "test_files/test1same.py"]
+    filetofingerprintobjects = compare_multiple_files_txt(mixtest, 10, 5, [], 0)
+    # print_prototype_test(filetofingerprintobjects, [])
+    print("")
+
+    print("Boilerplate tests: ")
+    boilerplatepy = ["test_files/test1.py", "test_files/test2same.py", "test_files/test.txt", "test_files/test2.txt"]
+    boilerplatetestpy = ["test_files/test1same.py", "test_files/test1copier.py"]
+    # filetofingerprintobjects = compare_multiple_files_py(boilerplatetestpy, 5, 4, boilerplatepy, 0)
+    # print_prototype_test(filetofingerprintobjects, boilerplatepy)
+
+    boilerplatetxt = ["test_files/ipsum.txt"]
+    boilerplatetesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/lorem.txt",
+                          "test_files/test.txt", "test_files/test2.txt"]
+    filetofingerprintobjects = compare_multiple_files_txt(boilerplatetesttxt, 10, 5, boilerplatetxt, 0)
+    # print_prototype_test(filetofingerprintobjects, boilerplatetxt)
+
+    print("Most important matches:")
+    get_most_important_matches_multiple_files_txt(filetofingerprintobjects, 10, 3, 20)
+    for importanttest in filetofingerprintobjects:
+        print(importanttest.filename + " important matches: ")
+        for matchingfile in list(importanttest.mostimportantmatches.keys()):
+            print(matchingfile.filename + " important")
+            for match in importanttest.mostimportantmatches[matchingfile]:
+                print("F1: " + importanttest.filename)
+                print(match[0][0].substring + " (" + str(match[0][0].global_pos) + ") - " + match[0][
+                    1].substring + " (" + str(match[0][1].global_pos) + ")")
+                print("F2: " + matchingfile.filename)
+                for f2match in match[1]:
+                    print(f2match[0].substring + " (" + str(f2match[0].global_pos) + ") - " + f2match[
+                        1].substring + " (" + str(f2match[1].global_pos) + ")")
+        print("-------------------------------")
 
 
 if __name__ == "__main__":
