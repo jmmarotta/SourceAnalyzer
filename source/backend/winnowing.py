@@ -60,6 +60,7 @@ def scan_left_ind(r, w):
 
 
 # get all hashes from the file
+# depricated: we now use winnow with a k value of 2 for getting all substrings
 def compute_all(file_string, k):
     hashes = compute_hash(file_string, k)
     recorded = {}

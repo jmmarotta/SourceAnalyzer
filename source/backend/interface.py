@@ -18,12 +18,8 @@ def compare_files_txt(std1_filename, std2_filename, k, w):
 
 
 # get the common fingerprints between two text files
-# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_txt(std1_filename, std2_filename, k, w, num_common_fps, ignore_count):
-    if num_common_fps > ignore_count:
-        return get_winnow_fps_txt(std1_filename, std2_filename, k, 2)
-    else:
-        return get_winnow_fps_txt(std1_filename, std2_filename, k, w)
+def get_fps_txt(std1_filename, std2_filename, k):
+    return get_winnow_fps_txt(std1_filename, std2_filename, k, 2)
 
 
 # get the common fingerprints between two text files using the winnowing algorithm
@@ -41,7 +37,7 @@ def get_winnow_fps_txt(std1_filename, std2_filename, k, w):
 
 
 # Compares two python files to each other and returns the percent similarity
-def compare_files_py(std1_filename, std2_filename, k, w):
+def compare_files_py(std1_filename, std2_filename, k, w): # add boilerplate
     # Open the first file and get fingerprints
     with open(std1_filename, "r") as student_source:
         vs1 = PyAnalyzer(student_source)
@@ -55,19 +51,14 @@ def compare_files_py(std1_filename, std2_filename, k, w):
 
 
 # get the common fingerprints between two python files
-# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_py(std1_filename, std2_filename, k, w, num_common_fps, ignore_count):
-    if num_common_fps > ignore_count:
-        return get_winnow_fps_py(std1_filename, std2_filename, k, 2)
-    else:
-        return get_winnow_fps_py(std1_filename, std2_filename, k, w)
+def get_fps_py(std1_filename, std2_filename, k):
+    return get_winnow_fps_py(std1_filename, std2_filename, k, 2)
 
 
 # get the common fingerprints between two python files using the winnowing algorithm
 def get_winnow_fps_py(std1_filename, std2_filename, k, w):
     with open(std1_filename, "r") as student_source:
         vs1 = PyAnalyzer(student_source)
-
     with open(std2_filename, "r") as base_source:
         vs2 = PyAnalyzer(base_source)
 
@@ -88,18 +79,16 @@ def compare_files_java(std1_filename, std2_filename, k, w):
 
 
 # get the common fingerprints between two java files
-# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_java(std1_filename, std2_filename, k, w, num_common_fps, ignore_count):
-    if num_common_fps > ignore_count:
-        return get_winnow_fps_java(std1_filename, std2_filename, k, 2)
-    else:
-        return get_winnow_fps_java(std1_filename, std2_filename, k, w)
+def get_fps_java(std1_filename, std2_filename, k):
+    return get_winnow_fps_java(std1_filename, std2_filename, k, 2)
 
 
 # get the common fingerprints between two java files using the winnowing algorithm
 def get_winnow_fps_java(std1_filename, std2_filename, k, w):
     with open(std1_filename, "r") as std1_source:
         vs1 = JavaAnalyzer(std1_source)
+    # print(vs1.code)
+    # print(vs1.parsed_code)
 
     with open(std2_filename, "r") as std2_source:
         vs2 = JavaAnalyzer(std2_source)
@@ -153,6 +142,7 @@ def get_common_fps_txt(std1_txt, std2_txt, k, w):
 def get_common_fps(vs1, vs2, k, w):
     student_fingerprints = winnow(vs1.parsed_code, k, w)
     base_fingerprints = winnow(vs2.parsed_code, k, w)
+
     # get the common fingerprints from both files and store them as a list of tuples
     # of the list of fingerprints from both respective files
     common = []
@@ -682,14 +672,14 @@ def main():
     # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
     # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
     # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
-    # compare_files_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
-    # get_winnow_fps_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
-    compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
-    common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
+    # compare_files_py("test_files/test1.py", "test_files/test1copier.py", 20, 5)
+    # get_winnow_fps_py("test_files/test1.py", "test_files/test1copier.py", 20, 2)
+    compare_files_java('test_files/test1.java', 'test_files/test2.java', 20, 10)
+    common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 20, 10)
     """for c in common:
         print("FP1:\n" + c[0][0].substring)
         print("FP2:\n" + c[1][0].substring)"""
-    print("Multi-document tests: ")
+    """print("Multi-document tests: ")
     # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
     multidocumenttesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/javatest1.java",
                             "test_files/lorem.txt", "test_files/ipsum.txt"]
@@ -717,7 +707,7 @@ def main():
     # print_prototype_test(filetofingerprintobjects, boilerplatetxt)
 
     print("Most important matches:")
-    get_most_important_matches_multiple_files_txt(filetofingerprintobjects, 10, 3, 20)
+    get_most_important_matches_multiple_files_txt(filetofingerprintobjects, 10, 3)
     for importanttest in filetofingerprintobjects:
         print(importanttest.filename + " important matches: ")
         for matchingfile in list(importanttest.mostimportantmatches.keys()):
@@ -730,7 +720,7 @@ def main():
                 for f2match in match[1]:
                     print(f2match[0].substring + " (" + str(f2match[0].global_pos) + ") - " + f2match[
                         1].substring + " (" + str(f2match[1].global_pos) + ")")
-        print("-------------------------------")
+        print("-------------------------------")"""
 
 
 if __name__ == "__main__":
