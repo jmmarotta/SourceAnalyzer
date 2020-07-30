@@ -468,7 +468,6 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
             file.similarto = newsimilarto"""
     return files
 
-#julian's still working on it
 def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     files = wrap_filenames(filenames)
     allfingerprints = collections.defaultdict(dict)
@@ -780,14 +779,15 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
                         continue
                     #templist.append((f2start[pos], fp2lastpos[pos]))
                     distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
-                    templist.append(f2.base.get_code_from_parsed(f2start[pos].global_pos, distance + k))
+                    templist.append(f2.base.get_code_from_parsed(distance + k, f2start[pos].global_pos))
                 """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
                 print("F2 end:", end ="")
                 for ender in fp2lastpos:
                     print(ender.substring + ",( " + str(ender.global_pos) + ")")"""
                 #most_important_match_locations.append(((start, end), templist))
                 distance = end.global_pos - start.global_pos
-                most_important_match_locations.append((f1.base.get_code_from_parsed(start.global_pos, distance + k), templist))
+                most_important_match_locations.append((f1.base.get_code_from_parsed(distance + k, start.global_pos), templist))
+                print(start.global_pos, str(distance + k), f1.base.get_code_from_parsed(distance + k, start.global_pos))
             blockcounter = 0
     if blockcounter >= blocksize: #1 more block check to see if the last one was end of a block
         end = f1_fingerprints[len(f1_fingerprints) - 1]
@@ -797,20 +797,20 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
                 continue
             #templist.append((f2start[pos], fp2lastpos[pos]))
             distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
-            templist.append(f2.base.get_code_from_parsed(f2start[pos].global_pos, distance + k))
+            templist.append(f2.base.get_code_from_parsed(distance + k, f2start[pos].global_pos))
         """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
         print("F2 end:", end="")
         for ender in templist:
             print(ender[1].substring + ",( " + str(ender[1].global_pos) + ")")"""
         #most_important_match_locations.append(((start, end), templist))
         distance = end.global_pos - start.global_pos
-        most_important_match_locations.append((f1.base.get_code_from_parsed(start.global_pos, distance + k), templist))
-    """print("MOSTY: ")
+        most_important_match_locations.append((f1.base.get_code_from_parsed(distance + k, start.global_pos), templist))
+    print("MOSTY: ")
     for most in most_important_match_locations:
         print(most[0])
         print("---------")
         print(most[1])
-    print("")"""
+    print("")
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
     else:
@@ -925,9 +925,9 @@ def main():
     #filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
     #print_prototype_test(filetofingerprintobjects, [])
     multidocumenttestpy = ["test_files/test1.py", "test_files/test1copier.py"]
-    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 5, 10, [], 0)
-    get_most_important_matches_javpy(filetofingerprintobjects[0], filetofingerprintobjects[1], 5, 2, 20)
-    #print_prototype_test(filetofingerprintobjects, [])
+    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 10, 5, [], 0)
+    get_most_important_matches_javpy(filetofingerprintobjects[0], filetofingerprintobjects[1], 10, 3, 20)
+    print_prototype_test(filetofingerprintobjects, [])
     mixtest = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py", "test_files/test1same.py"]
     filetofingerprintobjects = compare_multiple_files_txt(mixtest, 10, 5, [], 0)
     #print_prototype_test(filetofingerprintobjects, [])
