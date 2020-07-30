@@ -19,7 +19,7 @@ class PyAnalyzer:
         parser_tokens = []
         pos = 0
         loop_line = False
-        boiler_plate = ['(', ')', ':', 'def']
+        boiler_plate = ['(', ')', ':', 'def', 'class', 'self']
         indent_next = False
         for token in tokens:
             replace = re.sub(r"\s+", "", token.string.lower())
@@ -36,10 +36,11 @@ class PyAnalyzer:
                 elif token.type in [4, 61]:
                     indent_next = True
                     parser_tokens.append(ParserTokenInfo(token.type, replace, start,
-                                                         end, token.line,token.string +
+                                                         end, token.line, token.string +
                                                          (" " if token.line[token.end[1]] == " " else "")))
+
                     continue
-                elif loop_line or token.type == 60 or token.string in boiler_plate:
+                elif loop_line or token.type == 60 or token.string in boiler_plate or "import" in token.line:
                     if token.string == ':' and token.type == 54:
                         loop_line = False
                     replace = ""
@@ -49,11 +50,16 @@ class PyAnalyzer:
                     elif token.string == 'for' or token.string == 'while':
                         if ':' in token.line:
                             loop_line = True
-                        replace = "l"
+                        replace = 'l'
+                    elif token.line[token.start[1]-6:token.start[1]-1] == 'class':
+                        replace = '@'
                     elif token.line[token.end[1]] == '(':
-                        replace = "f"
+                        if token.string == 'print':
+                            replace = 'p'
+                        else:
+                            replace = 'f'
                     else:
-                        replace = "v"
+                        replace = 'v'
                 indent = len(token.line) - len(token.line.lstrip(" "))
                 parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
                                                      ((" " * indent) if indent_next else "") +
@@ -61,8 +67,12 @@ class PyAnalyzer:
                 if indent_next:
                     indent_next = False
             except IndexError:
-                parser_tokens.append(ParserTokenInfo(token.type, re.sub(r"\s+", "", token.string.lower()), start,
-                                                     end, token.line, token.string))
+                if token.string == ')':
+                    parser_tokens.append(ParserTokenInfo(token.type, '', start,
+                                                         end, token.line, token.string))
+                else:
+                    parser_tokens.append(ParserTokenInfo(token.type, re.sub(r"\s+", "", token.string.lower()), start,
+                                                         end, token.line, token.string))
         """for p in parser_tokens:
             print(p)"""
         return parser_tokens
@@ -124,6 +134,7 @@ class JavaAnalyzer:
     def __init__(self, source):
         source.seek(0)
         self._code = source.read()
+        self._code = remove_comments(self._code)
         tokens = javalang.tokenizer.tokenize(self._code)
         tree = javalang.parse.parse(self._code)
         self._parser_tokens = self.__init_tokens(tokens, tree)
@@ -140,7 +151,6 @@ class JavaAnalyzer:
         is_class = False
         index = 0
         for token in tokens:
-            print(token)
             if is_class:
                 parser_tokens.append(ParserTokenInfo(type(token), 'C', token.position, token.value))
                 is_class = False
@@ -227,3 +237,13 @@ def get_text_substring(pos, k, text):
             k += 1
     return text[pos:pos+k]
 
+
+def remove_comments(text):
+    def replacing_string(match):
+        s = match.group(0)
+        if s.startswith('/'):
+            return " "  # note: a space and not an empty string
+        else:
+            return s
+    pattern = re.compile(r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"', re.DOTALL | re.MULTILINE)
+    return re.sub(pattern, replacing_string, text)
