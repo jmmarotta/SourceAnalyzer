@@ -425,6 +425,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
                             file.similarto[similarfilename] = [{file.fingerprints[fp]: list(fpdata.values())[0]}]"""
         # clear similarto element if less than ignorecount
         for comfile in list(file.similarto.keys()):
+            print("File", file.filename, "similarto:", len(file.similarto[comfile]))
             count = 0
             for uniquefp in file.similarto[comfile]:
                 for pos in uniquefp[0]:
@@ -692,11 +693,12 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
         #most_important_match_locations.append(((start, end), templist))
         distance = end.global_pos - start.global_pos
         most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
-        print("MOSTY: ")
-        for most in most_important_match_locations:
-            print(most[0])
-            print(most[1])
-        print("")
+    """print("MOSTY: ")
+    for most in most_important_match_locations:
+        print(most[0])
+        print("---------")
+        print(most[1])
+    print("")"""
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
     else:
@@ -778,14 +780,14 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
                         continue
                     #templist.append((f2start[pos], fp2lastpos[pos]))
                     distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
-                    templist.append(get_text_substring(f2start[pos].global_pos, distance + k, f2.base))
+                    templist.append(f2.base.get_code_from_parsed(f2start[pos].global_pos, distance + k))
                 """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
                 print("F2 end:", end ="")
                 for ender in fp2lastpos:
                     print(ender.substring + ",( " + str(ender.global_pos) + ")")"""
                 #most_important_match_locations.append(((start, end), templist))
                 distance = end.global_pos - start.global_pos
-                most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
+                most_important_match_locations.append((f1.base.get_code_from_parsed(start.global_pos, distance + k), templist))
             blockcounter = 0
     if blockcounter >= blocksize: #1 more block check to see if the last one was end of a block
         end = f1_fingerprints[len(f1_fingerprints) - 1]
@@ -795,14 +797,20 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
                 continue
             #templist.append((f2start[pos], fp2lastpos[pos]))
             distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
-            templist.append(get_text_substring(f2start[pos].global_pos, distance + k, f2.base))
+            templist.append(f2.base.get_code_from_parsed(f2start[pos].global_pos, distance + k))
         """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
         print("F2 end:", end="")
         for ender in templist:
             print(ender[1].substring + ",( " + str(ender[1].global_pos) + ")")"""
         #most_important_match_locations.append(((start, end), templist))
         distance = end.global_pos - start.global_pos
-        most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
+        most_important_match_locations.append((f1.base.get_code_from_parsed(start.global_pos, distance + k), templist))
+    """print("MOSTY: ")
+    for most in most_important_match_locations:
+        print(most[0])
+        print("---------")
+        print(most[1])
+    print("")"""
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
     else:
@@ -914,10 +922,11 @@ def main():
     print("Multi-document tests: ")
     # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
     multidocumenttesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/javatest1.java", "test_files/lorem.txt", "test_files/ipsum.txt"]
-    filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
-    print_prototype_test(filetofingerprintobjects, [])
+    #filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
+    #print_prototype_test(filetofingerprintobjects, [])
     multidocumenttestpy = ["test_files/test1.py", "test_files/test1copier.py"]
     filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 5, 10, [], 0)
+    get_most_important_matches_javpy(filetofingerprintobjects[0], filetofingerprintobjects[1], 5, 2, 20)
     #print_prototype_test(filetofingerprintobjects, [])
     mixtest = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py", "test_files/test1same.py"]
     filetofingerprintobjects = compare_multiple_files_txt(mixtest, 10, 5, [], 0)
