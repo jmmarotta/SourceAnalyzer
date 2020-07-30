@@ -7,6 +7,7 @@ import tkinter as tk
 
 
 
+
 def remove_spaces(str_remove):
     before = len(str_remove)
     str_remove = str_remove.replace(' ', '')
@@ -563,8 +564,11 @@ class SourceAnalyzer:
 
     def openHelp(self):
         helpSect = tk.Toplevel()
-        helpSect.title("Source Analyzer Help Section")
-        inputMessage = "Input descriptions of various parts of program here. Troubleshooting problems. Analysis of algorithms"
+        helpSect.title("SCAM Help Manual")
+        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to \n\nK (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\n" \
+                       "Window Size is the winnow size used by the algorithm.\n" \
+                       "Ignore Count determines fingerprint threshold for commonality.\n" \
+                       "Python files should be able to be compiled for the best results.\n\n"
         tk.Label(helpSect, text=inputMessage).pack()
         tk.Button(helpSect, text="DONE", command=helpSect.destroy).pack()
 
@@ -610,25 +614,25 @@ class SourceAnalyzer:
         self.very_bottom = tk.Frame(self.output_frame, width=0)
         self.very_bottom.pack(expand=False, fill='none', padx=(0, 125), pady=5, side="bottom")
 
-    #Menubar - Currently Non-Functional
+    #Menubar
 
-        #self.filemenu = tk.Menu(self.menubar, tearoff=0)
-        #self.filemenu.add_command(label="New Window", command=self.donothing) #newWindow
+        self.filemenu = tk.Menu(self.menubar, tearoff=0)
+        #self.filemenu.add_command(label="New Window", command=self.master.open) #newWindow
         ##self.filemenu.add_command(label="Save Settings", command=self.donothing)
         #self.filemenu.add_separator()
-        #self.filemenu.add_command(label="Exit", command=self.master.quit)
-        #self.menubar.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="Exit", command=self.master.quit)
+        self.menubar.add_cascade(label="File", menu=self.filemenu)
 
         #self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
         #self.toolsmenu.add_command(label="Check Matches", command=self.donothing)
         #self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
         #self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
 
-        #self.helpmenu = tk.Menu(self.menubar, tearoff=0)
-        #self.helpmenu.add_command(label="Open Help", command= self.openHelp)
-        #self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        self.helpmenu = tk.Menu(self.menubar, tearoff=0)
+        self.helpmenu.add_command(label="Manual", command= self.openHelp)
+        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
-        #self.master.config(menu=self.menubar) 
+        self.master.config(menu=self.menubar)
           
     #Filename Display
 
@@ -681,13 +685,29 @@ class SourceAnalyzer:
         #self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
-        self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
-        self.k_desc_label.grid(row=0, column=0, columnspan=4)
-        self.k_desc_label.config(font=(None, 8))
+        photo1 = tk.PhotoImage(file="source/SCAM.png")
+        smallerphoto1 = photo1.subsample(6,6)
+        imglabel = tk.Label(self.button_panel, image=smallerphoto1)
+        imglabel.image = smallerphoto1
+        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
 
-        self.w_desc_label = tk.Label(self.button_panel, text = "All values may be left at default.")
-        self.w_desc_label.grid(row=1, column=0, columnspan=4)
+        """
+        photo = Image.open("source/SCAM.png")
+        smallerphoto = photo.resize((round(photo.size[0] * .1), round(photo.size[1] * .1)));
+        render = ImageTk.PhotoImage(smallerphoto)
+        img = tk.Label(self.button_panel, image=render)
+        img.image = render
+        img.grid(row=0, column=0, columnspan=4)
+        """
+
+        #self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
+        #self.k_desc_label.grid(row=1, column=0, columnspan=4)
+        #self.k_desc_label.config(font=(None, 8))
+
+        self.w_desc_label = tk.Label(self.button_panel, text = "Default values set for optimal machine output. \n View Help Manual for more information.")
+        self.w_desc_label.grid(row=2, column=0, columnspan=4)
         self.w_desc_label.config(font=(None, 8))
+
 
         #self.ignore_label = tk.Label(self.button_panel, text = "Ignore Files: ")
         #self.ignore_label.grid(row=1, column=0)
@@ -697,55 +717,55 @@ class SourceAnalyzer:
         #self.file_ignore.grid(row=1, column=1, columnspan=4)
 
         self.button1 = tk.Button(self.button_panel, text="Add File A", command=self.open_file1, bg="gray75", width=15)
-        self.button1.grid(row = 2, column = 0, padx = 1, pady = 5, columnspan=2)
+        self.button1.grid(row = 3, column = 0, padx = 1, pady = 5, columnspan=2)
 
         self.button1a = tk.Button(self.button_panel, text="Clear File A(s)", command=self.clear_file1, bg="gray80", width=15)
-        self.button1a.grid(row = 2, column = 2, padx = 1, pady = 5, columnspan=2)
+        self.button1a.grid(row = 3, column = 2, padx = 1, pady = 5, columnspan=2)
 
         self.button2 = tk.Button(self.button_panel, text="Add File B", command=self.open_file2, bg="gray75", width=15)
-        self.button2.grid(row = 3, column = 0, padx =1, pady = 2, columnspan=2)
+        self.button2.grid(row = 4, column = 0, padx =1, pady = 2, columnspan=2)
 
         self.button2a = tk.Button(self.button_panel, text="Clear File B(s)", command=self.clear_file2, bg="gray80", width=15)
-        self.button2a.grid(row = 3, column = 2, padx = 1, pady = 2, columnspan=2)
+        self.button2a.grid(row = 4, column = 2, padx = 1, pady = 2, columnspan=2)
 
         #Commands
 
         self.lang_label = tk.Label(self.button_panel, text = "Language: ")
-        self.lang_label.grid(row = 4, column = 0, pady = 10)
+        self.lang_label.grid(row = 5, column = 0, pady = 10)
         self.lang_label.config(font=(None, 9))
 
         self.language_var = tk.StringVar(self.button_panel)
         self.language_var.set("Python")
         self.languageMenu = tk.OptionMenu(self.button_panel, self.language_var, "Text", "Python")
-        self.languageMenu.grid(row=4, column=1, pady=10, sticky='w', columnspan=2)
+        self.languageMenu.grid(row=5, column=1, pady=10, sticky='w', columnspan=2)
 
         self.ignore_count_label = tk.Label(self.button_panel, text = "Ignore Count: ")
-        self.ignore_count_label.grid(row = 4, column = 2, pady = 10)
+        self.ignore_count_label.grid(row = 5, column = 2, pady = 10)
         self.ignore_count_label.config(font=(None, 9))
 
         self.ignore_input = tk.Spinbox(self.button_panel, from_=0, to=255, width=5)
-        self.ignore_input.grid(row=4, column=3, pady=10)
+        self.ignore_input.grid(row=5, column=3, pady=10)
         self.ignore_input.delete(0, tk.END)
         self.ignore_input.insert(0, '5')
 
         #Advanced
 
         self.k_label = tk.Label(self.button_panel, text = "K-grams: ")
-        self.k_label.grid(row = 6, column = 0, padx = 1, pady = (10,0))
+        self.k_label.grid(row = 7, column = 0, padx = 1, pady = (10,0))
         self.k_label.config(font=(None, 9))
 
         self.k_input = tk.Spinbox(self.button_panel, from_=1, to=255, width=5)
-        self.k_input.grid(row=6, column=1, padx=5, pady = (10,0))
+        self.k_input.grid(row=7, column=1, padx=5, pady = (10,0))
 
         self.k_input.delete(0, tk.END)
         self.k_input.insert(0, '10')
 
         self.w_label = tk.Label(self.button_panel, text = "Window Size: ")
-        self.w_label.grid(row = 6, column = 2, padx = 1, pady = (10,0))
+        self.w_label.grid(row = 7, column = 2, padx = 1, pady = (10,0))
         self.w_label.config(font=(None, 9))
 
         self.windowSizeInput = tk.Spinbox(self.button_panel, from_=1, to=255, width=5)
-        self.windowSizeInput.grid(row=6, column=3, padx=5, pady = (10,0))
+        self.windowSizeInput.grid(row=7, column=3, padx=5, pady = (10,0))
 
         self.windowSizeInput.delete(0, tk.END)
         self.windowSizeInput.insert(0, '5')
@@ -753,10 +773,10 @@ class SourceAnalyzer:
         #Compare
 
         self.run_label = tk.Button(self.button_panel, text="Compare", height = 1, width = 40, command=self.export_files, bg="gray75", bd=3)
-        self.run_label.grid(row=8, column=0, pady=(20, 0), columnspan=4)
+        self.run_label.grid(row=9, column=0, pady=(20, 0), columnspan=4)
 
         self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
-        self.clear_label.grid(row=9, column=0, pady=2.5, columnspan=4)
+        self.clear_label.grid(row=10, column=0, pady=2.5, columnspan=4)
 
     #Bottom Frame
 
@@ -821,7 +841,7 @@ class SourceAnalyzer:
 def main():
     root = tk.Tk()
     root.geometry("1080x720")
-    root.title("Source Analyzer")
+    root.title("Source Code Analyzer Machine")
     gui = SourceAnalyzer(root)
     root.mainloop()
 
