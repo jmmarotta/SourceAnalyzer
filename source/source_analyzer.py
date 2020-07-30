@@ -617,10 +617,10 @@ class SourceAnalyzer:
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
         photo1 = tk.PhotoImage(file="source/SCAM.png")
-        smallerphoto1 = photo1.subsample(6,6)
+        smallerphoto1 = photo1.subsample(4,4)
         imglabel = tk.Label(self.button_panel, image=smallerphoto1)
         imglabel.image = smallerphoto1
-        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
+        imglabel.grid(row=0, column=0, columnspan=4, padx=50)
 
         """
         photo = Image.open("source/SCAM.png")
@@ -636,7 +636,7 @@ class SourceAnalyzer:
         #self.k_desc_label.config(font=(None, 8))
 
         self.w_desc_label = tk.Label(self.button_panel, text = "Default values set for optimal machine output. \n View Help Manual for more information.")
-        self.w_desc_label.grid(row=2, column=0, columnspan=4)
+        self.w_desc_label.grid(row=1, column=0, columnspan=4)
         self.w_desc_label.config(font=(None, 8))
 
 
@@ -668,7 +668,7 @@ class SourceAnalyzer:
         self.language_var = tk.StringVar(self.button_panel)
         self.language_var.set("Python")
         self.languageMenu = tk.OptionMenu(self.button_panel, self.language_var, "Text", "Python", "Java")
-        self.languageMenu.grid(row=4, column=1, pady=10, sticky='w', columnspan=2)
+        self.languageMenu.grid(row=5, column=1, pady=10, sticky='w', columnspan=2)
 
         self.ignore_count_label = tk.Label(self.button_panel, text = "Ignore Count: ")
         self.ignore_count_label.grid(row = 5, column = 2, pady = 10)
