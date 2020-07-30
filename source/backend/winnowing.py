@@ -128,7 +128,7 @@ def wrap_filenames(filenames):
     files = []
     filecount = 0
     for fnames in filenames:
-        file = filetofingerprint(fnames, None, filecount ,-1, {}, {}, {})
+        file = filetofingerprint(fnames, filecount, None, -1, {}, {}, {})
         files.append(file)
         filecount += 1
     return files
