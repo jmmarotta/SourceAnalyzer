@@ -895,14 +895,17 @@ def print_prototype_test(files, boilerplate):
             print("")
 
 def main():
-    res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
-    get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
-    get_all_fps_txt("test_files/test.txt", "test_files/test2.txt", 5)
-    get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
-    compare_files_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_winnow_fps_py("test_files/test1.py", "test_files/test2.py", 10, 5)
-    get_all_fps_py("test_files/test1.py", "test_files/test2.py", 10)
-    compare_files_java("test_files/javatest1.java", "test_files/javatest1.java", 10, 5)
+    # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
+    # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
+    # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
+    # compare_files_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
+    # get_winnow_fps_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
+    compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
+    common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5)
+    """for c in common:
+        print("FP1:\n" + c[0][0].substring)
+        print("FP2:\n" + c[1][0].substring)"""
+    
     #compare_files_cpp("test_files/c++test1.cpp", "test_files/c++test1.cpp", 10, 5)
 
     print("Multi-document tests: ")

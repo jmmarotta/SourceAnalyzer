@@ -2,6 +2,7 @@ public class AddTwoIntegers {
 
     public static void main(String[] args) {
 
+        // comment
         int first = 10;
         int second = 20;
 
