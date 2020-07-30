@@ -461,7 +461,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
     return files
 
 
-#julian's still working on it
+# julian's still working on it
 def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     files = wrap_filenames(filenames)
     allfingerprints = collections.defaultdict(dict)
@@ -568,7 +568,7 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     return files
 
 
-#not done
+# not done
 """def compare_files_cpp(student_filename1, student_filename2, k, w):
     with open(student_filename1, "r") as student_source1:
         vs1 = CppAnalyzer(student_source1)
@@ -598,11 +598,11 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     return res, num_common_fps"""
 
 
-#gets the most important matches of fileobjects f1 to f2, as determined by the number of blocks of consecutive fingerprints, puts the
-#results into f1's mostimportantmatches property
-#changing blocksize determines how many consecutive fingerprints there have to be before being considered
-#a block, changing offset determines the distance that's allowed between each print for it to be considered within the same block
-#the files need to have their similarto attribute filled up through compare_multiple_files first for this to work
+# gets the most important matches of fileobjects f1 to f2, as determined by the number of blocks of consecutive fingerprints, puts the
+# results into f1's mostimportantmatches property
+# changing blocksize determines how many consecutive fingerprints there have to be before being considered
+# a block, changing offset determines the distance that's allowed between each print for it to be considered within the same block
+# the files need to have their similarto attribute filled up through compare_multiple_files first for this to work
 def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
     if f1.similarto.get(f2) == None:
             return
@@ -830,7 +830,7 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
         print("")"""
 
 
-#the version for multiple files
+# the version for multiple files
 def get_most_important_matches_multiple_files_txt(files, k , blocksize, offset):
     for f1 in files:
         for f2 in files:
@@ -843,7 +843,7 @@ def get_most_important_matches_multiple_files_javpy(files, k, blocksize, offset)
             get_most_important_matches_javpy(f1, f2, k, blocksize, offset)
 
 
-#gets % similarity between 2 different filetofingerprintobjects that were initialized through compare_multiple_documents
+# gets % similarity between 2 different filetofingerprintobjects that were initialized through compare_multiple_documents
 def get_similarity(f1, f2):
     print(f1.filename, f2.filename)
     if f1.similarto.get(f2) == None:
