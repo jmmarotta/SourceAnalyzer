@@ -628,9 +628,9 @@ class SourceAnalyzer:
         #self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
         #self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
 
-        self.helpmenu = tk.Menu(self.menubar, tearoff=0)
-        self.helpmenu.add_command(label="Manual", command= self.openHelp)
-        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        #self.helpmenu = tk.Menu(self.menubar, tearoff=0)
+        #self.helpmenu.add_command(label="Manual", command= self.openHelp)
+        #self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
         self.master.config(menu=self.menubar)
           
