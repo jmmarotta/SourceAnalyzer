@@ -909,9 +909,9 @@ def main():
     # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
     multidocumenttesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/javatest1.java", "test_files/lorem.txt", "test_files/ipsum.txt"]
     filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
-    print_prototype_test(filetofingerprintobjects, [])
-    multidocumenttestpy = ["test_files/test1.py", "test_files/test2.py", "test_files/test1copier.py"]
-    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 10, 5, [], 0)
+    #print_prototype_test(filetofingerprintobjects, [])
+    multidocumenttestpy = ["test_files/test1.py", "test_files/test1copier.py"]
+    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 5, 10, [], 0)
     print_prototype_test(filetofingerprintobjects, [])
     mixtest = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py", "test_files/test1same.py"]
     filetofingerprintobjects = compare_multiple_files_txt(mixtest, 10, 5, [], 0)
