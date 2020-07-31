@@ -359,7 +359,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
             bpfingerprints = winnow(bp.parsed_code, k, w)
         else:
             bpfingerprints.update(winnow(bp.parsed_code, k, w))
-        print("BP PARSED CODE:", bp.parsed_code)
+        # print("BP PARSED CODE:", bp.parsed_code)
 
     #put all fingerprints into large fp dictionary
     if len(boilerplate) == 0:
@@ -367,7 +367,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
             with open(file.filename, "r") as student_source:
                 vs = PyAnalyzer(student_source)
             file.base = vs
-            print("PARSED CODE:", vs.parsed_code)
+            # print("PARSED CODE:", vs.parsed_code)
             file.fingerprintssetup = winnow(vs.parsed_code, k, w)
             for fp in list(file.fingerprintssetup.keys()):
                 allfingerprints[fp][file] = []

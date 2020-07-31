@@ -42,17 +42,14 @@ class PyAnalyzer:
             try:
                 # if the token is an indent
                 if token.type == 5:
-                    parser_tokens.append(ParserTokenInfo(token.type, "", start, end, token.line, "" +
-                                                         (" " if token.line[token.end[1]] == " " else "")))
+                    parser_tokens.append(ParserTokenInfo(token.type, "", start, end, token.line, ""))
                     continue
                 # if the token is a newline
                 elif token.type in [4, 61]:
                     # the nex line is an indent
                     indent_next = True
-                    parser_tokens.append(ParserTokenInfo(token.type, replace, start,
-                                                         end, token.line, token.string +
-                                                         (" " if token.line[token.end[1]] == " " else "")))
-
+                    parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
+                                                         find_end_spaces(token.line, token.end[1] - 1) + token.string))
                     continue
                 # if the token is comment/boilerplate/import or loopline is active
                 elif loop_line or token.type == 60 or token.string in boiler_plate or "import" in token.line:
@@ -298,3 +295,11 @@ def remove_comments(text):
             return s
     pattern = re.compile(r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"', re.DOTALL | re.MULTILINE)
     return re.sub(pattern, replacing_string, text)
+
+
+def find_end_spaces(line, end):
+    num_spaces = 0
+    while line[end] == ' ':
+        num_spaces += 1
+        end -= 1
+    return (num_spaces - 1) * " "
