@@ -1,5 +1,6 @@
 import sys
 from source.backend.analyzer import *
+from source.backend.file_to_fingerprint import filetofingerprint
 
 
 # Algorithm taken from 'Winnowing: Local Algorithms for Document Fingerprinting'
@@ -120,3 +121,14 @@ def text_compute_all_setup(text, k):
     text = re.sub(r'\s+', '', text.lower())
     # return the output of the winnow function
     return compute_all(text, k)
+
+# Wraps a list of filenames into filetofingerprint objects
+def wrap_filenames(filenames):
+    files = []
+    filecount = 0
+    for fnames in filenames:
+        file = filetofingerprint(fnames, filecount, -1, {}, {}, {})
+        files.append(file)
+        filecount += 1
+    return files
+
