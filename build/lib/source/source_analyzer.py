@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
 from tkinter import filedialog as fd
-from source.backend.interface import *
+from backend.interface import *
 import os
 import tkinter as tk
 
@@ -50,105 +50,407 @@ class SourceAnalyzer:
         self.file_name2.delete(0, tk.END)
 
     def export_files(self):
-        if self.file_name1.curselection() and self.file_name2.curselection():
+        #if self.file_name1.curselection() and self.file_name2.curselection():
 
-            self.clear_output()
+        self.clear_output()
 
-            file1 = self.file_name1.get(self.file_name1.curselection()[0])
-            file2 = self.file_name2.get(self.file_name2.curselection()[0])
+        file1 = self.file_name1.get(0, tk.END) #student
+        file2 = self.file_name2.get(0, tk.END) #boilerplate
 
-            k = int(self.k_input.get())
-            w = int(self.windowSizeInput.get())
+        k = int(self.k_input.get())
+        w = int(self.windowSizeInput.get())
 
-            file1out = open(file1, 'r').read()
-            file2out = open(file2, 'r').read()
+        self.fileList=file1
+        index1 = 0
+        index2 = 1
 
-            #Python
-            if self.language_var.get() == "Python":
-                res, num_common_fps = compare_files_py(file1, file2, k, w)
-                fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
-            #Text
+        if (not (len(file1)<=1)): #student files 1 or empty
+            #print("CLEARED: more than one student file")
+
+            diff = True
+            for x in file1:
+                for y in file2:
+                    if x == y:
+                        diff = False
+            if diff:
+                #print("CLEARED: all files differ between bp and student")
+
+                self.file1out = open(file1[index1], 'r').read()
+#                try: #boilerplate allowed to be empty
+                self.file2out = open(file1[index2], 'r').read()
+#                except IndexError as e:
+#                    print("no boilerplate files recognized")
+
+                #ADDED for boilerplate
+
+                #
+                # Takes in a list of multiple filenames, performs the comparison function and
+                # returns an array of filetofingerprint objects
+                # the boilerplate argument takes in a list of boilerplate filenames, which is something the files
+                # will be allowed to be similar to/copy from
+                # ignorecount does nothing right now
+                #
+                # get_similarity(file1,file2) output s similarities between files
+                # switch between the files a output the get_similarity on a pool of student files.
+                #
+
+                ignorecount = 0
+                #filenames = file1 + file2
+                blocksize = 10 ##MAKE USER INPUT
+                offset = 3 ##MAKE USER INPUT
+
+                #Python
+                if self.language_var.get() == "Python":
+                    #res, num_common_fps = compare_files_py(file1, file2, k, w)
+                    file2fp_objs = compare_multiple_files_py(file1, k, w, file2, ignorecount)
+                    #mimatches = get_most_important_matches_py(file1, file2, blocksize, offset)
+                    #fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+                #Text
+                else:
+                    #res, num_common_fps = compare_files_txt(file1, file2, k, w)
+                    file2fp_objs = compare_multiple_files_txt(file1, k, w, file2, ignorecount)
+                    #mimatches = get_most_important_matches_txt(file1, file2, blocksize, offset)
+                    #fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+
+
+                self.out_result.configure(state='normal')
+                self.out_text1.configure(state='normal')
+                self.out_text2.configure(state='normal')
+
+                self.f2fp = file2fp_objs
+
+
+                index1 = 0
+                index2 = 1
+                self.curr_index1 = index1
+                self.curr_index2 = index2
+
+                percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+                f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[self.curr_index2].filename + " is " + str(percentage))
+                print(f2fpstring)
+
+                self.out_result.delete('1.0', tk.END)
+                self.out_result.insert(tk.END, f2fpstring)
+
+
+                #self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
+                if self.language_var.get() == "Python":
+                    if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
+                        self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
+
+                self.out_text1.tag_config("match", background='yellow')
+                self.out_text2.tag_config("match", background='yellow')
+                self.out_text1.tag_config("found")
+                self.out_text2.tag_config("found")
+                self.out_text1.delete('1.0', tk.END)
+                self.out_text2.delete('1.0', tk.END)
+                self.out_text1.insert(tk.END, self.file1out)
+#                try: #boilerplate allowed to be empty
+                self.out_text2.insert(tk.END, self.file2out)
+#                except UnboundLocalError as e:
+ #                   print("Second output is empty")
+
+                index_track1 = '1.0'
+
+                """for fingerprint in fp:
+
+                    index1 = []
+                    index2 = []
+
+                    len1 = []
+                    len2 = []
+
+                    index_track2 = '1.0'
+
+                    for i in range(len(fingerprint[0])):
+                        index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False))
+                        if index1[i] != '':
+                            self.out_text1.tag_add("found", index1[i], str(index1[i]) + "+" + str(len(fingerprint[0][i].substring)) + "c")
+                            len1.append(len(fingerprint[0][i].substring))
+                        else:
+                            index1.pop(i)
+
+                    for i in range(len(fingerprint[1])):
+                        index2.append(self.out_text2.search(fingerprint[1][i].substring, index_track2, tk.END, exact=False))
+                        if index2[i] != '':
+                            self.out_text2.tag_add("found", index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
+                            len2.append(len(fingerprint[1][i].substring))
+                            index_track2 = index2[i]
+                        else:
+                            index2.pop(i)
+
+                    if len(index1) > 0:
+                        index_track1 = index1[0]
+
+
+                    self.index1s.append((index1, len1))
+                    self.index2s.append((index2, len2))
+
+                self.out_result.configure(state='disabled')
+                self.out_text1.configure(state='disabled')
+                self.out_text2.configure(state='disabled')
+
+                self.fp = fp
+
+                print(len(self.index1s))
+                print(len(self.index2s))
+
+                self.max_fp = len(self.fp)
+                self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+
+                self.show_fp()
+                """
+
+                #Python
+                if self.language_var.get() == "Python":
+                    res, num_common_fps = compare_files_py(file1, file2, k, w)
+                    fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+
+                #Text
+                else:
+                    res, num_common_fps = compare_files_txt(file1, file2, k, w)
+                    fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+
+                
+                self.out_result.configure(state='normal')
+                self.out_text1.configure(state='normal')
+                self.out_text2.configure(state='normal')
+
+                self.out_result.delete('1.0', tk.END)
+                self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
+                if self.language_var.get() == "Python":
+                    if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
+                        self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
+
+
+                for i in range(len(fp)):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
+                self.out_text1.delete('1.0', tk.END)
+                self.out_text2.delete('1.0', tk.END)
+                self.out_text1.insert(tk.END, file1out)
+                self.out_text2.insert(tk.END, file2out)
+
+                index_track1 = '1.0'
+                fp_track = 0
+
+                for fingerprint in fp:
+
+                    index1 = []
+                    index2 = []
+
+                    len1 = []
+                    len2 = []
+
+                    index_track2 = '1.0'
+
+                    for i in range(len(fingerprint[0])):
+                        index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END))
+                        print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)
+                        if index1[i] != '':
+                            self.out_text1.tag_add("match" + str(fp_track), index1[i], str(index1[i]) + "+" + str(len(fingerprint[0][i].substring)) + "c")
+                            len1.append(len(fingerprint[0][i].substring))
+                        else:
+                            index1.pop(i)
+                            print("COULD NOT FIND")
+
+                    for i in range(len(fingerprint[1])):
+                        index2.append(self.out_text2.search(fingerprint[1][i].substring, '1.0', tk.END))
+                        print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)
+                        if index2[i] != '':
+                            self.out_text2.tag_add("match" + str(fp_track), index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
+                            len2.append(len(fingerprint[1][i].substring))
+                            index_track2 = index2[i]
+                        else:
+                            index2.pop(i)          
+                            print("COULD NOT FIND")    
+
+                    if len(index1) > 0:
+                        index_track1 = index1[0]
+
+                    fp_track += 1
+                        
+                    self.index1s.append((index1, len1))
+                    self.index2s.append((index2, len2))
+
+                self.out_result.configure(state='disabled')
+                self.out_text1.configure(state='disabled')
+                self.out_text2.configure(state='disabled')
+
+                self.fp = fp
+
+                print(len(self.index1s))
+                print(len(self.index2s))
+
+                self.max_fp = len(self.fp)
+                self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+
+                self.show_fp()
+
             else:
-                res, num_common_fps = compare_files_txt(file1, file2, k, w)
-                fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
-
-            
-            self.out_result.configure(state='normal')
-            self.out_text1.configure(state='normal')
-            self.out_text2.configure(state='normal')
-
-            self.out_result.delete('1.0', tk.END)
-            self.out_result.insert(tk.END, "File A is " + str(round(res, 2)) + "% similar to File B.\n" + str(len(fp)) + " fingerprints.")
-            if self.language_var.get() == "Python":
-                if file1[(len(file1) - 4):] == '.txt' or file2[(len(file2) - 4):] == '.txt':
-                    self.out_result.insert(tk.END, " WARNING: Used 'Python' analyzer on .txt files. Results will be inaccurate!")
-
-            self.out_text1.tag_config("match", background='yellow')
-            self.out_text2.tag_config("match", background='yellow')
-            self.out_text1.tag_config("found")
-            self.out_text2.tag_config("found")
-            self.out_text1.delete('1.0', tk.END)
-            self.out_text2.delete('1.0', tk.END)
-            self.out_text1.insert(tk.END, file1out)
-            self.out_text2.insert(tk.END, file2out)
-
-            index_track1 = '1.0'
-
-            for fingerprint in fp:
-
-                index1 = []
-                index2 = []
-
-                len1 = []
-                len2 = []
-
-                index_track2 = '1.0'
-
-                for i in range(len(fingerprint[0])):
-                    index1.append(self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False))
-                    if index1[i] != '':
-                        self.out_text1.tag_add("found", index1[i], str(index1[i]) + "+" + str(len(fingerprint[0][i].substring)) + "c")
-                        len1.append(len(fingerprint[0][i].substring))
-                    else:
-                        index1.pop(i)
-
-                for i in range(len(fingerprint[1])):
-                    index2.append(self.out_text2.search(fingerprint[1][i].substring, index_track2, tk.END, exact=False))
-                    if index2[i] != '':
-                        self.out_text2.tag_add("found", index2[i], str(index2[i]) + "+" + str(len(fingerprint[1][i].substring)) + "c")
-                        len2.append(len(fingerprint[1][i].substring))
-                        index_track2 = index2[i]
-                    else:
-                        index2.pop(i)              
-
-                if len(index1) > 0:
-                    index_track1 = index1[0]
-    
-                    
-                self.index1s.append((index1, len1))
-                self.index2s.append((index2, len2))
-
-            self.out_result.configure(state='disabled')
-            self.out_text1.configure(state='disabled')
-            self.out_text2.configure(state='disabled')
-
-            self.fp = fp
-
-            print(len(self.index1s))
-            print(len(self.index2s))
-
-            self.max_fp = len(self.fp)
-            self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
-
-            self.show_fp()
-
+                print("there exists a same file between boilerplate and student files")
 
         else:
-            print("Please select two files to compare!")
+            print("Please include more student files to compare!")
             self.out_result.configure(state='normal')
             self.out_result.delete('1.0', tk.END)
-            self.out_result.insert(tk.END, "Please select two files to compare!")
+            self.out_result.insert(tk.END, "Please include more student files to compare!")
             self.out_result.configure(state='disabled')
+
+    def show_file(self):
+
+        self.fileList = self.file_name1.get(0, tk.END)
+        print(self.fileList)
+
+        if self.file_name1 in self.fileList:
+            val = self.fileList.index(self.file_name1)
+            print("val not in tuple")
+            if val in self.fileList:
+                index = self.fileList.index(val)
+                prev_file = self.fileList[index - 1] if index  > 0 else None
+                curr_file = self.fileList[index]
+                next_file = self.fileList[index + 1] if index + 1 < len(self.fileList) else None
+
+    #        next, prev = self.find_next_prev(val, fileList)
+
+        self.curr_index1 = index
+        self.curr_index2 = index
+        print(index)
+        #    return prev_file, curr_file, next_file
+
+    def next_file1(self):
+        self.out_result.configure(state='normal')
+        #print("REACHED next_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+        if (self.curr_index1+1) == self.curr_index2:
+            self.curr_index1 = self.curr_index1 + 2
+        else:
+            self.curr_index1 = self.curr_index1 + 1
+
+        if self.curr_index1 >= len(self.f2fp):
+            if self.curr_index2 != 0:
+                self.curr_index1 = 0
+            else:
+                self.curr_index1 = 1
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            #print(f2fpstring)
+
+        file1 = self.file_name1.get(0, tk.END)  # student
+        self.file1out = open(file1[self.curr_index1], 'r').read()
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+
+        self.out_result.configure(state='disabled')
+
+
+    def next_file2(self):
+        self.out_result.configure(state='normal')
+        #print("REACHED next_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+
+        if (self.curr_index2+1) == self.curr_index1:
+            self.curr_index2 = self.curr_index2 + 2
+        else:
+            self.curr_index2 = self.curr_index2 + 1
+
+        if self.curr_index2 >= len(self.f2fp):
+            if self.curr_index1 != 0:
+                self.curr_index2 = 0
+            else:
+                self.curr_index2 = 1
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            #print(f2fpstring)
+
+
+        file2 = self.file_name1.get(0, tk.END)  # student
+        self.file2out = open(file2[self.curr_index2], 'r').read()
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text2.insert(tk.END, self.file2out)
+
+        self.out_result.configure(state='disabled')
+
+    def prev_file1(self):
+        self.out_result.configure(state='normal')
+        #print("REACHED prev_file1. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+
+        if (self.curr_index1-1) == self.curr_index2:
+            self.curr_index1 = self.curr_index1 - 2
+        else:
+            self.curr_index1 = self.curr_index1 - 1
+
+        if self.curr_index1 < 0:
+            if self.curr_index2 != len(self.f2fp) - 1:
+                self.curr_index1 = len(self.f2fp) - 1
+            else:
+                self.curr_index1 = len(self.f2fp) - 2
+
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            #print(f2fpstring)
+
+        file1 = self.file_name1.get(0, tk.END)  # student
+        self.file1out = open(file1[self.curr_index1], 'r').read()
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+
+        self.out_result.configure(state='disabled')
+
+    def prev_file2(self):
+        self.out_result.configure(state='normal')
+        #print("REACHED prev_file2. curr_index1=" + str(self.curr_index1) + ". curr_index2=" + str(self.curr_index2))
+
+        if (self.curr_index2-1) == self.curr_index1:
+            self.curr_index2 = self.curr_index2 - 2
+        else:
+            self.curr_index2 = self.curr_index2 - 1
+
+        if self.curr_index2 < 0:
+            if self.curr_index1 != len(self.f2fp) - 1:
+                self.curr_index2 = len(self.f2fp) - 1
+            else:
+                self.curr_index2 = len(self.f2fp) - 2
+
+        if len(self.f2fp) > 0:
+            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2]))
+            f2fpstring = str("Similarity between " + self.f2fp[self.curr_index1].filename + " and " + self.f2fp[
+                self.curr_index2].filename + " is " + str(percentage))
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, f2fpstring)
+            #print(f2fpstring)
+
+        file2 = self.file_name1.get(0, tk.END)  # student
+        self.file2out = open(file2[self.curr_index2], 'r').read()
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text2.insert(tk.END, self.file2out)
+
+        self.out_result.configure(state='disabled')
+
+ #   def find_next_prev(cur_file, fileList):
+ #       next, prev = None, None
+ #       index = fileList.index(cur_file)
+ #       if index > 0:
+ #           prev = fileList[index - 1]
+ #       if index < (len(fileList) - 1):
+ #           next = fileList[index + 1]
+ #       return next, prev
 
     def show_fp(self):
 
@@ -156,12 +458,9 @@ class SourceAnalyzer:
         self.out_text2.configure(state='normal')
 
         if self.view_var.get() == 1:
-            
-            for i in range(len(self.index1s)):
-                for j in range(len(self.index1s[i][0])):
-                    self.out_text1.tag_add("match", self.index1s[i][0][j], str(self.index1s[i][0][j]) + "+" + str(self.index1s[i][1][j]) + "c")
-                for j in range(len(self.index2s[i][0])):
-                    self.out_text2.tag_add("match", self.index2s[i][0][j], str(self.index2s[i][0][j]) + "+" + str(self.index2s[i][1][j]) + "c")
+            for i in range(self.max_fp):
+                self.out_text1.tag_config("match" + str(i), background='yellow')
+                self.out_text2.tag_config("match" + str(i), background='yellow')
 
         else:
             self.out_text1.tag_remove("match", '1.0', tk.END)
@@ -169,10 +468,18 @@ class SourceAnalyzer:
             if self.max_fp > 0:
                 self.cur_fp = 1
                 
-                for i in range(len(self.index1s[0][0])):
-                    self.out_text1.tag_add("match", self.index1s[0][0][i], str(self.index1s[0][0][i]) + "+" + str(self.index1s[0][1][i]) + "c")
-                for i in range(len(self.index2s[0][0])):
-                    self.out_text2.tag_add("match", self.index2s[0][0][i], str(self.index2s[0][0][i]) + "+" + str(self.index2s[0][1][i]) + "c")
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
+
+                self.out_text1.tag_config("match0", background='yellow')
+                self.out_text2.tag_config("match0", background='yellow')
+
+                self.out_text1.tag_raise("match0")
+                self.out_text2.tag_raise("match0")
+
+                self.out_text1.see(self.out_text1.tag_ranges("match0")[0])
+                self.out_text2.see(self.out_text2.tag_ranges("match0")[0])
                 
             else:
                 self.cur_fp = 0
@@ -184,16 +491,23 @@ class SourceAnalyzer:
     def next_fp(self):
         if self.view_var.get() == 0:
             if self.cur_fp < self.max_fp:
-                self.out_text1.tag_remove("match", '1.0', tk.END)
-                self.out_text2.tag_remove("match", '1.0', tk.END)
 
-                for i in range(len(self.index1s[self.cur_fp][0])):
-                    self.out_text1.tag_add("match", self.index1s[self.cur_fp][0][i], str(self.index1s[self.cur_fp][0][i]) + "+" + str(self.index1s[self.cur_fp][1][i]) + "c")
-                for i in range(len(self.index2s[self.cur_fp][0])):
-                    self.out_text2.tag_add("match", self.index2s[self.cur_fp][0][i], str(self.index2s[self.cur_fp][0][i]) + "+" + str(self.index2s[self.cur_fp][1][i]) + "c")
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
 
-                #self.out_text1.see(self.index1s[self.cur_fp][0][0]  + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
-                #self.out_text2.see(self.index2s[self.cur_fp][0][0] + "+" + str(self.index1s[self.cur_fp][1][0]) + "c")
+                self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
+                self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+
+                self.out_text1.tag_config("match" + str(self.cur_fp), background='yellow')
+                self.out_text2.tag_config("match" + str(self.cur_fp), background='yellow')
+
+                self.out_text1.tag_raise("match" + str(self.cur_fp))
+                self.out_text2.tag_raise("match" + str(self.cur_fp))
+
+                self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp))[1])
+                self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp))[1])
+
                 
                 self.cur_fp = self.cur_fp + 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -201,16 +515,22 @@ class SourceAnalyzer:
     def last_fp(self):
         if self.view_var.get() == 0:
             if self.cur_fp > 1:
-                self.out_text1.tag_remove("match", '1.0', tk.END)
-                self.out_text2.tag_remove("match", '1.0', tk.END)
 
-                for i in range(len(self.index1s[self.cur_fp - 2][0])):
-                    self.out_text1.tag_add("match", self.index1s[self.cur_fp - 2][0][i], str(self.index1s[self.cur_fp - 2][0][i]) + "+" + str(self.index1s[self.cur_fp - 2][1][i]) + "c")
-                for i in range(len(self.index2s[self.cur_fp - 2][0])):
-                    self.out_text2.tag_add("match", self.index2s[self.cur_fp - 2][0][i], str(self.index2s[self.cur_fp - 2][0][i]) + "+" + str(self.index2s[self.cur_fp - 2][1][i]) + "c")
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("match" + str(i), background='white')
+                    self.out_text2.tag_config("match" + str(i), background='white')
 
-                #self.out_text1.see(self.index1s[self.cur_fp - 2][0][0])
-                #self.out_text2.see(self.index2s[self.cur_fp - 2][0][0])
+                self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
+                self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+
+                self.out_text1.tag_config("match" + str(self.cur_fp - 2), background='yellow')
+                self.out_text2.tag_config("match" + str(self.cur_fp - 2), background='yellow')
+
+                self.out_text1.tag_raise("match" + str(self.cur_fp - 2))
+                self.out_text2.tag_raise("match" + str(self.cur_fp - 2))
+
+                self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp - 2))[0])
+                self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp - 2))[0])
                 
                 self.cur_fp = self.cur_fp - 1
                 self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
@@ -263,6 +583,10 @@ class SourceAnalyzer:
         self.index1s = []
         self.index2s = []
 
+        self.curr_index1 = 0
+        self.curr_index2 = 1
+        self.f2fp = []
+
         self.menubar = tk.Menu(self.master)
         
         self.upper = tk.Frame(self.master)
@@ -279,6 +603,9 @@ class SourceAnalyzer:
 
         self.bottom_frame = tk.Frame(self.output_frame)
         self.bottom_frame.pack(expand=True, fill='both', pady=5)
+
+        self.index_btns = tk.Frame(self.bottom_frame)
+        self.index_btns.pack(expand=False, fill='both', pady=5, side='bottom')
 
         self.very_bottom = tk.Frame(self.output_frame, width=0)
         self.very_bottom.pack(expand=False, fill='none', padx=(0, 125), pady=5, side="bottom")
@@ -310,6 +637,10 @@ class SourceAnalyzer:
 
         self.file2_frame = tk.Frame(self.top_frame)
         self.file2_frame.pack(side='bottom', expand=True, fill='both')
+
+        #ADDED for bp
+        self.bpfile_frame = tk.Frame(self.top_frame)
+        self.bpfile_frame.pack(side='bottom', expand=True, fill='both')
 
         #Filebox 1
 
@@ -453,6 +784,19 @@ class SourceAnalyzer:
 
         self.out_text2.pack(expand=True, fill="both", padx=(10,0),pady=10, side='left')
         self.txt_scroll2.pack(side='left', padx=(0,10), fill='y', pady=10)
+
+        #added
+        self.next_filebtn1 = tk.Button(self.index_btns, text="Compare Next1", command=self.next_file1, bg="gray75", width=15)
+        self.next_filebtn1.grid(row=0, column=0, padx=(10,10),  columnspan=4)
+
+        self.prev_filebtn1 = tk.Button(self.index_btns, text="Compare Prev1", command=self.prev_file1, bg="gray80", width=15)
+        self.prev_filebtn1.grid(row=0, column=5, padx=(0,10),  columnspan=4)
+
+        self.next_filebtn2 = tk.Button(self.index_btns, text="Compare Next2", command=self.next_file2, bg="gray75", width=15)
+        self.next_filebtn2.grid(row=0, column=25, padx=(290,0), columnspan=4)
+
+        self.prev_filebtn2 = tk.Button(self.index_btns, text="Compare Prev2", command=self.prev_file2, bg="gray80", width=15)
+        self.prev_filebtn2.grid(row=0, column=30, padx=(10,0), columnspan=4)
 
     #Very Bottom
         
