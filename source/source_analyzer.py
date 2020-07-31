@@ -884,53 +884,53 @@ class SourceAnalyzer:
 
     def create_widgets(self):
 
-        #Class Variables
+    #Class Variables
 
-            #Store Filenames
-            self.files1 = []
-            self.files2 = []
+        #Store Filenames
+        self.files1 = []
+        self.files2 = []
 
-            #Tracking Fingerprints
-            self.cur_fp = 0
-            self.max_fp = 0
-            self.fp = []
-            self.most_fp = []
+        #Tracking Fingerprints
+        self.cur_fp = 0
+        self.max_fp = 0
+        self.fp = []
+        self.most_fp = []
 
-            #Tracking Multiple Files
-            self.curr_index1 = 0
-            self.curr_index2 = 1
-            self.f2fp = []
+        #Tracking Multiple Files
+        self.curr_index1 = 0
+        self.curr_index2 = 1
+        self.f2fp = []
 
-        #Frames/Layout
+    #Frames/Layout
 
-            self.menubar = tk.Menu(self.master)
-            
-            self.upper = tk.Frame(self.master)
-            self.upper.pack(side = "top", fill='both', pady=5, padx=5)
+        self.menubar = tk.Menu(self.master)
+        
+        self.upper = tk.Frame(self.master)
+        self.upper.pack(side = "top", fill='both', pady=5, padx=5)
 
-            self.top_frame = tk.Frame(self.upper)
-            self.top_frame.pack(expand=True, side = "left", fill='both', pady=5)
+        self.top_frame = tk.Frame(self.upper)
+        self.top_frame.pack(expand=True, side = "left", fill='both', pady=5)
 
-            self.button_panel = tk.Frame(self.upper)
-            self.button_panel.pack(side="right", fill='x', padx=10, pady=5)
+        self.button_panel = tk.Frame(self.upper)
+        self.button_panel.pack(side="right", fill='x', padx=10, pady=5)
 
-            self.output_frame = tk.Frame(self.master)
-            self.output_frame.pack(expand=True, fill='both', pady=5, side='bottom')
+        self.output_frame = tk.Frame(self.master)
+        self.output_frame.pack(expand=True, fill='both', pady=5, side='bottom')
 
-            self.bottom_frame = tk.Frame(self.output_frame)
-            self.bottom_frame.pack(expand=True, fill='both', pady=5)
+        self.bottom_frame = tk.Frame(self.output_frame)
+        self.bottom_frame.pack(expand=True, fill='both', pady=5)
 
-            self.index_btns = tk.Frame(self.bottom_frame)
-            self.index_btns.pack(expand=False, fill='x', pady=5, side='bottom')
+        self.index_btns = tk.Frame(self.bottom_frame)
+        self.index_btns.pack(expand=False, fill='x', pady=5, side='bottom')
 
-            self.index_btns1 = tk.Frame(self.index_btns)
-            self.index_btns1.pack(expand=True, fill='x', side='left')
+        self.index_btns1 = tk.Frame(self.index_btns)
+        self.index_btns1.pack(expand=True, fill='x', side='left')
 
-            self.index_btns2 = tk.Frame(self.index_btns)
-            self.index_btns2.pack(expand=True, fill='x', side='right')
+        self.index_btns2 = tk.Frame(self.index_btns)
+        self.index_btns2.pack(expand=True, fill='x', side='right')
 
-            self.very_bottom = tk.Frame(self.output_frame, width=0, height=5)
-            self.very_bottom.pack(expand=False, fill='none', pady=5, side="bottom")
+        self.very_bottom = tk.Frame(self.output_frame, width=0, height=5)
+        self.very_bottom.pack(expand=False, fill='none', pady=5, side="bottom")
 
         self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
         self.toolsmenu.add_command(label="Generate Report", command=self.report)
@@ -942,285 +942,285 @@ class SourceAnalyzer:
         self.helpmenu.add_command(label="Manual", command= self.openHelp)
         self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
-            #self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
-            #self.toolsmenu.add_command(label="Check Matches", command=self.donothing)
-            #self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
-            #self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
+        #self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
+        #self.toolsmenu.add_command(label="Check Matches", command=self.donothing)
+        #self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
+        #self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
 
-            #self.helpmenu = tk.Menu(self.menubar, tearoff=0)
-            #self.helpmenu.add_command(label="Manual", command= self.openHelp)
-            #self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        #self.helpmenu = tk.Menu(self.menubar, tearoff=0)
+        #self.helpmenu.add_command(label="Manual", command= self.openHelp)
+        #self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
-            self.master.config(menu=self.menubar)
-            
-        #Filename Display
+        self.master.config(menu=self.menubar)
+        
+    #Filename Display
 
-            self.file1_frame = tk.Frame(self.top_frame)
-            self.file1_frame.pack(side='top', expand=True, fill='both')
+        self.file1_frame = tk.Frame(self.top_frame)
+        self.file1_frame.pack(side='top', expand=True, fill='both')
 
-            self.file2_frame = tk.Frame(self.top_frame)
-            self.file2_frame.pack(side='bottom', expand=True, fill='both')
+        self.file2_frame = tk.Frame(self.top_frame)
+        self.file2_frame.pack(side='bottom', expand=True, fill='both')
 
-            #ADDED for bp
-            self.bpfile_frame = tk.Frame(self.top_frame)
-            self.bpfile_frame.pack(side='bottom', expand=True, fill='both')
+        #ADDED for bp
+        self.bpfile_frame = tk.Frame(self.top_frame)
+        self.bpfile_frame.pack(side='bottom', expand=True, fill='both')
 
-            #Filebox 1
+        #Filebox 1
 
-            self.cur_file_label1 = tk.Label(self.file1_frame, text = "Student Files: ")
-            self.cur_file_label1.pack(anchor='w')
-            self.cur_file_label1.config(font=(None, 9))
+        self.cur_file_label1 = tk.Label(self.file1_frame, text = "Student Files: ")
+        self.cur_file_label1.pack(anchor='w')
+        self.cur_file_label1.config(font=(None, 9))
 
-            self.file_name1 = tk.Listbox(self.file1_frame, height=5, exportselection=False)
+        self.file_name1 = tk.Listbox(self.file1_frame, height=5, exportselection=False)
 
-            self.file_scroll1 = tk.Scrollbar(self.file1_frame, command=self.file_name1.yview)
-            self.file_name1['yscrollcommand'] = self.file_scroll1.set
-            self.file_scroll1.pack(expand=False, fill="y", side='right')
+        self.file_scroll1 = tk.Scrollbar(self.file1_frame, command=self.file_name1.yview)
+        self.file_name1['yscrollcommand'] = self.file_scroll1.set
+        self.file_scroll1.pack(expand=False, fill="y", side='right')
 
-            self.file_name1.pack(expand=True, pady=(0, 10), fill='both')
+        self.file_name1.pack(expand=True, pady=(0, 10), fill='both')
 
-            #Filebox 2
+        #Filebox 2
 
-            self.cur_file_label2 = tk.Label(self.file2_frame, text = "Boilerplate Files: ")
-            self.cur_file_label2.pack(anchor='w')
-            self.cur_file_label2.config(font=(None, 9))
+        self.cur_file_label2 = tk.Label(self.file2_frame, text = "Boilerplate Files: ")
+        self.cur_file_label2.pack(anchor='w')
+        self.cur_file_label2.config(font=(None, 9))
 
-            self.file_name2 = tk.Listbox(self.file2_frame, height=5, exportselection=False)
+        self.file_name2 = tk.Listbox(self.file2_frame, height=5, exportselection=False)
 
-            self.file_scroll2 = tk.Scrollbar(self.file2_frame, command=self.file_name2.yview)
-            self.file_name2['yscrollcommand'] = self.file_scroll2.set
-            self.file_scroll2.pack(expand=False, fill="y", side='right')
+        self.file_scroll2 = tk.Scrollbar(self.file2_frame, command=self.file_name2.yview)
+        self.file_name2['yscrollcommand'] = self.file_scroll2.set
+        self.file_scroll2.pack(expand=False, fill="y", side='right')
 
-            self.file_name2.pack(expand=True, fill='both')
+        self.file_name2.pack(expand=True, fill='both')
 
-        #Button Panel
+    #Button Panel
 
-            #Logo
+        #Logo
 
-            photo1 = tk.PhotoImage(file="SCAM.png")
-            smallerphoto1 = photo1.subsample(8,8)
-            imglabel = tk.Label(self.button_panel, image=smallerphoto1)
-            imglabel.image = smallerphoto1
-            imglabel.grid(row=0, column=0, columnspan=4, padx=100)
+        photo1 = tk.PhotoImage(file="SCAM.png")
+        smallerphoto1 = photo1.subsample(8,8)
+        imglabel = tk.Label(self.button_panel, image=smallerphoto1)
+        imglabel.image = smallerphoto1
+        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
 
-            """
-            photo = Image.open("source/SCAM.png")
-            smallerphoto = photo.resize((round(photo.size[0] * .1), round(photo.size[1] * .1)));
-            render = ImageTk.PhotoImage(smallerphoto)
-            img = tk.Label(self.button_panel, image=render)
-            img.image = render
-            img.grid(row=0, column=0, columnspan=4)
-            """
+        """
+        photo = Image.open("source/SCAM.png")
+        smallerphoto = photo.resize((round(photo.size[0] * .1), round(photo.size[1] * .1)));
+        render = ImageTk.PhotoImage(smallerphoto)
+        img = tk.Label(self.button_panel, image=render)
+        img.image = render
+        img.grid(row=0, column=0, columnspan=4)
+        """
 
-            #self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
-            #self.k_desc_label.grid(row=1, column=0, columnspan=4)
-            #self.k_desc_label.config(font=(None, 8))
+        #self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
+        #self.k_desc_label.grid(row=1, column=0, columnspan=4)
+        #self.k_desc_label.config(font=(None, 8))
 
-            self.w_desc_label = tk.Label(self.button_panel, text = "Default values set for optimal machine output. \n View Help Manual for more information.")
-            self.w_desc_label.grid(row=1, column=0, columnspan=4)
-            self.w_desc_label.config(font=(None, 8))
+        self.w_desc_label = tk.Label(self.button_panel, text = "Default values set for optimal machine output. \n View Help Manual for more information.")
+        self.w_desc_label.grid(row=1, column=0, columnspan=4)
+        self.w_desc_label.config(font=(None, 8))
 
-            #self.ignore_label = tk.Label(self.button_panel, text = "Ignore Files: ")
-            #self.ignore_label.grid(row=1, column=0)
-            #self.ignore_label.config(font=(None, 9))
+        #self.ignore_label = tk.Label(self.button_panel, text = "Ignore Files: ")
+        #self.ignore_label.grid(row=1, column=0)
+        #self.ignore_label.config(font=(None, 9))
 
-            #self.file_ignore = tk.Text(self.button_panel, height=1, width=30, state='disabled')
-            #self.file_ignore.grid(row=1, column=1, columnspan=4)
+        #self.file_ignore = tk.Text(self.button_panel, height=1, width=30, state='disabled')
+        #self.file_ignore.grid(row=1, column=1, columnspan=4)
 
-            #Add Files
+        #Add Files
 
-            self.button1 = tk.Button(self.button_panel, text="Add Student Files", command=self.open_file1, bg="gray75", width=20)
-            self.button1.grid(row = 2, column = 0, padx = 1, pady = 2, columnspan=2)
-            self.button1.config(font=(None, 9))
+        self.button1 = tk.Button(self.button_panel, text="Add Student Files", command=self.open_file1, bg="gray75", width=20)
+        self.button1.grid(row = 2, column = 0, padx = 1, pady = 2, columnspan=2)
+        self.button1.config(font=(None, 9))
 
-            self.button1a = tk.Button(self.button_panel, text="Clear Student File(s)", command=self.clear_file1, bg="gray80", width=20)
-            self.button1a.grid(row = 2, column = 2, padx = 1, pady = 2, columnspan=2)
-            self.button1a.config(font=(None, 9))
+        self.button1a = tk.Button(self.button_panel, text="Clear Student File(s)", command=self.clear_file1, bg="gray80", width=20)
+        self.button1a.grid(row = 2, column = 2, padx = 1, pady = 2, columnspan=2)
+        self.button1a.config(font=(None, 9))
 
-            self.button2 = tk.Button(self.button_panel, text="Add Boilerplate Files", command=self.open_file2, bg="gray75", width=20)
-            self.button2.grid(row = 3, column = 0, padx =1, pady = 2, columnspan=2)
-            self.button2.config(font=(None, 9))
+        self.button2 = tk.Button(self.button_panel, text="Add Boilerplate Files", command=self.open_file2, bg="gray75", width=20)
+        self.button2.grid(row = 3, column = 0, padx =1, pady = 2, columnspan=2)
+        self.button2.config(font=(None, 9))
 
-            self.button2a = tk.Button(self.button_panel, text="Clear Boilerplate File(s)", command=self.clear_file2, bg="gray80", width=20)
-            self.button2a.grid(row = 3, column = 2, padx = 1, pady = 2, columnspan=2)
-            self.button2a.config(font=(None, 9))
-
-            #Language Select/Ignore Count
-
-            self.lang_label = tk.Label(self.button_panel, text = "Language: ")
-            self.lang_label.grid(row = 5, column = 0, pady = 10)
-            self.lang_label.config(font=(None, 9))
-
-            self.language_var = tk.StringVar(self.button_panel)
-            self.language_var.set("Python")
-            self.languageMenu = tk.OptionMenu(self.button_panel, self.language_var, "Text", "Python", "Java")
-            self.languageMenu.grid(row=5, column=1, pady=10, sticky='w', columnspan=1)
-            self.languageMenu.config(font=(None, 9))
-
-            self.ignore_count_label = tk.Label(self.button_panel, text = "Ignore Count: ")
-            self.ignore_count_label.grid(row = 5, column = 2, pady = 10)
-            self.ignore_count_label.config(font=(None, 9))
+        self.button2a = tk.Button(self.button_panel, text="Clear Boilerplate File(s)", command=self.clear_file2, bg="gray80", width=20)
+        self.button2a.grid(row = 3, column = 2, padx = 1, pady = 2, columnspan=2)
+        self.button2a.config(font=(None, 9))
+
+        #Language Select/Ignore Count
+
+        self.lang_label = tk.Label(self.button_panel, text = "Language: ")
+        self.lang_label.grid(row = 5, column = 0, pady = 10)
+        self.lang_label.config(font=(None, 9))
+
+        self.language_var = tk.StringVar(self.button_panel)
+        self.language_var.set("Python")
+        self.languageMenu = tk.OptionMenu(self.button_panel, self.language_var, "Text", "Python", "Java")
+        self.languageMenu.grid(row=5, column=1, pady=10, sticky='w', columnspan=1)
+        self.languageMenu.config(font=(None, 9))
+
+        self.ignore_count_label = tk.Label(self.button_panel, text = "Ignore Count: ")
+        self.ignore_count_label.grid(row = 5, column = 2, pady = 10)
+        self.ignore_count_label.config(font=(None, 9))
 
-            self.ignore_input = tk.Spinbox(self.button_panel, from_=0, to=255, width=5)
-            self.ignore_input.grid(row=5, column=3, pady=10)
-            self.ignore_input.delete(0, tk.END)
-            self.ignore_input.insert(0, '5')
-            self.ignore_input.config(font=(None, 9))
-
-            #Advanced
-
-            self.k_label = tk.Label(self.button_panel, text = "K-grams: ")
-            self.k_label.grid(row = 7, column = 0, padx = 1, pady = (10,0))
-            self.k_label.config(font=(None, 9))
-
-            self.k_input = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
-            self.k_input.grid(row=7, column=1, padx=5, pady = (10,0))
-
-            self.k_input.delete(0, tk.END)
-            self.k_input.insert(0, '50')
-            self.k_input.config(font=(None, 9))
+        self.ignore_input = tk.Spinbox(self.button_panel, from_=0, to=255, width=5)
+        self.ignore_input.grid(row=5, column=3, pady=10)
+        self.ignore_input.delete(0, tk.END)
+        self.ignore_input.insert(0, '5')
+        self.ignore_input.config(font=(None, 9))
+
+        #Advanced
+
+        self.k_label = tk.Label(self.button_panel, text = "K-grams: ")
+        self.k_label.grid(row = 7, column = 0, padx = 1, pady = (10,0))
+        self.k_label.config(font=(None, 9))
+
+        self.k_input = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
+        self.k_input.grid(row=7, column=1, padx=5, pady = (10,0))
+
+        self.k_input.delete(0, tk.END)
+        self.k_input.insert(0, '50')
+        self.k_input.config(font=(None, 9))
 
-            self.w_label = tk.Label(self.button_panel, text = "Window Size: ")
-            self.w_label.grid(row = 7, column = 2, padx = 1, pady = (10,0))
-            self.w_label.config(font=(None, 9))
+        self.w_label = tk.Label(self.button_panel, text = "Window Size: ")
+        self.w_label.grid(row = 7, column = 2, padx = 1, pady = (10,0))
+        self.w_label.config(font=(None, 9))
 
-            self.windowSizeInput = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
-            self.windowSizeInput.grid(row=7, column=3, padx=5, pady = (10,0))
-            self.windowSizeInput.config(font=(None, 9))
+        self.windowSizeInput = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
+        self.windowSizeInput.grid(row=7, column=3, padx=5, pady = (10,0))
+        self.windowSizeInput.config(font=(None, 9))
 
-            self.windowSizeInput.delete(0, tk.END)
-            self.windowSizeInput.insert(0, '20')
+        self.windowSizeInput.delete(0, tk.END)
+        self.windowSizeInput.insert(0, '20')
 
-            self.fp_count_lbl = tk.Label(self.button_panel, text = "Block Size: ")
-            self.fp_count_lbl.grid(row = 8, column = 0, padx = 5, pady = 5)
-            self.fp_count_lbl.config(font=(None, 9))
+        self.fp_count_lbl = tk.Label(self.button_panel, text = "Block Size: ")
+        self.fp_count_lbl.grid(row = 8, column = 0, padx = 5, pady = 5)
+        self.fp_count_lbl.config(font=(None, 9))
 
-            self.fp_count_in = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
-            self.fp_count_in.grid(row=8, column=1, padx=5, pady = 5)
-            self.fp_count_in.delete(0, tk.END)
-            self.fp_count_in.insert(0, '3')
-            self.fp_count_in.config(font=(None, 9))
+        self.fp_count_in = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
+        self.fp_count_in.grid(row=8, column=1, padx=5, pady = 5)
+        self.fp_count_in.delete(0, tk.END)
+        self.fp_count_in.insert(0, '3')
+        self.fp_count_in.config(font=(None, 9))
 
-            self.offset_lbl = tk.Label(self.button_panel, text = "Offset: ")
-            self.offset_lbl.grid(row = 8, column = 2, padx = 1, pady = 5, columnspan=1)
-            self.offset_lbl.config(font=(None, 9))
+        self.offset_lbl = tk.Label(self.button_panel, text = "Offset: ")
+        self.offset_lbl.grid(row = 8, column = 2, padx = 1, pady = 5, columnspan=1)
+        self.offset_lbl.config(font=(None, 9))
 
-            self.offset_in = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
-            self.offset_in.grid(row=8, column=3, padx=0, pady = 5, columnspan=2)
-            self.offset_in.delete(0, tk.END)
-            self.offset_in.insert(0, '6')
-            self.offset_in.config(font=(None, 9))
+        self.offset_in = tk.Spinbox(self.button_panel, from_=1, to=999, width=5)
+        self.offset_in.grid(row=8, column=3, padx=0, pady = 5, columnspan=2)
+        self.offset_in.delete(0, tk.END)
+        self.offset_in.insert(0, '6')
+        self.offset_in.config(font=(None, 9))
 
-            self.fp_type = tk.IntVar(self.button_panel)
-            self.fp_type.set(0)
-            self.fp_menu1 = tk.Radiobutton(self.button_panel, text="All Fingerprints", variable=self.fp_type, value=0)
-            self.fp_menu1.grid(row=9, column=0, padx=5, pady=(10,5), columnspan=2)
-            self.fp_menu1.config(font=(None, 9))
-            self.fp_menu2 = tk.Radiobutton(self.button_panel, text="Most Important", variable=self.fp_type, value=1)
-            self.fp_menu2.grid(row=9, column=2, padx=(0,10), pady=(10,5), columnspan=2)
-            self.fp_menu2.config(font=(None, 9))
+        self.fp_type = tk.IntVar(self.button_panel)
+        self.fp_type.set(0)
+        self.fp_menu1 = tk.Radiobutton(self.button_panel, text="All Fingerprints", variable=self.fp_type, value=0)
+        self.fp_menu1.grid(row=9, column=0, padx=5, pady=(10,5), columnspan=2)
+        self.fp_menu1.config(font=(None, 9))
+        self.fp_menu2 = tk.Radiobutton(self.button_panel, text="Most Important", variable=self.fp_type, value=1)
+        self.fp_menu2.grid(row=9, column=2, padx=(0,10), pady=(10,5), columnspan=2)
+        self.fp_menu2.config(font=(None, 9))
 
-            #Compare
+        #Compare
 
-            self.run_label = tk.Button(self.button_panel, text="Compare", height = 1, width = 40, command=self.export_files, bg="gray75", bd=3)
-            self.run_label.grid(row=11, column=0, pady=(5, 0), columnspan=4)
-            self.run_label.config(font=(None, 9))
+        self.run_label = tk.Button(self.button_panel, text="Compare", height = 1, width = 40, command=self.export_files, bg="gray75", bd=3)
+        self.run_label.grid(row=11, column=0, pady=(5, 0), columnspan=4)
+        self.run_label.config(font=(None, 9))
 
-            self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
-            self.clear_label.grid(row=12, column=0, pady=2.5, columnspan=4)
-            self.clear_label.config(font=(None, 9))
+        self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
+        self.clear_label.grid(row=12, column=0, pady=2.5, columnspan=4)
+        self.clear_label.config(font=(None, 9))
 
-            #self.report_label = tk.Button(self.button_panel, text="Full Report", height=1, width=40, command=self.report_output, bg="gray80", bd=3)
-            #self.report_label.grid(row=11, column=0, pady=2.5, columnspan=4)
+        #self.report_label = tk.Button(self.button_panel, text="Full Report", height=1, width=40, command=self.report_output, bg="gray80", bd=3)
+        #self.report_label.grid(row=11, column=0, pady=2.5, columnspan=4)
 
-        #Bottom Frame
+    #Bottom Frame
 
-            self.output_frame = tk.Frame(self.bottom_frame)
-            self.output_frame.pack(expand=False, fill='x', side='top', padx=10, pady=5)
+        self.output_frame = tk.Frame(self.bottom_frame)
+        self.output_frame.pack(expand=False, fill='x', side='top', padx=10, pady=5)
 
-            self.output_lbl = tk.Label(self.output_frame, text = "Output")
-            self.output_lbl.pack()
+        self.output_lbl = tk.Label(self.output_frame, text = "Output")
+        self.output_lbl.pack()
 
-            self.out_result = tk.Text(self.output_frame, width=1, height=3)
-            self.out_result.pack(expand=True, fill="both", side='left', padx=0)
-            self.res_scroll = tk.Scrollbar(self.output_frame, command=self.out_result.yview)
-            self.out_result['yscrollcommand'] = self.res_scroll.set
-            self.res_scroll.pack(expand=False, fill="y", side='left')
-            self.out_result.configure(state='disabled')
+        self.out_result = tk.Text(self.output_frame, width=1, height=3)
+        self.out_result.pack(expand=True, fill="both", side='left', padx=0)
+        self.res_scroll = tk.Scrollbar(self.output_frame, command=self.out_result.yview)
+        self.out_result['yscrollcommand'] = self.res_scroll.set
+        self.res_scroll.pack(expand=False, fill="y", side='left')
+        self.out_result.configure(state='disabled')
 
-            self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
-            self.clear_label.grid(row=12, column=0, pady=2.5, columnspan=4)
-            self.clear_label.config(font=(None, 9))
+        self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
+        self.clear_label.grid(row=12, column=0, pady=2.5, columnspan=4)
+        self.clear_label.config(font=(None, 9))
 
-        #Output Display
+    #Output Display
 
-            self.output_frame = tk.Frame(self.bottom_frame)
-            self.output_frame.pack(expand=False, fill='x', side='top', padx=10, pady=5)
+        self.output_frame = tk.Frame(self.bottom_frame)
+        self.output_frame.pack(expand=False, fill='x', side='top', padx=10, pady=5)
 
-            self.output_lbl = tk.Label(self.output_frame, text = "Output")
-            self.output_lbl.pack()
+        self.output_lbl = tk.Label(self.output_frame, text = "Output")
+        self.output_lbl.pack()
 
-            self.out_result = tk.Text(self.output_frame, width=1, height=3)
-            self.out_result.pack(expand=True, fill="both", side='left', padx=0)
-            self.res_scroll = tk.Scrollbar(self.output_frame, command=self.out_result.yview)
-            self.out_result['yscrollcommand'] = self.res_scroll.set
-            self.res_scroll.pack(expand=False, fill="y", side='left')
-            self.out_result.configure(state='disabled')
+        self.out_result = tk.Text(self.output_frame, width=1, height=3)
+        self.out_result.pack(expand=True, fill="both", side='left', padx=0)
+        self.res_scroll = tk.Scrollbar(self.output_frame, command=self.out_result.yview)
+        self.out_result['yscrollcommand'] = self.res_scroll.set
+        self.res_scroll.pack(expand=False, fill="y", side='left')
+        self.out_result.configure(state='disabled')
 
-            self.out_text1 = tk.Text(self.bottom_frame, width=1, height=1)
-            self.out_text1.configure(state='disabled')
+        self.out_text1 = tk.Text(self.bottom_frame, width=1, height=1)
+        self.out_text1.configure(state='disabled')
 
-            self.txt_scroll1 = tk.Scrollbar(self.bottom_frame, command=self.mult_yview)
-            self.out_text1['yscrollcommand'] = self.txt_scroll1.set
+        self.txt_scroll1 = tk.Scrollbar(self.bottom_frame, command=self.mult_yview)
+        self.out_text1['yscrollcommand'] = self.txt_scroll1.set
 
-            self.out_text1.pack(expand=True, fill="both", padx=(10,0),pady=10, side='left')
-            self.txt_scroll1.pack(side='left', padx=(0,10), fill='y', pady=10)
+        self.out_text1.pack(expand=True, fill="both", padx=(10,0),pady=10, side='left')
+        self.txt_scroll1.pack(side='left', padx=(0,10), fill='y', pady=10)
 
-            self.out_text2 = tk.Text(self.bottom_frame, width=1, height=1, )
-            self.out_text2.configure(state='disabled')
+        self.out_text2 = tk.Text(self.bottom_frame, width=1, height=1, )
+        self.out_text2.configure(state='disabled')
 
-            self.txt_scroll2 = tk.Scrollbar(self.bottom_frame, command=self.mult_yview)
-            self.out_text2['yscrollcommand'] = self.txt_scroll2.set
+        self.txt_scroll2 = tk.Scrollbar(self.bottom_frame, command=self.mult_yview)
+        self.out_text2['yscrollcommand'] = self.txt_scroll2.set
 
-            self.out_text2.pack(expand=True, fill="both", padx=(10,0),pady=10, side='left')
-            self.txt_scroll2.pack(side='left', padx=(0,10), fill='y', pady=10)
+        self.out_text2.pack(expand=True, fill="both", padx=(10,0),pady=10, side='left')
+        self.txt_scroll2.pack(side='left', padx=(0,10), fill='y', pady=10)
 
-        #Next File Buttons
+    #Next File Buttons
 
-            self.next_filebtn1 = tk.Button(self.index_btns1, text="Compare Next File", command=self.next_file1, bg="gray75", width=15)
-            self.next_filebtn1.pack(expand=True, side='right', padx=(5,25), fill='x')
+        self.next_filebtn1 = tk.Button(self.index_btns1, text="Compare Next File", command=self.next_file1, bg="gray75", width=15)
+        self.next_filebtn1.pack(expand=True, side='right', padx=(5,25), fill='x')
 
-            self.prev_filebtn1 = tk.Button(self.index_btns1, text="Compare Previous File", command=self.prev_file1, bg="gray80", width=15)
-            self.prev_filebtn1.pack(expand=True, side='left', padx=(25,5), fill='x')
+        self.prev_filebtn1 = tk.Button(self.index_btns1, text="Compare Previous File", command=self.prev_file1, bg="gray80", width=15)
+        self.prev_filebtn1.pack(expand=True, side='left', padx=(25,5), fill='x')
 
-            self.next_filebtn2 = tk.Button(self.index_btns2, text="Compare Next File", command=self.next_file2, bg="gray75", width=15)
-            self.next_filebtn2.pack(expand=True, side='right', padx=(5,25), fill='x')
+        self.next_filebtn2 = tk.Button(self.index_btns2, text="Compare Next File", command=self.next_file2, bg="gray75", width=15)
+        self.next_filebtn2.pack(expand=True, side='right', padx=(5,25), fill='x')
 
-            self.prev_filebtn2 = tk.Button(self.index_btns2, text="Compare Previous File", command=self.prev_file2, bg="gray80", width=15)
-            self.prev_filebtn2.pack(expand=True, side='left', padx=(25,5), fill='x')
+        self.prev_filebtn2 = tk.Button(self.index_btns2, text="Compare Previous File", command=self.prev_file2, bg="gray80", width=15)
+        self.prev_filebtn2.pack(expand=True, side='left', padx=(25,5), fill='x')
 
-        #Very Bottom
-            
-            self.view_label = tk.Label(self.very_bottom, text="View All?")
-            self.view_label.grid(row=0, column=3, padx=(60,0), pady=5)
+    #Very Bottom
+        
+        self.view_label = tk.Label(self.very_bottom, text="View All?")
+        self.view_label.grid(row=0, column=3, padx=(60,0), pady=5)
 
-            self.view_var = tk.IntVar()
+        self.view_var = tk.IntVar()
 
-            self.view_all = tk.Checkbutton(self.very_bottom, command=self.show_fp, variable=self.view_var)
-            self.view_all.grid(row=0, column=4, padx=5, pady=5)
+        self.view_all = tk.Checkbutton(self.very_bottom, command=self.show_fp, variable=self.view_var)
+        self.view_all.grid(row=0, column=4, padx=5, pady=5)
 
-            self.last_fp = tk.Button(self.very_bottom, text="Last Fingerprint", command=self.last_fp)
-            self.last_fp.grid(row=0, column=5, padx=5, pady=5)
+        self.last_fp = tk.Button(self.very_bottom, text="Last Fingerprint", command=self.last_fp)
+        self.last_fp.grid(row=0, column=5, padx=5, pady=5)
 
-            self.current_fp = tk.Label(self.very_bottom, text="Current: " + str(self.cur_fp) + "/" + str(self.max_fp))
-            self.current_fp.grid(row=0, column=6, padx=5, pady=5)
+        self.current_fp = tk.Label(self.very_bottom, text="Current: " + str(self.cur_fp) + "/" + str(self.max_fp))
+        self.current_fp.grid(row=0, column=6, padx=5, pady=5)
 
-            self.next_fp = tk.Button(self.very_bottom, text="Next Fingerprint", command=self.next_fp)
-            self.next_fp.grid(row=0, column=7, padx=(5, 0), pady=5)
+        self.next_fp = tk.Button(self.very_bottom, text="Next Fingerprint", command=self.next_fp)
+        self.next_fp.grid(row=0, column=7, padx=(5, 0), pady=5)
 
-            self.warning_lbl2 = tk.Label(self.very_bottom, text="Number of fingerprints shown at the bottom does not reflect the results of the user's search. This number is calculated via a separate in-depth search\nspecifically for the side-by-side comparison, and is also limited by what fingerprints are viewable. It can be larger or smaller than the reported number.")
-            self.warning_lbl2.grid(row=2, column=0, padx=(10,0), pady=5, columnspan=30)
-            self.warning_lbl2.config(font=(None, 8))
+        self.warning_lbl2 = tk.Label(self.very_bottom, text="Number of fingerprints shown at the bottom does not reflect the results of the user's search. This number is calculated via a separate in-depth search\nspecifically for the side-by-side comparison, and is also limited by what fingerprints are viewable. It can be larger or smaller than the reported number.")
+        self.warning_lbl2.grid(row=2, column=0, padx=(10,0), pady=5, columnspan=30)
+        self.warning_lbl2.config(font=(None, 8))
 
 
 def main():
