@@ -143,6 +143,76 @@ class SourceAnalyzer:
         else:
             self.gather_most_fingerprints()
 
+    def report(self):
+
+        self.out_result.configure(state='normal')
+
+        total = len(self.f2fp)
+        if total != 0:
+
+            self.report_index1 = self.curr_index1 % total
+            self.report_index2 = self.curr_index2 % total
+
+            localreport = open("../SCAM-report.txt", "w")
+
+            print("Save file under different name to keep results before next run.\n", file=localreport)
+
+            for x in self.f2fp:
+                for y in self.f2fp:
+                    if self.report_index1 == self.report_index2:
+                        self.report_index2 = (self.report_index2 + 1) % total
+                        continue
+                    else:
+                        percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
+                        localreport.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
+                        localreport.write(str("\nPercentage Similarity: " + str(percentage)) + "\n\n")
+                        #f.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]]))))
+                        self.report_index2 = (self.report_index2 + 1 ) % total
+
+                self.report_index1 = (self.report_index1 + 1) % total
+
+            #report_save = fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report1.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
+
+            localreport.close()
+
+            localreport = open("../SCAM-report.txt")
+
+            #if report_save:
+            with open("../SCAM-report.txt") as f:
+                with fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*"))) as report_save:
+                    if report_save:
+                        for line in f:
+                            report_save.write(line)
+                            #report_save.write(localreport, 'a')
+                            #name = asksaveasfile(mode='w', defaultextension=".txt")
+                            #text2save = str(text.get(0.0, END))
+                            #report_save.write(str(localreport))
+                        report_save.close
+
+            """                
+            report.reportname.insert(tk.END, )            
+            def clear_file1(self):
+                self.file1 = []
+                self.file_name1.delete(0, tk.END)
+            """
+            #localreport.close()
+
+
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, "Full Report Generated!\n")
+
+            print(localreport)
+
+
+        else:
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, "Must Compare files before generating report!")
+
+        self.out_result.configure(state='disabled')
+
+
+
+
     def gather_reg_fingerprints(self):
 
         self.out_text1.configure(state='normal')
@@ -648,7 +718,8 @@ class SourceAnalyzer:
     def openHelp(self):
         helpSect = tk.Toplevel()
         helpSect.title("SCAM Help Manual")
-        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to \n\nK (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\n" \
+        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to \n\n" \
+                       "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\n" \
                        "Window Size is the winnow size used by the algorithm.\n" \
                        "Ignore Count determines fingerprint threshold for commonality.\n" \
                        "Python files should be able to be compiled for the best results.\n\n"
@@ -714,14 +785,15 @@ class SourceAnalyzer:
         self.filemenu.add_command(label="Exit", command=self.master.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
 
-        #self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
+        self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
+        self.toolsmenu.add_command(label="Generate Report", command=self.report)
         #self.toolsmenu.add_command(label="Check Matches", command=self.donothing)
         #self.toolsmenu.add_command(label="Fingerprint Offest", command=self.donothing)
-        #self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
+        self.menubar.add_cascade(label="Tools", menu=self.toolsmenu)
 
-        #self.helpmenu = tk.Menu(self.menubar, tearoff=0)
-        #self.helpmenu.add_command(label="Manual", command= self.openHelp)
-        #self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        self.helpmenu = tk.Menu(self.menubar, tearoff=0)
+        self.helpmenu.add_command(label="Manual", command= self.openHelp)
+        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
         self.master.config(menu=self.menubar)
           
@@ -777,7 +849,7 @@ class SourceAnalyzer:
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
         photo1 = tk.PhotoImage(file="SCAM.png")
-        smallerphoto1 = photo1.subsample(8,8)
+        smallerphoto1 = photo1.subsample(6,6)
         imglabel = tk.Label(self.button_panel, image=smallerphoto1)
         imglabel.image = smallerphoto1
         imglabel.grid(row=0, column=0, columnspan=4, padx=100)
@@ -908,6 +980,9 @@ class SourceAnalyzer:
         self.clear_label.grid(row=12, column=0, pady=2.5, columnspan=4)
         self.clear_label.config(font=(None, 9))
 
+        #self.report_label = tk.Button(self.button_panel, text="Full Report", height=1, width=40, command=self.report_output, bg="gray80", bd=3)
+        #self.report_label.grid(row=11, column=0, pady=2.5, columnspan=4)
+
     #Bottom Frame
 
         self.output_frame = tk.Frame(self.bottom_frame)
@@ -977,7 +1052,7 @@ class SourceAnalyzer:
 def main():
     root = tk.Tk()
     root.geometry("1080x720")
-    root.title("Source Code Analyzer Machine")
+    root.title("Source Code Analyzing Machine")
     gui = SourceAnalyzer(root)
     root.mainloop()
 
