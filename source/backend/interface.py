@@ -28,7 +28,7 @@ def compare_files_txt(std1_filename, std2_filename, k, w, boilerplate_filenames)
 
 # get the common fingerprints between two text files
 # if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_txt(std1_filename, std2_filename, k, w, boilerplate_filenames):
+def get_fps_txt(std1_filename, std2_filename, k, boilerplate_filenames):
     return get_winnow_fps_txt(std1_filename, std2_filename, k, 2, boilerplate_filenames)
 
 
@@ -79,7 +79,7 @@ def compare_files_py(std1_filename, std2_filename, k, w, boilerplate_filenames):
 
 # get the common fingerprints between two python files
 # if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_py(std1_filename, std2_filename, k, w, boilerplate_filenames):
+def get_fps_py(std1_filename, std2_filename, k, boilerplate_filenames):
     return get_winnow_fps_py(std1_filename, std2_filename, k, 2, boilerplate_filenames)
 
 
@@ -124,7 +124,7 @@ def compare_files_java(std1_filename, std2_filename, k, w, boilerplate_filenames
 
 # get the common fingerprints between two java files
 # if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames):
+def get_fps_java(std1_filename, std2_filename, k, boilerplate_filenames):
     return get_winnow_fps_java(std1_filename, std2_filename, k, 2, boilerplate_filenames)
 
 
@@ -132,7 +132,6 @@ def get_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames):
 def get_winnow_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames):
     with open(std1_filename, "r") as std1_source:
         vs1 = JavaAnalyzer(std1_source)
-    print(vs1.parsed_code)
     with open(std2_filename, "r") as std2_source:
         vs2 = JavaAnalyzer(std2_source)
 
@@ -159,7 +158,7 @@ def get_percent_similarity(std1_fingerprints, std2_fingerprints, bpfingerprints)
                 num_common_fps += 1
     # return previously calculated number divided by the total number of fingerprints
     similarity = num_common_fps / num_std_fps
-    print(res := similarity * 100)
+    res = similarity * 100
     return res, num_common_fps
 
 
