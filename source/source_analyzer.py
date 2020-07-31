@@ -387,19 +387,19 @@ class SourceAnalyzer:
 
             #Parse through all substrings in File 1 for a given fingerprint, tagging them for this fingerprint
             for i in range(len(fingerprint[0])):
-                new_tag1 = self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END)
+                new_tag1 = self.out_text1.search(fingerprint[0][i].substring, index_track1, tk.END, exact=False)
                 
                 if new_tag1 != '':
                     '''print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)'''
                     self.out_text1.tag_add("match" + str(fp_track), new_tag1, str(new_tag1) + "+" + str(len(fingerprint[0][i].substring)) + "c")
                 else:
                     increment_fp = False
-                    '''print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)'''
-                    '''print("COULD NOT FIND")'''
+                    print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)
+                    print("COULD NOT FIND")
 
             #Parse through all substrings in File 2 for a given fingerprint, tagging them for this fingerprint
             for i in range(len(fingerprint[1])):
-                new_tag2 = self.out_text2.search(fingerprint[1][i].substring, '1.0', tk.END)
+                new_tag2 = self.out_text2.search(fingerprint[1][i].substring, '1.0', tk.END, exact=False)
                 
                 if new_tag2 != '':
                     '''print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)'''
@@ -407,12 +407,8 @@ class SourceAnalyzer:
                     index_track2 = new_tag2
                 else:
                     increment_fp = False
-                    '''print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)'''
-                    '''print("COULD NOT FIND")'''
-
-            #If fingerprints found, progress the search
-            if len(self.out_text1.tag_ranges("match" + str(fp_track))) > 0:
-                index_track1 = new_tag1
+                    print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)
+                    print("COULD NOT FIND")
 
             if increment_fp:
                 fp_track += 1
@@ -872,7 +868,8 @@ class SourceAnalyzer:
         "\n K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored." \
         "\nWindow Size is the winnow size used by the algorithm." \
         "\nIgnore Count determines fingerprint threshold for commonality." \
-        "\nThis program was orginally built for python software, thus \"*.py\" files are the most likely to produce the best results.\n\n"
+        "\nThis program was orginally built for python software, thus \"*.py\" files are the most likely to produce the best results.\n\n"\
+        "Number of fingerprints shown at the bottom does not reflect the results of the user's search.\nThis number is calculated via a separate in-depth search specifically for the side-by-side comparison, and is also limited by what fingerprints are viewable. It can be larger or smaller than the reported number."
         tk.Label(helpSect, text=inputMessage).pack()
         tk.Button(helpSect, text="DONE", command=helpSect.destroy, pady= 25 ).pack()
 
@@ -904,6 +901,7 @@ class SourceAnalyzer:
     #Frames/Layout
 
         self.menubar = tk.Menu(self.master)
+        self.menubar.config(font=(None, 9))
         
         self.upper = tk.Frame(self.master)
         self.upper.pack(side = "top", fill='both', pady=5, padx=5)
@@ -1133,25 +1131,6 @@ class SourceAnalyzer:
         #self.report_label = tk.Button(self.button_panel, text="Full Report", height=1, width=40, command=self.report_output, bg="gray80", bd=3)
         #self.report_label.grid(row=11, column=0, pady=2.5, columnspan=4)
 
-    #Bottom Frame
-
-        self.output_frame = tk.Frame(self.bottom_frame)
-        self.output_frame.pack(expand=False, fill='x', side='top', padx=10, pady=5)
-
-        self.output_lbl = tk.Label(self.output_frame, text = "Output")
-        self.output_lbl.pack()
-
-        self.out_result = tk.Text(self.output_frame, width=1, height=3)
-        self.out_result.pack(expand=True, fill="both", side='left', padx=0)
-        self.res_scroll = tk.Scrollbar(self.output_frame, command=self.out_result.yview)
-        self.out_result['yscrollcommand'] = self.res_scroll.set
-        self.res_scroll.pack(expand=False, fill="y", side='left')
-        self.out_result.configure(state='disabled')
-
-        self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
-        self.clear_label.grid(row=12, column=0, pady=2.5, columnspan=4)
-        self.clear_label.config(font=(None, 9))
-
     #Output Display
 
         self.output_frame = tk.Frame(self.bottom_frame)
@@ -1202,7 +1181,7 @@ class SourceAnalyzer:
     #Very Bottom
         
         self.view_label = tk.Label(self.very_bottom, text="View All?")
-        self.view_label.grid(row=0, column=3, padx=(60,0), pady=5)
+        self.view_label.grid(row=0, column=3, padx=(10,0), pady=5)
 
         self.view_var = tk.IntVar()
 
@@ -1216,16 +1195,16 @@ class SourceAnalyzer:
         self.current_fp.grid(row=0, column=6, padx=5, pady=5)
 
         self.next_fp = tk.Button(self.very_bottom, text="Next Fingerprint", command=self.next_fp)
-        self.next_fp.grid(row=0, column=7, padx=(5, 0), pady=5)
+        self.next_fp.grid(row=0, column=7, padx=(5, 100), pady=5)
 
-        self.warning_lbl2 = tk.Label(self.very_bottom, text="Number of fingerprints shown at the bottom does not reflect the results of the user's search. This number is calculated via a separate in-depth search\nspecifically for the side-by-side comparison, and is also limited by what fingerprints are viewable. It can be larger or smaller than the reported number.")
-        self.warning_lbl2.grid(row=2, column=0, padx=(10,0), pady=5, columnspan=30)
-        self.warning_lbl2.config(font=(None, 8))
+        #self.warning_lbl2 = tk.Label(self.very_bottom, text="")
+        #self.warning_lbl2.grid(row=2, column=0, padx=(10,0), pady=5, columnspan=30)
+        #self.warning_lbl2.config(font=(None, 8))
 
 
 def main():
     root = tk.Tk()
-    root.geometry("1080x720")
+    root.geometry("1080x740")
     root.title("Source Code Analyzing Machine")
     gui = SourceAnalyzer(root)
     root.mainloop()
