@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../')
 from tkinter import filedialog as fd
-from backend.interface import *
-from backend.analyzer import remove_comments
+from source.backend.interface import *
+from source.backend.analyzer import remove_comments
 import os
 import tkinter as tk
 

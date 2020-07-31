@@ -132,7 +132,7 @@ def get_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames):
 def get_winnow_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames):
     with open(std1_filename, "r") as std1_source:
         vs1 = JavaAnalyzer(std1_source)
-
+    print(vs1.parsed_code)
     with open(std2_filename, "r") as std2_source:
         vs2 = JavaAnalyzer(std2_source)
 
@@ -910,14 +910,19 @@ def print_prototype_test(files, boilerplate):
 
 
 def main():
+    boilerplatejava = []
     # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
     # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
     # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
-    # compare_files_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
-    # get_winnow_fps_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
-    boilerplatejava = ["test_files/test2.java"]
-    compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
-    common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
+    compare_files_py("test_files/test2innocent.py", "test_files/test2.py", 50, 50, boilerplatejava)
+    common = get_winnow_fps_py("test_files/test2innocent.py", "test_files/test2.py", 50, 50, boilerplatejava)
+    for c in common:
+        print("FP1:\n" + c[0][0].substring)
+        print("FP2:\n" + c[1][0].substring)
+    # boilerplatejava = ["test_files/test2.java"]
+    # boilerplatejava = []
+    # compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
+    # common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
     """for c in common:
         print("FP1:\n" + c[0][0].substring)
         print("FP2:\n" + c[1][0].substring)"""

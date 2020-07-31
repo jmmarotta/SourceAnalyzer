@@ -208,9 +208,9 @@ class JavaAnalyzer:
             # if the token is a string, get rid of whitespace
             elif type(token) == javalang.tokenizer.String:
                 parser_tokens.append(ParserTokenInfo(type(token), re.sub(" ", "", token.value), token.position,
-                                                     token.value))
+                                                     re.sub(" ", "", token.value)))
             # if the value is 'class'
-            elif token.value == 'class':
+            elif token.value == "class":
                 parser_tokens.append(ParserTokenInfo(type(token), '', token.position, token.value))
                 is_class = True
             # else just return the original value
@@ -237,11 +237,41 @@ class JavaAnalyzer:
     # get the code given a k and position
     # the text has comments removed
     def get_code_from_parsed(self, k, pos):
-        return get_text_substring(pos, k, self._code)
+        index = 0
+        for token in self._parser_tokens:
+            if index < pos:
+                pos += len(token.old_string) - len(token.string)
+                index += len(token.old_string)
+            elif pos <= index < pos + k:
+                k += len(token.old_string) - len(token.string)
+                index += len(token.old_string)
+            else:
+                break
+
+        return get_java_substring(pos, k, self._code)
 
 
 # find the accurate substring for a text with spaces given the position and k of a text without spaces
 def get_text_substring(pos, k, text):
+    i = 0
+    spaces_pos = []
+    # for character in text
+    for ch in text:
+        # check if whitespace and if it is append the position to the array
+        if ch == ' ' or ch == '\n':
+            spaces_pos.append(i)
+        i += 1
+    # for the positions in the array modify position and k based on detected whitespace
+    for space_pos in spaces_pos:
+        if space_pos < pos:
+            pos += 1
+        if pos <= space_pos < pos + k:
+            k += 1
+    return text[pos:pos+k]
+
+
+# find the accurate substring for a text with spaces given the position and k of a text without spaces
+def get_java_substring(pos, k, text):
     i = 0
     spaces_pos = []
     # for character in text
