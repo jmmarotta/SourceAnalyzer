@@ -1181,7 +1181,7 @@ class SourceAnalyzer:
     #Very Bottom
         
         self.view_label = tk.Label(self.very_bottom, text="View All?")
-        self.view_label.grid(row=0, column=3, padx=(60,0), pady=5)
+        self.view_label.grid(row=0, column=3, padx=(10,0), pady=5)
 
         self.view_var = tk.IntVar()
 
@@ -1195,7 +1195,7 @@ class SourceAnalyzer:
         self.current_fp.grid(row=0, column=6, padx=5, pady=5)
 
         self.next_fp = tk.Button(self.very_bottom, text="Next Fingerprint", command=self.next_fp)
-        self.next_fp.grid(row=0, column=7, padx=(5, 0), pady=5)
+        self.next_fp.grid(row=0, column=7, padx=(5, 100), pady=5)
 
         #self.warning_lbl2 = tk.Label(self.very_bottom, text="")
         #self.warning_lbl2.grid(row=2, column=0, padx=(10,0), pady=5, columnspan=30)
