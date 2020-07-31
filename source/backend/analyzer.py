@@ -30,6 +30,7 @@ class PyAnalyzer:
         loop_line = False
         boiler_plate = ['(', ')', ':', 'def', 'class', 'self']
         indent_next = False
+
         for token in tokens:
             # set original replace value
             replace = re.sub(r"\s+", "", token.string.lower())
@@ -172,7 +173,10 @@ class JavaAnalyzer:
         self._code = source.read()
         self._code = remove_comments(self._code)
         tokens = javalang.tokenizer.tokenize(self._code)
-        tree = javalang.parse.parse(self._code)
+        try:
+            tree = javalang.parse.parse(self._code)
+        except Exception:
+            tree = []
         self._parser_tokens = self.__init_tokens(tokens, tree)
         self._parsed_code = self.__get_parsed_code(self._parser_tokens)
 
@@ -187,6 +191,7 @@ class JavaAnalyzer:
         indent_next = False"""
         is_class = False
         index = 0
+
         for token in tokens:
             # if the previous token was 'class'
             if is_class:
@@ -294,6 +299,7 @@ def remove_comments(text):
         else:
             return s
     pattern = re.compile(r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"', re.DOTALL | re.MULTILINE)
+
     return re.sub(pattern, replacing_string, text)
 
 
@@ -303,3 +309,4 @@ def find_end_spaces(line, end):
         num_spaces += 1
         end -= 1
     return (num_spaces - 1) * " "
+
