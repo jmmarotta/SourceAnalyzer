@@ -150,11 +150,23 @@ class SourceAnalyzer:
         self.out_result.delete('1.0', tk.END)
         self.out_result.insert(tk.END, f2fpstring)
 
+        if self.language_var.get() == "Python":
+            if self.f2fp[self.curr_index1].filename[(len(self.f2fp[self.curr_index1].filename) - 3):] != '.py' or self.f2fp[self.curr_index2].filename[(len(self.f2fp[self.curr_index2].filename) - 3):] != '.py':
+                self.out_result.insert(tk.END, " WARNING: Used improper analyzer for file type. Results will be inaccurate!")
+
+        if self.language_var.get() == "Java":
+            if self.f2fp[self.curr_index1].filename[(len(self.f2fp[self.curr_index1].filename) - 5):] != '.java' or self.f2fp[self.curr_index2].filename[(len(self.f2fp[self.curr_index2].filename) - 5):] != '.java':
+                self.out_result.insert(tk.END, " WARNING: Used improper analyzer for file type. Results will be inaccurate!")
+
         self.out_result.configure(state='disabled')
 
-        self.show_reg_fingerprints()
+        print(self.fp_type.get())
+        if self.fp_type.get() == 0:
+            self.gather_reg_fingerprints()
+        else:
+            self.gather_most_fingerprints()
 
-    def show_reg_fingerprints(self):
+    def gather_reg_fingerprints(self):
 
         self.out_text1.configure(state='normal')
         self.out_text2.configure(state='normal')
@@ -185,29 +197,21 @@ class SourceAnalyzer:
 
         #Python
         if self.language_var.get() == "Python":
-            res, num_common_fps = compare_files_py(file1, file2, k, w)
-            fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+            res, num_common_fps = compare_files_py(file1, file2, k, w, self.file_name2.get(0, tk.END))
+            fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()), self.file_name2.get(0, tk.END))
 
         #Java
         elif self.language_var.get() == "Java":
-            res, num_common_fps = compare_files_java(file1, file2, k, w)
-            fp = get_fps_java(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+            res, num_common_fps = compare_files_java(file1, file2, k, w, self.file_name2.get(0, tk.END))
+            fp = get_fps_java(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()), self.file_name2.get(0, tk.END))
 
         #Text
         else:
-            res, num_common_fps = compare_files_txt(file1, file2, k, w)
-            fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()))
+            res, num_common_fps = compare_files_txt(file1, file2, k, w, self.file_name2.get(0, tk.END))
+            fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()), self.file_name2.get(0, tk.END))
 
 
         #fp = self.f2fp[self.curr_index1].similarto[self.f2fp[self.curr_index2]]
-
-        if self.language_var.get() == "Python":
-            if file1[(len(file1) - 3):] != '.py' or file2[(len(file2) - 3):] != '.py':
-                self.out_result.insert(tk.END, " WARNING: Used improper analyzer for file type. Results will be inaccurate!")
-
-        if self.language_var.get() == "Java":
-            if file1[(len(file1) - 5):] != '.java' or file2[(len(file2) - 5):] != '.java':
-                self.out_result.insert(tk.END, " WARNING: Used improper analyzer for file type. Results will be inaccurate!")
 
 
         for i in range(len(fp)):
@@ -256,43 +260,117 @@ class SourceAnalyzer:
                 index_track1 = index1[0]
 
             fp_track += 1
-                
-            self.index1s.append((index1, len1))
-            self.index2s.append((index2, len2))
 
         self.out_text1.configure(state='disabled')
         self.out_text2.configure(state='disabled')
 
         self.fp = fp
 
-        print(len(self.index1s))
-        print(len(self.index2s))
-
         self.max_fp = len(self.fp)
         self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
         self.show_fp()
 
-    def show_file(self):
+    def gather_most_fingerprints(self):
+        self.out_text1.configure(state='normal')
+        self.out_text2.configure(state='normal')
 
-        self.fileList = self.file_name1.get(0, tk.END)
-        print(self.fileList)
+        k = int(self.k_input.get())
+        w = int(self.windowSizeInput.get())
 
-        if self.file_name1 in self.fileList:
-            val = self.fileList.index(self.file_name1)
-            print("val not in tuple")
-            if val in self.fileList:
-                index = self.fileList.index(val)
-                prev_file = self.fileList[index - 1] if index  > 0 else None
-                curr_file = self.fileList[index]
-                next_file = self.fileList[index + 1] if index + 1 < len(self.fileList) else None
+        file1 = self.f2fp[self.curr_index1].filename
+        file2 = self.f2fp[self.curr_index2].filename
 
-    #        next, prev = self.find_next_prev(val, fileList)
+        file1out = open(file1, 'r').read()
+        file2out = open(file2, 'r').read()
 
-        self.curr_index1 = index
-        self.curr_index2 = index
-        print(index)
-        #    return prev_file, curr_file, next_file
+        if self.language_var.get() == "Java":
+            file1out = remove_comments(file1out)
+            file2out = remove_comments(file2out)
+
+        self.out_text1.tag_config("most", background='green')
+        self.out_text2.tag_config("most", background='green')
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, self.file1out)
+        self.out_text2.insert(tk.END, self.file2out)
+
+        index_track1 = '1.0'
+
+        #Python
+        if self.language_var.get() == "Python":
+            get_most_important_matches_javpy(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2], k, 3, 6)
+
+        #Java
+        elif self.language_var.get() == "Java":
+            get_most_important_matches_javpy(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2], k, 3, 6)
+
+        #Text
+        else:
+            get_most_important_matches_txt(self.f2fp[self.curr_index1], self.f2fp[self.curr_index2], k, 3, 6)
+
+        fp = self.f2fp[self.curr_index1].mostimportantmatches[self.f2fp[self.curr_index2]]
+        #print(fp)
+
+
+        for i in range(len(fp)):
+            self.out_text1.tag_config("match" + str(i), background='white')
+            self.out_text2.tag_config("match" + str(i), background='white')
+        self.out_text1.delete('1.0', tk.END)
+        self.out_text2.delete('1.0', tk.END)
+        self.out_text1.insert(tk.END, file1out)
+        self.out_text2.insert(tk.END, file2out)
+
+        index_track1 = '1.0'
+        fp_track = 0
+
+        for fingerprint in fp:
+
+            index1 = []
+            index2 = []
+
+            len1 = []
+            len2 = []
+
+            index_track2 = '1.0'
+
+            for i in range(len(fingerprint[0])):
+                index1.append(self.out_text1.search(fingerprint[0], '1.0', tk.END))
+                #print("1 - " + str(fp_track + 1) + ": " + fingerprint[0])
+                if index1[-1] != '':
+                    self.out_text1.tag_add("most" + str(fp_track), index1[-1], str(index1[-1]) + "+" + str(len(fingerprint[0])) + "c")
+                    len1.append(len(fingerprint[0][i]))
+                else:
+                    index1.pop(-1)
+                    print("COULD NOT FIND")
+
+            print(str(len(fingerprint[0])))
+            print(str(len(fingerprint[1])))
+            for i in range(len(fingerprint[1])):
+                index2.append(self.out_text2.search(fingerprint[1][i], '1.0', tk.END))
+                #print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i])
+                if index2[-1] != '':
+                    self.out_text2.tag_add("most" + str(fp_track), index2[-1], str(index2[-1]) + "+" + str(len(fingerprint[1][i])) + "c")
+                    len2.append(len(fingerprint[1][i]))
+                    index_track2 = index2[-1]
+                else:
+                    index2.pop(-1)          
+                    print("COULD NOT FIND")    
+
+            if len(index1) > 0:
+                index_track1 = index1[0]
+
+            fp_track += 1
+
+        self.out_text1.configure(state='disabled')
+        self.out_text2.configure(state='disabled')
+
+        self.fp = fp
+
+        self.max_fp = len(self.fp)
+        self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+
+        self.show_most_fp()
 
     def next_file1(self):
         self.out_result.configure(state='normal')
@@ -309,8 +387,8 @@ class SourceAnalyzer:
             else:
                 self.curr_index1 = 1
 
+        self.out_result.configure(state='disabled')
         self.get_output()
-
 
     def next_file2(self):
         self.out_result.configure(state='normal')
@@ -368,28 +446,27 @@ class SourceAnalyzer:
         self.out_result.configure(state='disabled')
         self.get_output()
 
- #   def find_next_prev(cur_file, fileList):
- #       next, prev = None, None
- #       index = fileList.index(cur_file)
- #       if index > 0:
- #           prev = fileList[index - 1]
- #       if index < (len(fileList) - 1):
- #           next = fileList[index + 1]
- #       return next, prev
-
     def show_fp(self):
+        if self.fp_type.get() == 0:
+            self.show_reg_fp()
+        else:
+            self.show_most_fp()
+
+    def show_reg_fp(self):
 
         self.out_text1.configure(state='normal')
         self.out_text2.configure(state='normal')
 
         if self.view_var.get() == 1:
+            if self.max_fp > 0:
+                self.cur_fp = 1
+            else:
+                self.cur_fp = 0
             for i in range(self.max_fp):
                 self.out_text1.tag_config("match" + str(i), background='yellow')
                 self.out_text2.tag_config("match" + str(i), background='yellow')
 
         else:
-            self.out_text1.tag_remove("match", '1.0', tk.END)
-            self.out_text2.tag_remove("match", '1.0', tk.END)
             if self.max_fp > 0:
                 self.cur_fp = 1
                 
@@ -413,53 +490,137 @@ class SourceAnalyzer:
         self.out_text1.configure(state='disabled')
         self.out_text2.configure(state='disabled')
 
-    def next_fp(self):
-        if self.view_var.get() == 0:
-            if self.cur_fp < self.max_fp:
+    def show_most_fp(self):
 
-                for i in range(self.max_fp):
-                    self.out_text1.tag_config("match" + str(i), background='white')
-                    self.out_text2.tag_config("match" + str(i), background='white')
+        self.out_text1.configure(state='normal')
+        self.out_text2.configure(state='normal')
 
-                self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
-                self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+        if self.view_var.get() == 1:
+            if self.max_fp > 0:
+                self.cur_fp = 1
+            else:
+                self.cur_fp = 0
+            for i in range(self.max_fp):
+                self.out_text1.tag_config("most" + str(i), background='green')
+                self.out_text2.tag_config("most" + str(i), background='green')
 
-                self.out_text1.tag_config("match" + str(self.cur_fp), background='yellow')
-                self.out_text2.tag_config("match" + str(self.cur_fp), background='yellow')
-
-                self.out_text1.tag_raise("match" + str(self.cur_fp))
-                self.out_text2.tag_raise("match" + str(self.cur_fp))
-
-                self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp))[1])
-                self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp))[1])
-
+        else:
+            if self.max_fp > 0:
+                self.cur_fp = 1
                 
-                self.cur_fp = self.cur_fp + 1
-                self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+                for i in range(self.max_fp):
+                    self.out_text1.tag_config("most" + str(i), background='white')
+                    self.out_text2.tag_config("most" + str(i), background='white')
+
+                self.out_text1.tag_config("most0", background='green')
+                self.out_text2.tag_config("most0", background='green')
+
+                self.out_text1.tag_raise("most0")
+                self.out_text2.tag_raise("most0")
+
+                self.out_text1.see(self.out_text1.tag_ranges("most0")[0])
+                self.out_text2.see(self.out_text2.tag_ranges("most0")[0])
+                
+            else:
+                self.cur_fp = 0
+            self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+
+        self.out_text1.configure(state='disabled')
+        self.out_text2.configure(state='disabled')
+
+    def next_fp(self):
+        if self.fp_type.get() == 0:
+            if self.view_var.get() == 0:
+                if self.cur_fp < self.max_fp:
+
+                    for i in range(self.max_fp):
+                        self.out_text1.tag_config("match" + str(i), background='white')
+                        self.out_text2.tag_config("match" + str(i), background='white')
+
+                    self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
+                    self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+
+                    self.out_text1.tag_config("match" + str(self.cur_fp), background='yellow')
+                    self.out_text2.tag_config("match" + str(self.cur_fp), background='yellow')
+
+                    self.out_text1.tag_raise("match" + str(self.cur_fp))
+                    self.out_text2.tag_raise("match" + str(self.cur_fp))
+
+                    self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp))[1])
+                    self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp))[1])
+
+                    
+                    self.cur_fp = self.cur_fp + 1
+                    self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+        else:
+            if self.view_var.get() == 0:
+                if self.cur_fp < self.max_fp:
+
+                    for i in range(self.max_fp):
+                        self.out_text1.tag_config("most" + str(i), background='white')
+                        self.out_text2.tag_config("most" + str(i), background='white')
+
+                    self.out_text1.tag_lower("most" + str(self.cur_fp - 1))
+                    self.out_text2.tag_lower("most" + str(self.cur_fp - 1))
+
+                    self.out_text1.tag_config("most" + str(self.cur_fp), background='green')
+                    self.out_text2.tag_config("most" + str(self.cur_fp), background='green')
+
+                    self.out_text1.tag_raise("most" + str(self.cur_fp))
+                    self.out_text2.tag_raise("most" + str(self.cur_fp))
+
+                    self.out_text1.see(self.out_text1.tag_ranges("most" + str(self.cur_fp))[1])
+                    self.out_text2.see(self.out_text2.tag_ranges("most" + str(self.cur_fp))[1])
+
+                    
+                    self.cur_fp = self.cur_fp + 1
+                    self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
     def last_fp(self):
-        if self.view_var.get() == 0:
-            if self.cur_fp > 1:
+        if self.fp_type.get() == 0:
+            if self.view_var.get() == 0:
+                if self.cur_fp > 1:
 
-                for i in range(self.max_fp):
-                    self.out_text1.tag_config("match" + str(i), background='white')
-                    self.out_text2.tag_config("match" + str(i), background='white')
+                    for i in range(self.max_fp):
+                        self.out_text1.tag_config("match" + str(i), background='white')
+                        self.out_text2.tag_config("match" + str(i), background='white')
 
-                self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
-                self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
+                    self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
+                    self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
 
-                self.out_text1.tag_config("match" + str(self.cur_fp - 2), background='yellow')
-                self.out_text2.tag_config("match" + str(self.cur_fp - 2), background='yellow')
+                    self.out_text1.tag_config("match" + str(self.cur_fp - 2), background='yellow')
+                    self.out_text2.tag_config("match" + str(self.cur_fp - 2), background='yellow')
 
-                self.out_text1.tag_raise("match" + str(self.cur_fp - 2))
-                self.out_text2.tag_raise("match" + str(self.cur_fp - 2))
+                    self.out_text1.tag_raise("match" + str(self.cur_fp - 2))
+                    self.out_text2.tag_raise("match" + str(self.cur_fp - 2))
 
-                self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp - 2))[0])
-                self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp - 2))[0])
-                
-                self.cur_fp = self.cur_fp - 1
-                self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+                    self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp - 2))[0])
+                    self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp - 2))[0])
+                    
+                    self.cur_fp = self.cur_fp - 1
+                    self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
+        else:
+            if self.view_var.get() == 0:
+                if self.cur_fp > 1:
 
+                    for i in range(self.max_fp):
+                        self.out_text1.tag_config("most" + str(i), background='white')
+                        self.out_text2.tag_config("most" + str(i), background='white')
+
+                    self.out_text1.tag_lower("most" + str(self.cur_fp - 1))
+                    self.out_text2.tag_lower("most" + str(self.cur_fp - 1))
+
+                    self.out_text1.tag_config("most" + str(self.cur_fp - 2), background='green')
+                    self.out_text2.tag_config("most" + str(self.cur_fp - 2), background='green')
+
+                    self.out_text1.tag_raise("most" + str(self.cur_fp - 2))
+                    self.out_text2.tag_raise("most" + str(self.cur_fp - 2))
+
+                    self.out_text1.see(self.out_text1.tag_ranges("most" + str(self.cur_fp - 2))[0])
+                    self.out_text2.see(self.out_text2.tag_ranges("most" + str(self.cur_fp - 2))[0])
+                    
+                    self.cur_fp = self.cur_fp - 1
+                    self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
     def clear_output(self):
 
@@ -471,13 +632,20 @@ class SourceAnalyzer:
         self.out_text1.delete('1.0', tk.END)
         self.out_text2.delete('1.0', tk.END)
 
+        for i in range(len(self.fp)):
+            self.out_text1.tag_delete('match' + str(i))
+            self.out_text2.tag_delete('match' + str(i))
+
         self.out_result.configure(state='disabled')
         self.out_text1.configure(state='disabled')
         self.out_text2.configure(state='disabled')
 
         self.fp = []
-        self.index1s = []
-        self.index2s = []
+        self.f2fp = []
+        self.curr_index1 = 0
+        self.curr_index2 = 1
+        self.cur_fp = 0
+        self.max_fp = 0
 
     def mult_yview(self, *args):
         self.out_text1.yview(*args)
@@ -499,15 +667,17 @@ class SourceAnalyzer:
 
     def create_widgets(self):
 
+    #Store Filenames
         self.files1 = []
         self.files2 = []
 
+    #Tracking Fingerprints
         self.cur_fp = 0
         self.max_fp = 0
         self.fp = []
-        self.index1s = []
-        self.index2s = []
+        self.most_fp = []
 
+    #Tracking Multiple Files
         self.curr_index1 = 0
         self.curr_index2 = 1
         self.f2fp = []
@@ -681,13 +851,31 @@ class SourceAnalyzer:
         self.windowSizeInput.delete(0, tk.END)
         self.windowSizeInput.insert(0, '5')
 
+        self.fp_count_lbl = tk.Label(self.button_panel, text = "Block Size: ")
+        self.fp_count_lbl.grid(row = 7, column = 0, padx = 5, pady = 5)
+        self.fp_count_lbl.config(font=(None, 9))
+
+        self.fp_count_in = tk.Spinbox(self.button_panel, from_=1, to=255, width=5)
+        self.fp_count_in.grid(row=7, column=1, padx=5, pady = 5)
+        self.fp_count_in.delete(0, tk.END)
+        self.fp_count_in.insert(0, '3')
+
+        self.offset_lbl = tk.Label(self.button_panel, text = "Offset: ")
+        self.offset_lbl.grid(row = 7, column = 2, padx = 1, pady = 5, columnspan=1)
+        self.offset_lbl.config(font=(None, 9))
+
+        self.offset_in = tk.Spinbox(self.button_panel, from_=1, to=255, width=5)
+        self.offset_in.grid(row=7, column=3, padx=5, pady = 5, columnspan=2)
+        self.offset_in.delete(0, tk.END)
+        self.offset_in.insert(0, '6')
+
         #Compare
 
         self.run_label = tk.Button(self.button_panel, text="Compare", height = 1, width = 40, command=self.export_files, bg="gray75", bd=3)
-        self.run_label.grid(row=8, column=0, pady=(20, 0), columnspan=4)
+        self.run_label.grid(row=9, column=0, pady=(20, 0), columnspan=4)
 
         self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
-        self.clear_label.grid(row=9, column=0, pady=2.5, columnspan=4)
+        self.clear_label.grid(row=10, column=0, pady=2.5, columnspan=4)
 
     #Bottom Frame
 
@@ -757,25 +945,7 @@ class SourceAnalyzer:
         self.current_fp.grid(row=0, column=6, padx=5, pady=5)
 
         self.next_fp = tk.Button(self.very_bottom, text="Next Fingerprint", command=self.next_fp)
-        self.next_fp.grid(row=0, column=7, padx=5, pady=5)
-
-        self.fp_count_lbl = tk.Label(self.very_bottom, text = "FP Count: ")
-        self.fp_count_lbl.grid(row = 0, column = 8, padx = (35,0), pady = 5)
-        self.fp_count_lbl.config(font=(None, 9))
-
-        self.fp_count_in = tk.Spinbox(self.very_bottom, from_=1, to=255, width=5)
-        self.fp_count_in.grid(row=0, column=9, padx=(0,5), pady = 5)
-        self.fp_count_in.delete(0, tk.END)
-        self.fp_count_in.insert(0, '3')
-
-        self.offset_lbl = tk.Label(self.very_bottom, text = "Offset: ")
-        self.offset_lbl.grid(row = 0, column = 10, padx = 1, pady = 5, columnspan=2)
-        self.offset_lbl.config(font=(None, 9))
-
-        self.offset_in = tk.Spinbox(self.very_bottom, from_=1, to=255, width=5)
-        self.offset_in.grid(row=0, column=12, padx=(5, 70), pady = 5, columnspan=2)
-        self.offset_in.delete(0, tk.END)
-        self.offset_in.insert(0, '6')
+        self.next_fp.grid(row=0, column=7, padx=(5, 350), pady=5)
 
 
 def main():
