@@ -718,13 +718,15 @@ class SourceAnalyzer:
     def openHelp(self):
         helpSect = tk.Toplevel()
         helpSect.title("SCAM Help Manual")
-        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to \n\n" \
-                       "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\n" \
-                       "Window Size is the winnow size used by the algorithm.\n" \
-                       "Ignore Count determines fingerprint threshold for commonality.\n" \
-                       "Python files should be able to be compiled for the best results.\n\n"
+        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to analyze similarity in source code for the purpose of plagiarism detection."\
+        "It supports the languages of python and java, but it can also analyze raw text which can be used for (although may not be as robust) other currently unsupported languages. " \
+        "\n\n General Starting Info:  "\
+        "\n K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored." \
+        "\nWindow Size is the winnow size used by the algorithm." \
+        "\nIgnore Count determines fingerprint threshold for commonality." \
+        "\nThis program was orginally built for python software, thus \"*.py\" files are the most likely to produce the best results.\n\n"
         tk.Label(helpSect, text=inputMessage).pack()
-        tk.Button(helpSect, text="DONE", command=helpSect.destroy).pack()
+        tk.Button(helpSect, text="DONE", command=helpSect.destroy, pady= 25 ).pack()
 
     def __init__(self, master):
         self.master = master
