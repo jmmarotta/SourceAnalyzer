@@ -31,70 +31,73 @@ class PyAnalyzer:
         boiler_plate = ['(', ')', ':', 'def', 'class', 'self']
         indent_next = False
 
-        for token in tokens:
-            # set original replace value
-            replace = re.sub(r"\s+", "", token.string.lower())
+        try:
+            for token in tokens:
+                # set original replace value
+                replace = re.sub(r"\s+", "", token.string.lower())
 
-            start = pos
-            end = pos + (diff := token.end[1] - token.start[1])
-            # increment absolute position accordingly
-            pos += diff
+                start = pos
+                end = pos + (diff := token.end[1] - token.start[1])
+                # increment absolute position accordingly
+                pos += diff
 
-            try:
-                # if the token is an indent
-                if token.type == 5:
-                    parser_tokens.append(ParserTokenInfo(token.type, "", start, end, token.line, ""))
-                    continue
-                # if the token is a newline
-                elif token.type in [4, 61]:
-                    # the nex line is an indent
-                    indent_next = True
-                    parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
-                                                         find_end_spaces(token.line, token.end[1] - 1) + token.string))
-                    continue
-                # if the token is comment/boilerplate/import or loopline is active
-                elif loop_line or token.type == 60 or token.string in boiler_plate or "import" in token.line:
-                    # if the end of a loop
-                    if token.string == ':' and token.type == 54:
-                        loop_line = False
-                    replace = ""
-                # if the comment is a name (identifier)
-                elif token.type == 1:
-                    # if the name is a conditional
-                    if token.string == 'if' or token.string == 'elif' or token.string == 'else':
-                        replace = "c"
-                    # if the name is a loop
-                    elif token.string == 'for' or token.string == 'while':
-                        # start loopline
-                        if ':' in token.line:
-                            loop_line = True
-                        replace = 'l'
-                    # if the name is a class
-                    elif token.line[token.start[1]-6:token.start[1]-1] == 'class':
-                        replace = '@'
-                    # if the name is a function
-                    elif token.line[token.end[1]] == '(':
-                        if token.string == 'print':
-                            replace = 'p'
+                try:
+                    # if the token is an indent
+                    if token.type == 5:
+                        parser_tokens.append(ParserTokenInfo(token.type, "", start, end, token.line, ""))
+                        continue
+                    # if the token is a newline
+                    elif token.type in [4, 61]:
+                        # the nex line is an indent
+                        indent_next = True
+                        parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
+                                                             find_end_spaces(token.line, token.end[1] - 1) + token.string))
+                        continue
+                    # if the token is comment/boilerplate/import or loopline is active
+                    elif loop_line or token.type == 60 or token.string in boiler_plate or "import" in token.line:
+                        # if the end of a loop
+                        if token.string == ':' and token.type == 54:
+                            loop_line = False
+                        replace = ""
+                    # if the comment is a name (identifier)
+                    elif token.type == 1:
+                        # if the name is a conditional
+                        if token.string == 'if' or token.string == 'elif' or token.string == 'else':
+                            replace = "c"
+                        # if the name is a loop
+                        elif token.string == 'for' or token.string == 'while':
+                            # start loopline
+                            if ':' in token.line:
+                                loop_line = True
+                            replace = 'l'
+                        # if the name is a class
+                        elif token.line[token.start[1]-6:token.start[1]-1] == 'class':
+                            replace = '@'
+                        # if the name is a function
+                        elif token.line[token.end[1]] == '(':
+                            if token.string == 'print':
+                                replace = 'p'
+                            else:
+                                replace = 'f'
+                        # if the name is a variable or other
                         else:
-                            replace = 'f'
-                    # if the name is a variable or other
+                            replace = 'v'
+                    # find the indent and create the new tuple with (type, parsed code, start, end, string line, and code)
+                    indent = len(token.line) - len(token.line.lstrip(" "))
+                    parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
+                                                         ((" " * indent) if indent_next else "") +
+                                                         token.string + (" " if token.line[token.end[1]] == " " else "")))
+                    if indent_next:
+                        indent_next = False
+                except IndexError:  # EOF is indexed
+                    if token.string == ')':
+                        parser_tokens.append(ParserTokenInfo(token.type, '', start,
+                                                             end, token.line, token.string))
                     else:
-                        replace = 'v'
-                # find the indent and create the new tuple with (type, parsed code, start, end, string line, and code)
-                indent = len(token.line) - len(token.line.lstrip(" "))
-                parser_tokens.append(ParserTokenInfo(token.type, replace, start, end, token.line,
-                                                     ((" " * indent) if indent_next else "") +
-                                                     token.string + (" " if token.line[token.end[1]] == " " else "")))
-                if indent_next:
-                    indent_next = False
-            except IndexError:  # EOF is indexed
-                if token.string == ')':
-                    parser_tokens.append(ParserTokenInfo(token.type, '', start,
-                                                         end, token.line, token.string))
-                else:
-                    parser_tokens.append(ParserTokenInfo(token.type, re.sub(r"\s+", "", token.string.lower()), start,
-                                                         end, token.line, token.string))
+                        parser_tokens.append(ParserTokenInfo(token.type, re.sub(r"\s+", "", token.string.lower()), start,
+                                                             end, token.line, token.string))
+        except Exception:
+            pass
         return parser_tokens
 
     # get the parsed code from the parser tokens
@@ -192,33 +195,36 @@ class JavaAnalyzer:
         is_class = False
         index = 0
 
-        for token in tokens:
-            # if the previous token was 'class'
-            if is_class:
-                parser_tokens.append(ParserTokenInfo(type(token), 'C', token.position, token.value))
-                is_class = False
-            # if the token is an identifier
-            elif type(token) == javalang.tokenizer.Identifier:
-                # if the value is a print
-                if token.value == 'print' or token.value == 'println':
-                    parser_tokens.append(ParserTokenInfo(type(token), 'P', token.position, token.value))
-                # if the value is a string type
-                elif token.value == 'String':
-                    parser_tokens.append(ParserTokenInfo(type(token), 'S', token.position, token.value))
+        try:
+            for token in tokens:
+                # if the previous token was 'class'
+                if is_class:
+                    parser_tokens.append(ParserTokenInfo(type(token), 'C', token.position, token.value))
+                    is_class = False
+                # if the token is an identifier
+                elif type(token) == javalang.tokenizer.Identifier:
+                    # if the value is a print
+                    if token.value == 'print' or token.value == 'println':
+                        parser_tokens.append(ParserTokenInfo(type(token), 'P', token.position, token.value))
+                    # if the value is a string type
+                    elif token.value == 'String':
+                        parser_tokens.append(ParserTokenInfo(type(token), 'S', token.position, token.value))
+                    else:
+                        parser_tokens.append(ParserTokenInfo(type(token), 'I', token.position, token.value))
+                # if the token is a string, get rid of whitespace
+                elif type(token) == javalang.tokenizer.String:
+                    parser_tokens.append(ParserTokenInfo(type(token), re.sub(" ", "", token.value), token.position,
+                                                         re.sub(" ", "", token.value)))
+                # if the value is 'class'
+                elif token.value == "class":
+                    parser_tokens.append(ParserTokenInfo(type(token), '', token.position, token.value))
+                    is_class = True
+                # else just return the original value
                 else:
-                    parser_tokens.append(ParserTokenInfo(type(token), 'I', token.position, token.value))
-            # if the token is a string, get rid of whitespace
-            elif type(token) == javalang.tokenizer.String:
-                parser_tokens.append(ParserTokenInfo(type(token), re.sub(" ", "", token.value), token.position,
-                                                     re.sub(" ", "", token.value)))
-            # if the value is 'class'
-            elif token.value == "class":
-                parser_tokens.append(ParserTokenInfo(type(token), '', token.position, token.value))
-                is_class = True
-            # else just return the original value
-            else:
-                parser_tokens.append(ParserTokenInfo(type(token), token.value, token.position, token.value))
-            index += 1
+                    parser_tokens.append(ParserTokenInfo(type(token), token.value, token.position, token.value))
+                index += 1
+        except Exception:
+            pass
         return parser_tokens
 
     # get the parsed code by iterating through parser tokens
