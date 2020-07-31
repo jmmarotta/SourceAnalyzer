@@ -655,10 +655,19 @@ class SourceAnalyzer:
     def donothing(self):
         x = 0
 
+    def report_output(self):
+        f = open("SCAM-report.txt", "w")
+        print("Save file under different name to keep results before next run.\n\n", file=f)
+        for x in self.f2fp:
+            print(" curr_index1: " + str(self.f2fp[self.curr_index1]) + ", curr_index2: " + str(self.f2fp[self.curr_index2]) + "\n", file=f)
+
+        f.close()
+
     def openHelp(self):
         helpSect = tk.Toplevel()
         helpSect.title("SCAM Help Manual")
-        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to \n\nK (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\n" \
+        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to \n\n" \
+                       "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\n" \
                        "Window Size is the winnow size used by the algorithm.\n" \
                        "Ignore Count determines fingerprint threshold for commonality.\n" \
                        "Python files should be able to be compiled for the best results.\n\n"
@@ -872,20 +881,20 @@ class SourceAnalyzer:
         self.windowSizeInput.insert(0, '5')
 
         self.fp_count_lbl = tk.Label(self.button_panel, text = "Block Size: ")
-        self.fp_count_lbl.grid(row = 7, column = 0, padx = 5, pady = 5)
+        self.fp_count_lbl.grid(row = 8, column = 0, padx = 5, pady = 5)
         self.fp_count_lbl.config(font=(None, 9))
 
         self.fp_count_in = tk.Spinbox(self.button_panel, from_=1, to=255, width=5)
-        self.fp_count_in.grid(row=7, column=1, padx=5, pady = 5)
+        self.fp_count_in.grid(row=8, column=1, padx=5, pady = 5)
         self.fp_count_in.delete(0, tk.END)
         self.fp_count_in.insert(0, '3')
 
         self.offset_lbl = tk.Label(self.button_panel, text = "Offset: ")
-        self.offset_lbl.grid(row = 7, column = 2, padx = 1, pady = 5, columnspan=1)
+        self.offset_lbl.grid(row = 8, column = 2, padx = 1, pady = 5, columnspan=1)
         self.offset_lbl.config(font=(None, 9))
 
         self.offset_in = tk.Spinbox(self.button_panel, from_=1, to=255, width=5)
-        self.offset_in.grid(row=7, column=3, padx=5, pady = 5, columnspan=2)
+        self.offset_in.grid(row=8, column=3, padx=5, pady = 5, columnspan=2)
         self.offset_in.delete(0, tk.END)
         self.offset_in.insert(0, '6')
 
@@ -896,6 +905,9 @@ class SourceAnalyzer:
 
         self.clear_label = tk.Button(self.button_panel, text="Clear Output", height = 1, width = 40, command=self.clear_output, bg="gray80", bd=3)
         self.clear_label.grid(row=10, column=0, pady=2.5, columnspan=4)
+
+        self.report_label = tk.Button(self.button_panel, text="Full Report", height = 1, width = 40, command=self.report_output, bg="gray80", bd=3)
+        self.report_label.grid(row=11, column=0, pady=2.5, columnspan=4)
 
     #Bottom Frame
 
