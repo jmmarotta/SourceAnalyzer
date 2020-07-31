@@ -577,27 +577,21 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
 """def compare_files_cpp(student_filename1, student_filename2, k, w):
     with open(student_filename1, "r") as student_source1:
         vs1 = CppAnalyzer(student_source1)
-
     with open(student_filename2, "r") as student_source2:
         vs2 = CppAnalyzer(student_source2)
-
     print("CPP PARSE CODE1: ",vs1.parsed_code)
     print("CPP PARSED CODE2: ",vs2.parsed_code)
-
     student_fingerprints1 = winnow(vs1.parsed_code, k, w)
     student_fingerprints2 = winnow(vs2.parsed_code, k, w)
-
     num_std_fps = 0
     for val in student_fingerprints1.values():
         for _ in val:
             num_std_fps += 1
-
     num_common_fps = 0
     for fp in list(student_fingerprints1.keys()):
         if fp in list(student_fingerprints2.keys()):
             for _ in student_fingerprints1[fp]:
                 num_common_fps += 1
-
     similarity = num_common_fps / num_std_fps
     print(res := similarity * 100)
     return res, num_common_fps"""
@@ -692,12 +686,11 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
         #most_important_match_locations.append(((start, end), templist))
         distance = end.global_pos - start.global_pos
         most_important_match_locations.append((get_text_substring(start.global_pos, distance + k, f1.base), templist))
-    """print("MOSTY: ")
+    print("MOSTY: ")
     for most in most_important_match_locations:
         print(most[0])
-        print("---------")
         print(most[1])
-    print("")"""
+        print("")
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
     else:
@@ -721,7 +714,8 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
 
 def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
     if f1.similarto.get(f2) == None:
-            return
+        f1.mostimportantmatches[f2] = []
+        return
     f1_fingerprints = []
     f2_fingerprints = {}
     for fptuple in f1.similarto[f2]: #order the fingerprint's individually by location
