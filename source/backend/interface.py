@@ -28,11 +28,8 @@ def compare_files_txt(std1_filename, std2_filename, k, w, boilerplate_filenames)
 
 # get the common fingerprints between two text files
 # if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_txt(std1_filename, std2_filename, k, w, num_common_fps, ignore_count, boilerplate_filenames):
-    if num_common_fps > ignore_count:
-        return get_winnow_fps_txt(std1_filename, std2_filename, k, 2, boilerplate_filenames)
-    else:
-        return get_winnow_fps_txt(std1_filename, std2_filename, k, w, boilerplate_filenames)
+def get_fps_txt(std1_filename, std2_filename, k, boilerplate_filenames):
+    return get_winnow_fps_txt(std1_filename, std2_filename, k, 2, boilerplate_filenames)
 
 
 # get the common fingerprints between two text files using the winnowing algorithm
@@ -82,11 +79,8 @@ def compare_files_py(std1_filename, std2_filename, k, w, boilerplate_filenames):
 
 # get the common fingerprints between two python files
 # if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_py(std1_filename, std2_filename, k, w, num_common_fps, ignore_count, boilerplate_filenames):
-    if num_common_fps > ignore_count:
-        return get_winnow_fps_py(std1_filename, std2_filename, k, 2, boilerplate_filenames)
-    else:
-        return get_winnow_fps_py(std1_filename, std2_filename, k, w, boilerplate_filenames)
+def get_fps_py(std1_filename, std2_filename, k, boilerplate_filenames):
+    return get_winnow_fps_py(std1_filename, std2_filename, k, 2, boilerplate_filenames)
 
 
 # get the common fingerprints between two python files using the winnowing algorithm
@@ -130,18 +124,14 @@ def compare_files_java(std1_filename, std2_filename, k, w, boilerplate_filenames
 
 # get the common fingerprints between two java files
 # if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
-def get_fps_java(std1_filename, std2_filename, k, w, num_common_fps, ignore_count, boilerplate_filenames):
-    if num_common_fps > ignore_count:
-        return get_winnow_fps_java(std1_filename, std2_filename, k, 2, boilerplate_filenames)
-    else:
-        return get_winnow_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames)
+def get_fps_java(std1_filename, std2_filename, k, boilerplate_filenames):
+    return get_winnow_fps_java(std1_filename, std2_filename, k, 2, boilerplate_filenames)
 
 
 # get the common fingerprints between two java files using the winnowing algorithm
 def get_winnow_fps_java(std1_filename, std2_filename, k, w, boilerplate_filenames):
     with open(std1_filename, "r") as std1_source:
         vs1 = JavaAnalyzer(std1_source)
-
     with open(std2_filename, "r") as std2_source:
         vs2 = JavaAnalyzer(std2_source)
 
@@ -168,7 +158,7 @@ def get_percent_similarity(std1_fingerprints, std2_fingerprints, bpfingerprints)
                 num_common_fps += 1
     # return previously calculated number divided by the total number of fingerprints
     similarity = num_common_fps / num_std_fps
-    print(res := similarity * 100)
+    res = similarity * 100
     return res, num_common_fps
 
 
@@ -356,6 +346,7 @@ def compare_multiple_files_txt(filenames, k, w, boilerplate, ignorecount):
         file.similarto = newsimilarto"""
     return files
 
+
 def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
     files = wrap_filenames(filenames)
     allfingerprints = collections.defaultdict(dict)
@@ -368,7 +359,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
             bpfingerprints = winnow(bp.parsed_code, k, w)
         else:
             bpfingerprints.update(winnow(bp.parsed_code, k, w))
-        print("BP PARSED CODE:", bp.parsed_code)
+        # print("BP PARSED CODE:", bp.parsed_code)
 
     #put all fingerprints into large fp dictionary
     if len(boilerplate) == 0:
@@ -376,7 +367,7 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
             with open(file.filename, "r") as student_source:
                 vs = PyAnalyzer(student_source)
             file.base = vs
-            print("PARSED CODE:", vs.parsed_code)
+            # print("PARSED CODE:", vs.parsed_code)
             file.fingerprintssetup = winnow(vs.parsed_code, k, w)
             for fp in list(file.fingerprintssetup.keys()):
                 allfingerprints[fp][file] = []
@@ -468,6 +459,8 @@ def compare_multiple_files_py(filenames, k, w, boilerplate, ignorecount):
             file.similarto = newsimilarto"""
     return files
 
+
+# julian's still working on it
 def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     files = wrap_filenames(filenames)
     allfingerprints = collections.defaultdict(dict)
@@ -573,7 +566,8 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
             file.similarto = newsimilarto"""
     return files
 
-#not done
+
+# not done
 """def compare_files_cpp(student_filename1, student_filename2, k, w):
     with open(student_filename1, "r") as student_source1:
         vs1 = CppAnalyzer(student_source1)
@@ -601,11 +595,13 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
     similarity = num_common_fps / num_std_fps
     print(res := similarity * 100)
     return res, num_common_fps"""
-#gets the most important matches of fileobjects f1 to f2, as determined by the number of blocks of consecutive fingerprints, puts the
-#results into f1's mostimportantmatches property
-#changing blocksize determines how many consecutive fingerprints there have to be before being considered
-#a block, changing offset determines the distance that's allowed between each print for it to be considered within the same block
-#the files need to have their similarto attribute filled up through compare_multiple_files first for this to work
+
+
+# gets the most important matches of fileobjects f1 to f2, as determined by the number of blocks of consecutive fingerprints, puts the
+# results into f1's mostimportantmatches property
+# changing blocksize determines how many consecutive fingerprints there have to be before being considered
+# a block, changing offset determines the distance that's allowed between each print for it to be considered within the same block
+# the files need to have their similarto attribute filled up through compare_multiple_files first for this to work
 def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
     if f1.similarto.get(f2) == None:
             return
@@ -719,6 +715,7 @@ def get_most_important_matches_txt(f1, f2, k, blocksize, offset):
             i += 1
         print("")"""
 
+
 def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
     if f1.similarto.get(f2) == None:
             return
@@ -779,15 +776,14 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
                         continue
                     #templist.append((f2start[pos], fp2lastpos[pos]))
                     distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
-                    templist.append(f2.base.get_code_from_parsed(distance + k, f2start[pos].global_pos))
+                    templist.append(f2.base.get_code_from_parsed(f2start[pos].global_pos, distance + k))
                 """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
                 print("F2 end:", end ="")
                 for ender in fp2lastpos:
                     print(ender.substring + ",( " + str(ender.global_pos) + ")")"""
                 #most_important_match_locations.append(((start, end), templist))
                 distance = end.global_pos - start.global_pos
-                most_important_match_locations.append((f1.base.get_code_from_parsed(distance + k, start.global_pos), templist))
-                print(start.global_pos, str(distance + k), f1.base.get_code_from_parsed(distance + k, start.global_pos))
+                most_important_match_locations.append((f1.base.get_code_from_parsed(start.global_pos, distance + k), templist))
             blockcounter = 0
     if blockcounter >= blocksize: #1 more block check to see if the last one was end of a block
         end = f1_fingerprints[len(f1_fingerprints) - 1]
@@ -797,20 +793,20 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
                 continue
             #templist.append((f2start[pos], fp2lastpos[pos]))
             distance = fp2lastpos[pos].global_pos - f2start[pos].global_pos
-            templist.append(f2.base.get_code_from_parsed(distance + k, f2start[pos].global_pos))
+            templist.append(f2.base.get_code_from_parsed(f2start[pos].global_pos, distance + k))
         """print("F1 end:" + end.substring + " (" + str(end.global_pos) + ")")
         print("F2 end:", end="")
         for ender in templist:
             print(ender[1].substring + ",( " + str(ender[1].global_pos) + ")")"""
         #most_important_match_locations.append(((start, end), templist))
         distance = end.global_pos - start.global_pos
-        most_important_match_locations.append((f1.base.get_code_from_parsed(distance + k, start.global_pos), templist))
-    print("MOSTY: ")
+        most_important_match_locations.append((f1.base.get_code_from_parsed(start.global_pos, distance + k), templist))
+    """print("MOSTY: ")
     for most in most_important_match_locations:
         print(most[0])
         print("---------")
         print(most[1])
-    print("")
+    print("")"""
     if len(most_important_match_locations) != 0:
         f1.mostimportantmatches[f2] = most_important_match_locations
     else:
@@ -832,18 +828,21 @@ def get_most_important_matches_javpy(f1, f2, k, blocksize, offset):
             i += 1
         print("")"""
 
-#the version for multiple files
+
+# the version for multiple files
 def get_most_important_matches_multiple_files_txt(files, k , blocksize, offset):
     for f1 in files:
         for f2 in files:
             get_most_important_matches_txt(f1, f2, k, blocksize, offset)
+
 
 def get_most_important_matches_multiple_files_javpy(files, k, blocksize, offset):
     for f1 in files:
         for f2 in files:
             get_most_important_matches_javpy(f1, f2, k, blocksize, offset)
 
-#gets % similarity between 2 different filetofingerprintobjects that were initialized through compare_multiple_documents
+
+# gets % similarity between 2 different filetofingerprintobjects that were initialized through compare_multiple_documents
 def get_similarity(f1, f2):
     print(f1.filename, f2.filename)
     if f1.similarto.get(f2) == None:
@@ -858,6 +857,7 @@ def get_similarity(f1, f2):
             for loc in fp:
                 totalfps += 1
         return simcount / totalfps
+
 
 # Printing debug results for prototype, accepts filetofingerprint object
 def print_prototype_test(files, boilerplate):
@@ -907,27 +907,33 @@ def print_prototype_test(files, boilerplate):
             print(sim.filename, "by {:.2%}".format(get_similarity(file, sim)))
             print("")
 
+
 def main():
+    boilerplatejava = []
     # res, num_common = compare_files_txt("test_files/test.txt", "test_files/test2.txt", 10, 5)
     # get_winnow_fps_txt("test_files/songtest1.txt", "test_files/songtest2.txt", 5, 4)
     # get_fps_txt("test_files/test.txt", "test_files/test2.txt", 10, 5, num_common, 5)
-    # compare_files_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
-    # get_winnow_fps_py("test_files/SciCalculator1.py", "test_files/test2.py", 50, 50)
-    boilerplatejava = ["test_files/test2.java"]
-    compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
-    common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
+    compare_files_py("test_files/test2innocent.py", "test_files/test2.py", 50, 50, boilerplatejava)
+    common = get_winnow_fps_py("test_files/test2innocent.py", "test_files/test2.py", 50, 50, boilerplatejava)
+    for c in common:
+        print("FP1:\n" + c[0][0].substring)
+        print("FP2:\n" + c[1][0].substring)
+    # boilerplatejava = ["test_files/test2.java"]
+    # boilerplatejava = []
+    # compare_files_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
+    # common = get_winnow_fps_java('test_files/test1.java', 'test_files/test2.java', 10, 5, boilerplatejava)
     """for c in common:
         print("FP1:\n" + c[0][0].substring)
         print("FP2:\n" + c[1][0].substring)"""
-    print("Multi-document tests: ")
+    """print("Multi-document tests: ")
     # multidocumenttest = ["songtest1.txt", "songtest2.txt", "javatest1.java", "c++test1.cpp", "texttest2.txt"]
     multidocumenttesttxt = ["test_files/songtest1.txt", "test_files/songtest2.txt", "test_files/javatest1.java", "test_files/lorem.txt", "test_files/ipsum.txt"]
     #filetofingerprintobjects = compare_multiple_files_txt(multidocumenttesttxt, 10, 5, [], 0)
     #print_prototype_test(filetofingerprintobjects, [])
     multidocumenttestpy = ["test_files/test1.py", "test_files/test1copier.py"]
-    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 10, 5, [], 0)
-    get_most_important_matches_javpy(filetofingerprintobjects[0], filetofingerprintobjects[1], 10, 3, 20)
-    print_prototype_test(filetofingerprintobjects, [])
+    filetofingerprintobjects = compare_multiple_files_py(multidocumenttestpy, 5, 10, [], 0)
+    get_most_important_matches_javpy(filetofingerprintobjects[0], filetofingerprintobjects[1], 5, 2, 20)
+    #print_prototype_test(filetofingerprintobjects, [])
     mixtest = ["test_files/test1.py", "test_files/test1copier.py", "test_files/test1innocent.py", "test_files/test1same.py"]
     filetofingerprintobjects = compare_multiple_files_txt(mixtest, 10, 5, [], 0)
     #print_prototype_test(filetofingerprintobjects, [])
@@ -946,7 +952,7 @@ def main():
 
     print("Most important matches:")
     get_most_important_matches_multiple_files_txt(filetofingerprintobjects, 10, 3, 20)
-    """for importanttest in filetofingerprintobjects:
+    for importanttest in filetofingerprintobjects:
         print(importanttest.filename + " important matches: ")
         for matchingfile in list(importanttest.mostimportantmatches.keys()):
             print(matchingfile.filename + " important")

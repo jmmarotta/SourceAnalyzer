@@ -1,0 +1,92 @@
+Save file under different name to keep results before next run.
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py
+Percentage Similarity: 2.63%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py
+Percentage Similarity: 76.32%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py
+Percentage Similarity: 2.63%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py
+Percentage Similarity: 2.33%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py
+Percentage Similarity: 2.33%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py
+Percentage Similarity: 3.12%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py
+Percentage Similarity: 100.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py
+Percentage Similarity: 65.40%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py
+Percentage Similarity: 39.30%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py
+Percentage Similarity: 89.88%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py
+Percentage Similarity: 47.77%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1innocent.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1same.py
+Percentage Similarity: 0.00%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2.py
+Percentage Similarity: 50.83%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2copier.py
+Percentage Similarity: 44.58%
+
+Files Compared: C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test2innocent.py and C:/Users/dcaustin/Documents/GitHub/SourceAnalyzer/source/test_files/test1copier.py
+Percentage Similarity: 0.42%
+

@@ -1,8 +1,10 @@
 
-
+# This class helps the backend pass an object that allows frontend to easily work
+# with multiple properties of the fingerprints in an accessible manner
+# Properties: hash, position, and substring
 class Fingerprint:
 
-    def __init__(self, fp_hash, global_pos, substring):
+    def __init__(self, fp_hash, global_pos, substring=""):
         self.__fp_hash = fp_hash
         self.__global_pos = global_pos
         self.__substring = substring
