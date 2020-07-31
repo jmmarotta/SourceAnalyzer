@@ -167,6 +167,50 @@ class SourceAnalyzer:
         else:
             self.gather_most_fingerprints()
 
+    def report_output(self):
+
+        self.out_result.configure(state='normal')
+
+        total = len(self.f2fp)
+        if total != 0:
+
+            self.report_index1 = self.curr_index1 % total
+            self.report_index2 = self.curr_index2 % total
+
+            f = open("../SCAM-report.txt", "w")
+            print("Save file under different name to keep results before next run.\n\n", file=f)
+
+            for x in self.f2fp:
+                for y in self.f2fp:
+                    if self.report_index1 == self.report_index2:
+                        self.report_index2 = (self.report_index2 + 1) % total
+                        continue
+                    else:
+                        percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
+                        f.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
+                        f.write(str("\nPercentage Similarity: " + str(percentage)) + "\n\n")
+                        #f.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]]))))
+                        self.report_index2 = (self.report_index2 + 1 ) % total
+
+                self.report_index1 = (self.report_index1 + 1) % total
+
+            f.close()
+
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, "Full Report Generated!\n")
+
+            f.filename = fd.asksaveasfilename(initialdir="/", initialfile='SCAM-report.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
+            print(f.filename)
+
+        else:
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, "Must Compare files before generating report!")
+
+        self.out_result.configure(state='disabled')
+
+
+
+
     def gather_reg_fingerprints(self):
 
         self.out_text1.configure(state='normal')
@@ -655,14 +699,6 @@ class SourceAnalyzer:
     def donothing(self):
         x = 0
 
-    def report_output(self):
-        f = open("SCAM-report.txt", "w")
-        print("Save file under different name to keep results before next run.\n\n", file=f)
-        for x in self.f2fp:
-            print(" curr_index1: " + str(self.f2fp[self.curr_index1]) + ", curr_index2: " + str(self.f2fp[self.curr_index2]) + "\n", file=f)
-
-        f.close()
-
     def openHelp(self):
         helpSect = tk.Toplevel()
         helpSect.title("SCAM Help Manual")
@@ -795,7 +831,7 @@ class SourceAnalyzer:
         #self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
-        photo1 = tk.PhotoImage(file="source/SCAM.png")
+        photo1 = tk.PhotoImage(file="SCAM.png")
         smallerphoto1 = photo1.subsample(6,6)
         imglabel = tk.Label(self.button_panel, image=smallerphoto1)
         imglabel.image = smallerphoto1
@@ -983,7 +1019,7 @@ class SourceAnalyzer:
 def main():
     root = tk.Tk()
     root.geometry("1080x720")
-    root.title("Source Code Analyzer Machine")
+    root.title("Source Code Analyzing Machine")
     gui = SourceAnalyzer(root)
     root.mainloop()
 
