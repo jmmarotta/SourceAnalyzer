@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../')
 from tkinter import filedialog as fd
-from backend.interface import *
-from backend.analyzer import remove_comments
+from source.backend.interface import *
+from source.backend.analyzer import remove_comments
 import os
 import tkinter as tk
 
@@ -247,17 +247,17 @@ class SourceAnalyzer:
             #Python
             if self.language_var.get() == "Python":
                 res, num_common_fps = compare_files_py(file1, file2, k, w, self.file_name2.get(0, tk.END))
-                fp = get_fps_py(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()), self.file_name2.get(0, tk.END))
+                fp = get_fps_py(file1, file2, k, self.file_name2.get(0, tk.END))
 
             #Java
             elif self.language_var.get() == "Java":
                 res, num_common_fps = compare_files_java(file1, file2, k, w, self.file_name2.get(0, tk.END))
-                fp = get_fps_java(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()), self.file_name2.get(0, tk.END))
+                fp = get_fps_java(file1, file2, k, self.file_name2.get(0, tk.END))
 
             #Text
             else:
                 res, num_common_fps = compare_files_txt(file1, file2, k, w, self.file_name2.get(0, tk.END))
-                fp = get_fps_txt(file1, file2, k, w, num_common_fps, int(self.ignore_input.get()), self.file_name2.get(0, tk.END))
+                fp = get_fps_txt(file1, file2, k, self.file_name2.get(0, tk.END))
             
         else:
             fp = []
@@ -850,11 +850,11 @@ class SourceAnalyzer:
         #self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
-        photo1 = tk.PhotoImage(file="SCAM.png")
+        """photo1 = tk.PhotoImage(file="SCAM.png")
         smallerphoto1 = photo1.subsample(6,6)
         imglabel = tk.Label(self.button_panel, image=smallerphoto1)
         imglabel.image = smallerphoto1
-        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
+        imglabel.grid(row=0, column=0, columnspan=4, padx=100)"""
 
         """
         photo = Image.open("source/SCAM.png")

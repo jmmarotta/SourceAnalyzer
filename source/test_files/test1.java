@@ -9,6 +9,10 @@ public class AddTwoIntegers {
         System.out.println("Enter two numbers: " + first + " " + second);
         int sum = first + second;
 
+        if (first == 10) {
+            first = 20;
+        }
+
         System.out.println("The sum is: " + sum);
     }
 }
