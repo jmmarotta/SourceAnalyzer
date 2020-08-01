@@ -5,6 +5,7 @@ from source.backend.interface import *
 from source.backend.analyzer import remove_comments
 import os
 import tkinter as tk
+import time
 
 class SourceAnalyzer:
     '''
@@ -252,9 +253,9 @@ class SourceAnalyzer:
             self.report_index1 = self.curr_index1 % total
             self.report_index2 = self.curr_index2 % total
 
-            localreport = open("../SCAM-report.txt", "w")
+            current_time = time.strftime("%Y-%m-%d_%H-%M-%S")
 
-            print("Save file under different name to keep results before next run.\n", file=localreport)
+            localreport = fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report_' + current_time + '.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
 
             for x in self.f2fp:
                 for y in self.f2fp:
@@ -271,23 +272,7 @@ class SourceAnalyzer:
 
                 self.report_index1 = (self.report_index1 + 1) % total
 
-            #report_save = fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report1.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
-
             localreport.close()
-
-            localreport = open("../SCAM-report.txt")
-
-            #if report_save:
-            with open("../SCAM-report.txt") as f:
-                with fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*"))) as report_save:
-                    if report_save:
-                        for line in f:
-                            report_save.write(line)
-                            #report_save.write(localreport, 'a')
-                            #name = asksaveasfile(mode='w', defaultextension=".txt")
-                            #text2save = str(text.get(0.0, END))
-                            #report_save.write(str(localreport))
-                        report_save.close
 
             """                
             report.reportname.insert(tk.END, )            
