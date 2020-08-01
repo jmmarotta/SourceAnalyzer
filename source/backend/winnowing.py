@@ -1,6 +1,6 @@
 import sys
-from source.backend.analyzer import *
-from source.backend.file_to_fingerprint import filetofingerprint
+from backend.analyzer import *
+from backend.file_to_fingerprint import filetofingerprint
 
 
 # Algorithm taken from 'Winnowing: Local Algorithms for Document Fingerprinting'

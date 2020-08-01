@@ -1,6 +1,6 @@
-from source.backend.fingerprint import Fingerprint
-from source.backend.winnowing import *
-from source.backend.analyzer import *
+from backend.fingerprint import Fingerprint
+from backend.winnowing import *
+from backend.analyzer import *
 
 # Compares two text files to each other and returns the percent similarity
 def compare_files_txt(std1_filename, std2_filename, k, w, boilerplate_filenames):
