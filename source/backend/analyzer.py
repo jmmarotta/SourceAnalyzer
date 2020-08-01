@@ -194,34 +194,50 @@ class JavaAnalyzer:
         indent_next = False"""
         is_class = False
         index = 0
-
         try:
             for token in tokens:
+                replace = re.sub(" ", "", token.value).lower()
+                # print(token)
                 # if the previous token was 'class'
                 if is_class:
-                    parser_tokens.append(ParserTokenInfo(type(token), 'C', token.position, token.value))
+                    replace = '@'
                     is_class = False
+                # if the token is a keyword
+                elif type(token) == javalang.tokenizer.Keyword:
+                    # conditionals
+                    if token.value in ['if', 'else', 'switch', 'case']:
+                        replace = 'c'
+                    # if the value is 'class'
+                    elif token.value == "class":
+                        replace = ''
+                        is_class = True
+                # if separator
+                elif type(token) == javalang.tokenizer.Separator:
+                    # don't include
+                    replace = ''
+                # if modifier
+                elif type(token) == javalang.tokenizer.Modifier:
+                    # public
+                    if token.value == 'public':
+                        replace = 'u'
+                    # private
+                    elif token.value == 'private':
+                        replace = 'r'
+                    # static
+                    elif token.value == 'static':
+                        replace = 't'
                 # if the token is an identifier
                 elif type(token) == javalang.tokenizer.Identifier:
                     # if the value is a print
                     if token.value == 'print' or token.value == 'println':
-                        parser_tokens.append(ParserTokenInfo(type(token), 'P', token.position, token.value))
+                        replace = 'p'
                     # if the value is a string type
                     elif token.value == 'String':
-                        parser_tokens.append(ParserTokenInfo(type(token), 'S', token.position, token.value))
+                        replace = 's'
                     else:
-                        parser_tokens.append(ParserTokenInfo(type(token), 'I', token.position, token.value))
-                # if the token is a string, get rid of whitespace
-                elif type(token) == javalang.tokenizer.String:
-                    parser_tokens.append(ParserTokenInfo(type(token), re.sub(" ", "", token.value), token.position,
-                                                         re.sub(" ", "", token.value)))
-                # if the value is 'class'
-                elif token.value == "class":
-                    parser_tokens.append(ParserTokenInfo(type(token), '', token.position, token.value))
-                    is_class = True
+                        replace = 'i'
                 # else just return the original value
-                else:
-                    parser_tokens.append(ParserTokenInfo(type(token), token.value, token.position, token.value))
+                parser_tokens.append(ParserTokenInfo(type(token), replace, token.position, re.sub(" ", "", token.value)))
                 index += 1
         except Exception:
             pass
