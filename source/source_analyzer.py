@@ -262,11 +262,12 @@ class SourceAnalyzer:
                         self.report_index2 = (self.report_index2 + 1) % total
                         continue
                     else:
-                        percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
-                        localreport.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
-                        localreport.write(str("\nPercentage Similarity: " + str(percentage)) + "\n\n")
-                        #f.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]]))))
-                        self.report_index2 = (self.report_index2 + 1 ) % total
+                        if self.f2fp[self.curr_index2] in self.f2fp[self.curr_index1].similarto:
+                            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
+                            localreport.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
+                            localreport.write(str("\nPercentage Similarity: " + str(percentage)) + "\n\n")
+                            #f.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]]))))
+                            self.report_index2 = (self.report_index2 + 1 ) % total
 
                 self.report_index1 = (self.report_index1 + 1) % total
 
@@ -308,9 +309,6 @@ class SourceAnalyzer:
             self.out_result.insert(tk.END, "Must Compare files before generating report!")
 
         self.out_result.configure(state='disabled')
-
-
-
 
     def gather_reg_fingerprints(self):
         '''
@@ -563,7 +561,6 @@ class SourceAnalyzer:
                 self.curr_index1 = 0
             else:
                 self.curr_index1 = 1
-        
 
         self.out_result.configure(state='disabled')
         self.get_output()
@@ -868,8 +865,7 @@ class SourceAnalyzer:
         "\n K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored." \
         "\nWindow Size is the winnow size used by the algorithm." \
         "\nIgnore Count determines fingerprint threshold for commonality." \
-        "\nThis program was orginally built for python software, thus \"*.py\" files are the most likely to produce the best results.\n\n"\
-        "Number of fingerprints shown at the bottom does not reflect the results of the user's search.\nThis number is calculated via a separate in-depth search specifically for the side-by-side comparison, and is also limited by what fingerprints are viewable. It can be larger or smaller than the reported number."
+        "\nThis program was orginally built for python software, thus \"*.py\" files are the most likely to produce the best results.\n\n"
         tk.Label(helpSect, text=inputMessage).pack()
         tk.Button(helpSect, text="DONE", command=helpSect.destroy, pady= 25 ).pack()
 
