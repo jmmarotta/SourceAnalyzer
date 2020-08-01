@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../')
 from tkinter import filedialog as fd
+from PIL import Image, ImageTk
 from backend.interface import *
 from backend.analyzer import remove_comments
 import os
@@ -712,21 +713,53 @@ class SourceAnalyzer:
         self.out_text1.yview(*args)
         self.out_text2.yview(*args)
 
-    def donothing(self):
-        x = 0
-
     def openHelp(self):
-        helpSect = tk.Toplevel()
-        helpSect.title("SCAM Help Manual")
-        inputMessage = "Welcome to the SCAM Help Manual! Our tool, the Source Code Analyzing Machine, is used to analyze similarity in source code for the purpose of plagiarism detection."\
-        "It supports the languages of python and java, but it can also analyze raw text which can be used for (although may not be as robust) other currently unsupported languages. " \
-        "\n\n General Starting Info:  "\
-        "\n K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored." \
-        "\nWindow Size is the winnow size used by the algorithm." \
-        "\nIgnore Count determines fingerprint threshold for commonality." \
-        "\nThis program was orginally built for python software, thus \"*.py\" files are the most likely to produce the best results.\n\n"
-        tk.Label(helpSect, text=inputMessage).pack()
-        tk.Button(helpSect, text="DONE", command=helpSect.destroy, pady= 25 ).pack()
+        self.helpSect = tk.Toplevel()#height=800, width=600)
+        self.helpSect.title("SCAM Help Manual")
+        self.helpSect.geometry("800x600")
+
+        self.hm_lbl = tk.Label(self.helpSect, text="Welcome to the SCAM help manual!", )
+        self.hm_lbl.pack(pady = 15)
+
+        self.hm_main = tk.Text(self.helpSect, height='30', width='80', wrap='word')
+        self.hm_main.pack()
+        self.hm_main.configure(state='normal')
+
+        self.hm_scroll= tk.Scrollbar(self.helpSect, command=self.hm_main.yview)
+        self.hm_main['yscrollcommand'] = self.hm_scroll.set
+
+        self.hm_main.insert(tk.INSERT,
+"""\n\tOur tool, the Source Code Analyzing Machine, is used to analyze similarity in source code for the purpose of plagiarism detection. It supports the lang- uages of Python and Java, but it can also analyze raw text which can be used for (although may not be as robust) other currently unsupported languages. 
+   
+                             
+Here is some general information to start off...
+                                     
+    -Ignore Count determines fingerprint threshold for commonality.
+    -K-grams (noise threshold) impacts sensitivity. 
+    -Window Size is the winnow size used by the algorithm." 
+    -Fingerprints size < k will be ignored.
+    -Block Size is the number of fingerprints required be to be considered 
+        a most important match block
+    -Offset is the allowable distance between them for most important matches
+    -Number of fingerprints shown at the bottom does not reflect the results 
+        of the user's search. This number is calculated via a separate in-depth
+        search specifically for the side-by-side comparison, and is also limited 
+        by what fingerprints are viewable. It can be larger or smaller than the 
+        reported number.
+
+
+This program was originally built for python software, thus \"*.py\" files are the most likely to produce the best results. 
+\n\n\t\t\t***SCROLL DOWN FOR FUTHER INFO***\n\n
+""")
+        self.hm_file = open("source/manual.txt", 'r', encoding="utf-8").read()
+
+        self.hm_main.insert(tk.INSERT, self.hm_file)
+        self.hm_main.configure(state='disable')
+
+        self.donebtn = tk.Button(self.helpSect, text="DONE", command=self.helpSect.destroy).pack()
+
+        self.helpSect.mainloop()
+
 
     def __init__(self, master):
         self.master = master
@@ -850,20 +883,21 @@ class SourceAnalyzer:
         #self.file_filter = tk.Text(self.button_panel, height=1, width=30, state='disabled')
         #self.file_filter.grid(row=0, column=1, columnspan=4)
 
-        photo1 = tk.PhotoImage(file="SCAM.png")
-        smallerphoto1 = photo1.subsample(6,6)
-        imglabel = tk.Label(self.button_panel, image=smallerphoto1)
-        imglabel.image = smallerphoto1
-        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
-
         """
-        photo = Image.open("source/SCAM.png")
-        smallerphoto = photo.resize((round(photo.size[0] * .1), round(photo.size[1] * .1)));
-        render = ImageTk.PhotoImage(smallerphoto)
+        logo = tk.PhotoImage(file="source/SCAM.png")
+        smallerlogo = logo.subsample(6,6)
+        imglabel = tk.Label(self.button_panel, image=smallerlogo)
+        imglabel.image = smallerlogo
+        imglabel.grid(row=0, column=0, columnspan=4, padx=100)
+        """
+
+        logo = Image.open("source/SCAM.png")
+        smallerlogo = logo.resize((round(logo.size[0] * .1), round(logo.size[1] * .1)));
+        render = ImageTk.PhotoImage(smallerlogo)
         img = tk.Label(self.button_panel, image=render)
         img.image = render
         img.grid(row=0, column=0, columnspan=4)
-        """
+
 
         #self.k_desc_label = tk.Label(self.button_panel, text = "K (noise threshold) impacts sensitivity. Fingerprints size < k will be ignored.\nWindow Size is the winnow size used by the algorithm.\nIgnore Count determines fingerprint threshold for commonality.\nPython files should be able to be compiled for the best results.")
         #self.k_desc_label.grid(row=1, column=0, columnspan=4)
