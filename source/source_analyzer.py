@@ -262,12 +262,12 @@ class SourceAnalyzer:
                         self.report_index2 = (self.report_index2 + 1) % total
                         continue
                     else:
-                        if self.f2fp[self.curr_index2] in self.f2fp[self.curr_index1].similarto:
+                        if self.f2fp[self.report_index2] in self.f2fp[self.report_index1].similarto:
                             percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
                             localreport.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
-                            localreport.write(str("\nPercentage Similarity: " + str(percentage)) + "\n\n")
-                            #f.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]]))))
-                            self.report_index2 = (self.report_index2 + 1 ) % total
+                            localreport.write(str("\nPercentage Similarity: " + str(percentage)))
+                            localreport.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]])) + "\n\n"))
+                        self.report_index2 = (self.report_index2 + 1 ) % total
 
                 self.report_index1 = (self.report_index1 + 1) % total
 
@@ -392,8 +392,8 @@ class SourceAnalyzer:
                     self.out_text1.tag_add("match" + str(fp_track), new_tag1, str(new_tag1) + "+" + str(len(fingerprint[0][i].substring)) + "c")
                 else:
                     increment_fp = False
-                    print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)
-                    print("COULD NOT FIND")
+                    '''print("1 - " + str(fp_track + 1) + ": " + fingerprint[0][i].substring)'''
+                    '''print("COULD NOT FIND")'''
 
             #Parse through all substrings in File 2 for a given fingerprint, tagging them for this fingerprint
             for i in range(len(fingerprint[1])):
@@ -405,8 +405,8 @@ class SourceAnalyzer:
                     index_track2 = new_tag2
                 else:
                     increment_fp = False
-                    print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)
-                    print("COULD NOT FIND")
+                    '''print("2 - " + str(fp_track + 1) + ": " + fingerprint[1][i].substring)'''
+                    '''print("COULD NOT FIND")'''
 
             if increment_fp:
                 fp_track += 1
@@ -689,6 +689,9 @@ class SourceAnalyzer:
         self.out_text2.configure(state='disabled')
 
     def show_most_fp(self):
+        '''
+        Responsible for showing most important fingerprints on screen, whether highlighting all of them, or just the first one.
+        '''
 
         self.out_text1.configure(state='normal')
         self.out_text2.configure(state='normal')
@@ -708,16 +711,19 @@ class SourceAnalyzer:
             if len(self.most_fp) > 0:
                 self.cur_fp = 1
                 
+                #Set others to white background
                 for i in range(len(self.most_fp)):
                     self.out_text1.tag_config("most" + str(i), background='white')
                     self.out_text2.tag_config("most" + str(i), background='white')
 
+                #Raise priority of and highlight first fingerprint
                 self.out_text1.tag_config("most0", background='green')
                 self.out_text2.tag_config("most0", background='green')
 
                 self.out_text1.tag_raise("most0")
                 self.out_text2.tag_raise("most0")
 
+                #Automatically scroll to it
                 self.out_text1.see(self.out_text1.tag_ranges("most0")[0])
                 self.out_text2.see(self.out_text2.tag_ranges("most0")[0])
                 
@@ -729,6 +735,11 @@ class SourceAnalyzer:
         self.out_text2.configure(state='disabled')
 
     def next_fp(self):
+        '''
+        Responsible for incrementing to the next fingerprint.
+        '''
+
+        #Checks whether working with most important or regular fingerprints
         if self.fp_type.get() == 0:
             if self.view_var.get() == 0:
                 if self.cur_fp < self.max_fp:
@@ -1110,7 +1121,7 @@ class SourceAnalyzer:
         self.fp_menu1 = tk.Radiobutton(self.button_panel, text="All Fingerprints", variable=self.fp_type, value=0)
         self.fp_menu1.grid(row=9, column=0, padx=5, pady=(10,5), columnspan=2)
         self.fp_menu1.config(font=(None, 9))
-        self.fp_menu2 = tk.Radiobutton(self.button_panel, text="Most Important", variable=self.fp_type, value=1)
+        self.fp_menu2 = tk.Radiobutton(self.button_panel, text="Important Blocks", variable=self.fp_type, value=1)
         self.fp_menu2.grid(row=9, column=2, padx=(0,10), pady=(10,5), columnspan=2)
         self.fp_menu2.config(font=(None, 9))
 
