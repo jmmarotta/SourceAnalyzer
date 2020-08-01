@@ -17,78 +17,86 @@ class SourceAnalyzer:
         File Selection:
         ----------------
             open_file1:
-                Responsible for student file addition
+                    Responsible for student file addition
             clear_file1:
-                Responsible for clearing student files
+                    Responsible for clearing student files
             open_file2:
-                Responsible for boilerplate file addition
+                    Responsible for boilerplate file addition
             clear_file2:
-                Responsible for clearing boilerplate files
+                    Responsible for clearing boilerplate files
         
         Backend Interface:
         ----------------
             export_files:
-                Sends student/boilerplate files to and nitializes filetofingerprint objects from the backend, 
-                ensures more than one student file is sent, and that boilerplate files can't be identical to student files.
+                    Sends student/boilerplate files to and nitializes filetofingerprint objects from the backend, 
+                    ensures more than one student file is sent, and that boilerplate files can't be identical to student files.
+            get_output:
+                    Responsible for printing at-a-glance results between two files, and issues warnings if incorrect analyzer is used.
             gather_reg_fingerprints:
-                With two provided filetofingerprint objects (based on tracking indexes in a class variable), and other user input data
-                (k, window size, ignore count), an in-depth comparison of the two files with eachother is done on the backend via
-                 compare_files and get_fps functions. The documents are output to the GUI's side-by-side textboxes, and that output
-                 is invisibly tagged with the locations of every found fingerprint (done searching for provided substrings). The tags
-                 follow the format 'match#' with # being a number from 0 to (max fingerprints). This function also establishes the
-                 number of fingerprints in a given comparison, as well as initializes the current fingerprint to 1.
+                    With two provided filetofingerprint objects (based on tracking indexes in a class variable), and other user input data
+                    (k, window size, ignore count), an in-depth comparison of the two files with eachother is done on the backend via
+                    compare_files and get_fps functions. The documents are output to the GUI's side-by-side textboxes, and that output
+                    is invisibly tagged with the locations of every found fingerprint (done searching for provided substrings). The tags
+                    follow the format 'match#' with # being a number from 0 to (max fingerprints). This function also establishes the
+                    number of fingerprints in a given comparison, as well as initializes the current fingerprint to 1.
             gather_most_fingerprints:
-                Very similar to gather_reg_fingerprints, only using backend functions pertaining specifically to most_important_fingerprints.
-                These matches are tagged using 'most#', and differs slightly in how the returned list/tuple structure is parsed.
+                    Very similar to gather_reg_fingerprints, only using backend functions pertaining specifically to most_important_fingerprints.
+                    These matches are tagged using 'most#', and differs slightly in how the returned list/tuple structure is parsed.
 
         File Navigation:
         ----------------
             next_file1:
-                Responsible for increasing the value self.curr_index1, which keeps track of which file is currently being compared on the left.
+                    Responsible for increasing the value self.curr_index1, which keeps track of which file is currently being compared on the left.
             next_file2:
-                Responsible for increasing the value self.curr_index2, which keeps track of which file is being compared to on the right.
+                    Responsible for increasing the value self.curr_index2, which keeps track of which file is being compared to on the right.
             prev_file1:
-                Responsible for decreasing self.curr_index1
+                    Responsible for decreasing self.curr_index1
             prev_file2:
-                Responsible for decreasing self.curr_index2
+                    Responsible for decreasing self.curr_index2
 
         Fingerprint Display:
         ----------------
             show_fp:
-                Called when 'View All' is toggled in order to update which fingerprints are being shown. Decides which version of show_fp to
-                run based on what type of fingerprint is being displayed.
+                    Called when 'View All' is toggled in order to update which fingerprints are being shown. Decides which version of show_fp to
+                    run based on what type of fingerprint is being displayed.
             show_reg_fp:
-                Depending on whether 'View All' is selected, either highlights every tagged fingerprint, or highlights the first fingerprint and
-                initializes a class variable to track the current fingerprint. Note that the textbox is changed to 'normal' at the beginning and 'disabled' at the
-                end of the function, to ensure users can't edit information inside the textboxes.
+                    Depending on whether 'View All' is selected, either highlights every tagged fingerprint, or highlights the first fingerprint and
+                    initializes a class variable to track the current fingerprint. Note that the textbox is changed to 'normal' at the beginning and 'disabled' at the
+                    end of the function, to ensure users can't edit information inside the textboxes.
             show_most_fp:
-                Very similar to show_reg_fp, only instead of highlighting the 'match#' tags, it highlights the 'most#' tags.
+                    Very similar to show_reg_fp, only instead of highlighting the 'match#' tags, it highlights the 'most#' tags.
         
         Fingerprint Navigation:
         ----------------
             next_fp:
-                Responsible for incrementing to and highlighting the next fingerprint. Due to issues with overlapping fingerprints, the current tag must be
-                raised in rank to ensure it shows up in full, hence this function must lower the previous tag, raise this new one, and highlight it yellow. This
-                function contains the code for both the most_important and regular fingerprints, the only difference being the name of the tags.
+                    Responsible for incrementing to and highlighting the next fingerprint. Due to issues with overlapping fingerprints, the current tag must be
+                    raised in rank to ensure it shows up in full, hence this function must lower the previous tag, raise this new one, and highlight it yellow. This
+                    function contains the code for both the most_important and regular fingerprints, the only difference being the name of the tags.
             last_fp:
-                Very similar to next_fp, only responsible for going to the previous fingerprint.
+                    Very similar to next_fp, only responsible for going to the previous fingerprint.
 
         Other Functions:
         ----------------
             clear_output:
-                Runs when the Clear Output button is pressed, but also immediately once the Compare button is pressed. Resets all class variables and
-                clears text output on screen.
+                    Runs when the Clear Output button is pressed, but also immediately once the Compare button is pressed. Resets all class variables and
+                    clears text output on screen.
             mult_yview:
-                Allows the scroll bars on the side-by-side text boxes to move in sync (when clicked and dragged)
+                    Allows the scroll bars on the side-by-side text boxes to move in sync (when clicked and dragged)
+            report:
+                    Responsible for generating the output report full of at-a-glance results.
+            open_help:
+                    Responsible for the help menu in the toolbar.
             
         Main Class:
         ----------------
             __init__:
-                Initializes class and runs create_widgets, which builds the GUI itself.
+                    Initializes class and runs create_widgets, which builds the GUI itself.
             create_widgets:
-                Responsible for creating and laying all the actual GUI elements: Frames, Buttons, Text-Boxes, etc. Also creates class variables.
+                    Responsible for creating and laying all the actual GUI elements: Frames, Buttons, Text-Boxes, etc. Also creates class variables.
 
     '''
+
+#File Selection
 
     def open_file1(self):
         '''
@@ -133,6 +141,8 @@ class SourceAnalyzer:
         '''
         self.file2 = []
         self.file_name2.delete(0, tk.END)
+
+#Backend Interface
 
     def export_files(self):
         '''
@@ -242,58 +252,6 @@ class SourceAnalyzer:
             self.gather_reg_fingerprints()
         else:
             self.gather_most_fingerprints()
-
-    def report(self):
-
-        self.out_result.configure(state='normal')
-
-        total = len(self.f2fp)
-        if total != 0:
-
-            self.report_index1 = self.curr_index1 % total
-            self.report_index2 = self.curr_index2 % total
-
-            current_time = time.strftime("%Y-%m-%d_%H-%M-%S")
-
-            localreport = fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report_' + current_time + '.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
-
-            for x in self.f2fp:
-                for y in self.f2fp:
-                    if self.report_index1 == self.report_index2:
-                        self.report_index2 = (self.report_index2 + 1) % total
-                        continue
-                    else:
-                        if self.f2fp[self.report_index2] in self.f2fp[self.report_index1].similarto:
-                            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
-                            localreport.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
-                            localreport.write(str("\nPercentage Similarity: " + str(percentage)))
-                            localreport.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]])) + "\n\n"))
-                        self.report_index2 = (self.report_index2 + 1 ) % total
-
-                self.report_index1 = (self.report_index1 + 1) % total
-
-            localreport.close()
-
-            """                
-            report.reportname.insert(tk.END, )            
-            def clear_file1(self):
-                self.file1 = []
-                self.file_name1.delete(0, tk.END)
-            """
-            #localreport.close()
-
-
-            self.out_result.delete('1.0', tk.END)
-            self.out_result.insert(tk.END, "Full Report Generated!\n")
-
-            print(localreport)
-
-
-        else:
-            self.out_result.delete('1.0', tk.END)
-            self.out_result.insert(tk.END, "Must Compare files before generating report!")
-
-        self.out_result.configure(state='disabled')
 
     def gather_reg_fingerprints(self):
         '''
@@ -528,6 +486,8 @@ class SourceAnalyzer:
         #Show fingerprints
         self.show_most_fp()
 
+#File Navigation
+
     def next_file1(self):
         '''
         Responsible for changing to the next file currently being analyzed on the left of the side-by-side
@@ -615,6 +575,8 @@ class SourceAnalyzer:
 
         self.out_result.configure(state='disabled')
         self.get_output()
+
+#Fingerprint Display
 
     def show_fp(self):
         '''
@@ -719,6 +681,8 @@ class SourceAnalyzer:
         self.out_text1.configure(state='disabled')
         self.out_text2.configure(state='disabled')
 
+#Fingerprint Navigation
+
     def next_fp(self):
         '''
         Responsible for incrementing to the next fingerprint.
@@ -726,99 +690,143 @@ class SourceAnalyzer:
 
         #Checks whether working with most important or regular fingerprints
         if self.fp_type.get() == 0:
+
+            #Checks to ensure view all isn't active
             if self.view_var.get() == 0:
+
+                #Checks to ensure there are fingerprints remaining
                 if self.cur_fp < self.max_fp:
 
+                    #Set others to white background
                     for i in range(self.max_fp):
                         self.out_text1.tag_config("match" + str(i), background='white')
                         self.out_text2.tag_config("match" + str(i), background='white')
 
+                    #Lower priority of prior fingerprint
                     self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
                     self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
 
+                    #Raise priority of and highlight new fingerprint
                     self.out_text1.tag_config("match" + str(self.cur_fp), background='yellow')
                     self.out_text2.tag_config("match" + str(self.cur_fp), background='yellow')
 
                     self.out_text1.tag_raise("match" + str(self.cur_fp))
                     self.out_text2.tag_raise("match" + str(self.cur_fp))
 
+                    #Autoscrolling
                     self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp))[1])
                     self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp))[1])
 
-                    
+                    #Increment current fingerprint
                     self.cur_fp = self.cur_fp + 1
                     self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
         else:
+
+            #Checks to ensure view all isn't active
             if self.view_var.get() == 0:
+
+                #Checks to ensure there are fingerprints remaining
                 if self.cur_fp < self.max_fp:
 
+                    #Set others to white background
                     for i in range(self.max_fp):
                         self.out_text1.tag_config("most" + str(i), background='white')
                         self.out_text2.tag_config("most" + str(i), background='white')
 
+                    #Lower priority of prior fingerprint
                     self.out_text1.tag_lower("most" + str(self.cur_fp - 1))
                     self.out_text2.tag_lower("most" + str(self.cur_fp - 1))
 
+                    #Raise priority of and highlight new fingerprint
                     self.out_text1.tag_config("most" + str(self.cur_fp), background='green')
                     self.out_text2.tag_config("most" + str(self.cur_fp), background='green')
 
                     self.out_text1.tag_raise("most" + str(self.cur_fp))
                     self.out_text2.tag_raise("most" + str(self.cur_fp))
 
+                    #Autoscrolling
                     self.out_text1.see(self.out_text1.tag_ranges("most" + str(self.cur_fp))[1])
                     self.out_text2.see(self.out_text2.tag_ranges("most" + str(self.cur_fp))[1])
 
-                    
+                    #Increment current fingerprint
                     self.cur_fp = self.cur_fp + 1
                     self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
     def last_fp(self):
+        '''
+        Responsible for decrementing to the previous fingerprint.
+        '''
+
+        #Checks whether working with most important or regular fingerprints
         if self.fp_type.get() == 0:
+
+            #Checks to ensure view all isn't active
             if self.view_var.get() == 0:
+
+                #Checks to ensure there are fingerprints remaining
                 if self.cur_fp > 1:
 
+                    #Set others to white background
                     for i in range(self.max_fp):
                         self.out_text1.tag_config("match" + str(i), background='white')
                         self.out_text2.tag_config("match" + str(i), background='white')
 
+                    #Lower priority of prior fingerprint
                     self.out_text1.tag_lower("match" + str(self.cur_fp - 1))
                     self.out_text2.tag_lower("match" + str(self.cur_fp - 1))
 
+                    #Raise priority of and highlight new fingerprint
                     self.out_text1.tag_config("match" + str(self.cur_fp - 2), background='yellow')
                     self.out_text2.tag_config("match" + str(self.cur_fp - 2), background='yellow')
 
                     self.out_text1.tag_raise("match" + str(self.cur_fp - 2))
                     self.out_text2.tag_raise("match" + str(self.cur_fp - 2))
 
+                    #Autoscrolling
                     self.out_text1.see(self.out_text1.tag_ranges("match" + str(self.cur_fp - 2))[0])
                     self.out_text2.see(self.out_text2.tag_ranges("match" + str(self.cur_fp - 2))[0])
                     
+                    #Decrement current fingerprint
                     self.cur_fp = self.cur_fp - 1
                     self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
         else:
+
+            #Checks to ensure view all isn't active
             if self.view_var.get() == 0:
+
+                #Checks to ensure there are fingerprints remaining
                 if self.cur_fp > 1:
 
+                    #Set others to white background
                     for i in range(self.max_fp):
                         self.out_text1.tag_config("most" + str(i), background='white')
                         self.out_text2.tag_config("most" + str(i), background='white')
 
+                    #Lower priority of prior fingerprint
                     self.out_text1.tag_lower("most" + str(self.cur_fp - 1))
                     self.out_text2.tag_lower("most" + str(self.cur_fp - 1))
 
+                    #Raise priority of and highlight new fingerprint
                     self.out_text1.tag_config("most" + str(self.cur_fp - 2), background='green')
                     self.out_text2.tag_config("most" + str(self.cur_fp - 2), background='green')
 
                     self.out_text1.tag_raise("most" + str(self.cur_fp - 2))
                     self.out_text2.tag_raise("most" + str(self.cur_fp - 2))
 
+                    #Autoscrolling
                     self.out_text1.see(self.out_text1.tag_ranges("most" + str(self.cur_fp - 2))[0])
                     self.out_text2.see(self.out_text2.tag_ranges("most" + str(self.cur_fp - 2))[0])
                     
+                    #Decrement current fingerprint
                     self.cur_fp = self.cur_fp - 1
                     self.current_fp['text'] = "Current: " + str(self.cur_fp) + "/" + str(self.max_fp)
 
+#Misc
+
     def clear_output(self):
+        '''
+        Responsible for clearing the output boxes on the GUI, as well as resetting class variables to default/empty states.
+        '''
 
         self.out_result.configure(state='normal')
         self.out_text1.configure(state='normal')
@@ -849,8 +857,66 @@ class SourceAnalyzer:
         self.max_fp = 0
 
     def mult_yview(self, *args):
+        '''
+        Allows both scroll bars in the side-by-side output to move at the same time.
+        '''
         self.out_text1.yview(*args)
         self.out_text2.yview(*args)
+
+    def report(self):
+        '''
+        Responsible for generating the output report full of at-a-glance results.
+        '''
+
+        self.out_result.configure(state='normal')
+
+        total = len(self.f2fp)
+        if total != 0:
+
+            self.report_index1 = self.curr_index1 % total
+            self.report_index2 = self.curr_index2 % total
+
+            current_time = time.strftime("%Y-%m-%d_%H-%M-%S")
+
+            localreport = fd.asksaveasfile(mode='w', initialdir=os.getcwd(), initialfile='SCAM-report_' + current_time + '.txt', title="Save SCAM report file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
+
+            for x in self.f2fp:
+                for y in self.f2fp:
+                    if self.report_index1 == self.report_index2:
+                        self.report_index2 = (self.report_index2 + 1) % total
+                        continue
+                    else:
+                        if self.f2fp[self.report_index2] in self.f2fp[self.report_index1].similarto:
+                            percentage = "{:.2%}".format(get_similarity(self.f2fp[self.report_index1], self.f2fp[self.report_index2]))
+                            localreport.write(str("Files Compared: " + str(self.f2fp[self.report_index1].filename) + " and " + str(self.f2fp[self.report_index2].filename)))
+                            localreport.write(str("\nPercentage Similarity: " + str(percentage)))
+                            localreport.write(str("\nCommon Fingerprints: " + str(len(self.f2fp[self.report_index1].similarto[self.f2fp[self.report_index2]])) + "\n\n"))
+                        self.report_index2 = (self.report_index2 + 1 ) % total
+
+                self.report_index1 = (self.report_index1 + 1) % total
+
+            localreport.close()
+
+            """                
+            report.reportname.insert(tk.END, )            
+            def clear_file1(self):
+                self.file1 = []
+                self.file_name1.delete(0, tk.END)
+            """
+            #localreport.close()
+
+
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, "Full Report Generated!\n")
+
+            print(localreport)
+
+
+        else:
+            self.out_result.delete('1.0', tk.END)
+            self.out_result.insert(tk.END, "Must Compare files before generating report!")
+
+        self.out_result.configure(state='disabled')
 
     def openHelp(self):
         helpSect = tk.Toplevel()
@@ -921,6 +987,8 @@ class SourceAnalyzer:
 
         self.very_bottom = tk.Frame(self.output_frame, width=0, height=5)
         self.very_bottom.pack(expand=False, fill='none', pady=5, side="bottom")
+
+    #Tools Menu
 
         self.toolsmenu = tk.Menu(self.menubar, tearoff=0)
         self.toolsmenu.add_command(label="Generate Report", command=self.report)
