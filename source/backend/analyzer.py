@@ -3,6 +3,8 @@ import string
 import tokenize
 import collections
 import javalang
+import clang.cindex
+from pycparser.c_lexer import CLexer
 
 # These classes and functions are used to analyze the different types of files
 # all of these classes have parsed code and the read code. These functions also
@@ -261,18 +263,204 @@ class JavaAnalyzer:
     # get the code given a k and position
     # the text has comments removed
     def get_code_from_parsed(self, k, pos):
-        index = 0
-        for token in self._parser_tokens:
-            if index < pos:
-                pos += len(token.old_string) - len(token.string)
-                index += len(token.old_string)
-            elif pos <= index < pos + k:
-                k += len(token.old_string) - len(token.string)
-                index += len(token.old_string)
-            else:
-                break
+        return code_from_parsed(k, pos, self._parser_tokens, self._code)
 
-        return get_java_substring(pos, k, self._code)
+
+class CPPAnalyzer:
+    # initialize the tokens and parsed code
+    def __init__(self, source, filename):
+        source.seek(0)
+        self._code = source.read()
+        self._code = remove_comments(self._code)
+        idx = clang.cindex.Index.create()
+        tu = idx.parse(filename, args=['-std=c++11'], unsaved_files=[(filename, self._code)], options=0)
+        self._parser_tokens = self.__init_tokens(tu)
+        self._parsed_code = self.__get_parsed_code(self._parser_tokens)
+
+    def __init_tokens(self, tokens):
+        ParserTokenInfo = collections.namedtuple("ParserTokenInfo", ['type', 'string', 'position',
+                                                                     'old_string'], rename=False, defaults=[None])
+        parser_tokens = []
+        is_class = False
+        index = 0
+        try:
+            for token in tokens:
+                replace = re.sub(" ", "", token.value).lower()
+                # print(token)
+                # if the previous token was 'class'
+                if is_class:
+                    replace = '@'
+                    is_class = False
+                # if the token is a keyword
+                elif token.kind == clang.cindex.TokenKind.from_value(1):
+                    # conditionals
+                    if token.value in ['if', 'else', 'switch', 'case']:
+                        replace = 'c'
+                    # if the value is 'class'
+                    elif token.value == "class":
+                        replace = ''
+                        is_class = True
+                    # public
+                    elif token.value == 'public':
+                        replace = 'u'
+                    # private
+                    elif token.value == 'private':
+                        replace = 'r'
+                    # static
+                    elif token.value == 'static':
+                        replace = 't'
+                # if separator
+                elif token.kind == clang.cindex.TokenKind.from_value(0):
+                    # don't include
+                    replace = ''
+                # if the token is an identifier
+                elif token.kind == clang.cindex.TokenKind.from_value(2):
+                    # if the value is a print
+                    if token.value == 'print' or token.value == 'println':
+                        replace = 'p'
+                    # if the value is a string type
+                    elif token.value == 'String':
+                        replace = 's'
+                    else:
+                        replace = 'i'
+                # else just return the original value
+                parser_tokens.append(
+                    ParserTokenInfo(type(token), replace, token.position, re.sub(" ", "", token.value)))
+                index += 1
+        except Exception:
+            pass
+        return parser_tokens
+
+    # get the parsed code by iterating through parser tokens
+    def __get_parsed_code(self, parser_tokens):
+        parsed_code = ""
+        for token in parser_tokens:
+            parsed_code += token.string
+        return parsed_code
+
+    @property
+    def parsed_code(self):
+        return self._parsed_code
+
+    @property
+    def code(self):
+        return self._code
+
+    # get the code given a k and position
+    # the text has comments removed
+    def get_code_from_parsed(self, k, pos):
+        return code_from_parsed(k, pos, self._parser_tokens, self._code)
+
+
+class CAnalyzer:
+    # initialize the tokens and parsed code
+    def __init__(self, source, filename):
+        source.seek(0)
+        self._code = source.read()
+        self._code = remove_comments(self._code)
+        clex = CLexer(self.error_func, self.on_lbrace_func, self.on_lbrace_func, self.type_lookup_func)
+        clex.build(optimize=False)
+        clex.input(self._code)
+        tokens = list(iter(clex.token, None))
+        self._parser_tokens = self.__init_tokens(tokens)
+        self._parsed_code = self.__get_parsed_code(self._parser_tokens)
+
+    def __init_tokens(self, tokens):
+        ParserTokenInfo = collections.namedtuple("ParserTokenInfo", ['type', 'string', 'position',
+                                                                     'old_string'], rename=False, defaults=[None])
+        parser_tokens = []
+        is_struct = False
+        index = 0
+        try:
+            for token in tokens:
+                replace = re.sub(" ", "", token.value).lower()
+                # print(token)
+                # if the previous token was 'class'
+                if is_struct:
+                    replace = '@'
+                    is_struct = False
+                # if the token is a keyword
+                elif token.type == "IF" or token.type == "ELSE" or token.type == "SWITCH" or token.type == "CASE":
+                    # conditionals
+                    if token.value in ['if', 'else', 'switch', 'case']:
+                        replace = 'c'
+                elif token.type == "STRUCT":
+                    replace = ''
+                    is_struct = True
+                    # static
+                elif token.type == "STATIC":
+                    replace = 't'
+                # if separator
+                elif token.type == clang.cindex.TokenKind.from_value(0):
+                    # don't include
+                    replace = ''
+                # if the token is an identifier
+                elif token.type == "ID":
+                    # if the value is a print
+                    if token.value == 'printf':
+                        replace = 'p'
+                    # if the value is a string type
+                    elif token.value == 'String':
+                        replace = 's'
+                    else:
+                        replace = 'i'
+                # else just return the original value
+                parser_tokens.append(
+                    ParserTokenInfo(type(token), replace, token.position, re.sub(" ", "", token.value)))
+                index += 1
+        except Exception:
+            pass
+        return parser_tokens
+        print(tokens)
+
+    # get the parsed code by iterating through parser tokens
+    def __get_parsed_code(self, parser_tokens):
+        parsed_code = ""
+        for token in parser_tokens:
+            parsed_code += token.string
+        return parsed_code
+
+    @property
+    def parsed_code(self):
+        return self._parsed_code
+
+    @property
+    def code(self):
+        return self._code
+
+    # get the code given a k and position
+    # the text has comments removed
+    def get_code_from_parsed(self, k, pos):
+        return code_from_parsed(k, pos, self._parser_tokens, self._code)
+
+    def type_lookup_func(self, typ):
+        if typ.startswith('mytype'):
+            return True
+        else:
+            return False
+
+    def on_lbrace_func(self):
+        return None
+
+    def on_rbrace_func(self):
+        return None
+
+    def error_func(self, msg, line, column):
+        return None
+
+
+def code_from_parsed(k, pos, tokens, code):
+    index = 0
+    for token in tokens:
+        if index < pos:
+            pos += len(token.old_string) - len(token.string)
+            index += len(token.old_string)
+        elif pos <= index < pos + k:
+            k += len(token.old_string) - len(token.string)
+            index += len(token.old_string)
+        else:
+            break
+    return get_java_substring(pos, k, code)
 
 
 # find the accurate substring for a text with spaces given the position and k of a text without spaces
@@ -311,6 +499,7 @@ def get_java_substring(pos, k, text):
         if pos <= space_pos < pos + k:
             k += 1
     return text[pos:pos+k]
+
 
 # remove comments from java/c/c++ string
 def remove_comments(text):

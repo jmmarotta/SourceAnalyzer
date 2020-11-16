@@ -2,6 +2,7 @@ from backend.fingerprint import Fingerprint
 from backend.winnowing import *
 from backend.analyzer import *
 
+
 # Compares two text files to each other and returns the percent similarity
 def compare_files_txt(std1_filename, std2_filename, k, w, boilerplate_filenames):
     # Open the first file and get fingerprints
@@ -136,6 +137,96 @@ def get_winnow_fps_java(std1_filename, std2_filename, k, w, boilerplate_filename
     for bpfile in boilerplate_filenames:
         with open(bpfile, "r") as bp_source:
             bp = JavaAnalyzer(bp_source)
+            bps.append(bp)
+
+    return get_common_fps(vs1, vs2, k, w, bps)
+
+
+# Compares two C++ files to each other and returns the percent similarity
+def compare_files_cpp(std1_filename, std2_filename, k, w, boilerplate_filenames):
+    # Open the first file and get fingerprints
+    with open(std1_filename, "r") as student_source1:
+        vs1 = CPPAnalyzer(student_source1)
+    std1_fingerprints = winnow(vs1.parsed_code, k, w)
+    # Open the second file and get fingerprints
+    with open(std2_filename, "r") as student_source2:
+        vs2 = CPPAnalyzer(student_source2)
+    std2_fingerprints = winnow(vs2.parsed_code, k, w)
+    # Open boilerplate files and get fingerprints
+    bpfingerprints = {}
+    for bpfile in boilerplate_filenames:
+        with open(bpfile, "r") as bp_source:
+            bp = CPPAnalyzer(bp_source)
+        if len(bpfingerprints) == 0:
+            bpfingerprints = winnow(bp.parsed_code, k, w)
+        else:
+            bpfingerprints.update(winnow(bp.parsed_code, k, w))
+    return get_percent_similarity(std1_fingerprints, std2_fingerprints, bpfingerprints)
+
+
+# get the common fingerprints between two java files
+# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
+def get_fps_cpp(std1_filename, std2_filename, k, boilerplate_filenames):
+    return get_winnow_fps_cpp(std1_filename, std2_filename, k, 2, boilerplate_filenames)
+
+
+# get the common fingerprints between two java files using the winnowing algorithm
+def get_winnow_fps_cpp(std1_filename, std2_filename, k, w, boilerplate_filenames):
+    with open(std1_filename, "r") as std1_source:
+        vs1 = CPPAnalyzer(std1_source)
+
+    with open(std2_filename, "r") as std2_source:
+        vs2 = CPPAnalyzer(std2_source)
+
+    bps = []
+    for bpfile in boilerplate_filenames:
+        with open(bpfile, "r") as bp_source:
+            bp = CPPAnalyzer(bp_source)
+            bps.append(bp)
+
+    return get_common_fps(vs1, vs2, k, w, bps)
+
+
+# Compares two C++ files to each other and returns the percent similarity
+def compare_files_c(std1_filename, std2_filename, k, w, boilerplate_filenames):
+    # Open the first file and get fingerprints
+    with open(std1_filename, "r") as student_source1:
+        vs1 = CAnalyzer(student_source1)
+    std1_fingerprints = winnow(vs1.parsed_code, k, w)
+    # Open the second file and get fingerprints
+    with open(std2_filename, "r") as student_source2:
+        vs2 = CAnalyzer(student_source2)
+    std2_fingerprints = winnow(vs2.parsed_code, k, w)
+    # Open boilerplate files and get fingerprints
+    bpfingerprints = {}
+    for bpfile in boilerplate_filenames:
+        with open(bpfile, "r") as bp_source:
+            bp = CAnalyzer(bp_source)
+        if len(bpfingerprints) == 0:
+            bpfingerprints = winnow(bp.parsed_code, k, w)
+        else:
+            bpfingerprints.update(winnow(bp.parsed_code, k, w))
+    return get_percent_similarity(std1_fingerprints, std2_fingerprints, bpfingerprints)
+
+
+# get the common fingerprints between two java files
+# if there are more fingerprints than the ignore count then we adjust the window size to gather all of the substrings
+def get_fps_c(std1_filename, std2_filename, k, boilerplate_filenames):
+    return get_winnow_fps_c(std1_filename, std2_filename, k, 2, boilerplate_filenames)
+
+
+# get the common fingerprints between two java files using the winnowing algorithm
+def get_winnow_fps_c(std1_filename, std2_filename, k, w, boilerplate_filenames):
+    with open(std1_filename, "r") as std1_source:
+        vs1 = CAnalyzer(std1_source)
+
+    with open(std2_filename, "r") as std2_source:
+        vs2 = CAnalyzer(std2_source)
+
+    bps = []
+    for bpfile in boilerplate_filenames:
+        with open(bpfile, "r") as bp_source:
+            bp = CAnalyzer(bp_source)
             bps.append(bp)
 
     return get_common_fps(vs1, vs2, k, w, bps)
@@ -542,6 +633,109 @@ def compare_multiple_files_java(filenames, k, w, boilerplate, ignorecount):
                     newsimilarto[simfile] = newf1common
             file.similarto = newsimilarto"""
     return files
+
+
+#cpp version
+def compare_multiple_files_cpp(filenames, k, w, boilerplate, ignorecount):
+    files = wrap_filenames(filenames)
+    allfingerprints = collections.defaultdict(dict)
+    bpfingerprints = {}
+
+    # get the boilerplate hashes/fingerprints
+    for bpfile in boilerplate:
+        with open(bpfile, "r") as student_source:
+            bp = CPPAnalyzer(student_source)
+        if len(bpfingerprints) == 0:
+            bpfingerprints = winnow(bp.parsed_code, k, w)
+        else:
+            bpfingerprints.update(winnow(bp.parsed_code, k, w))
+
+    # put all fingerprints into large fp dictionary
+    if len(boilerplate) == 0:  # this is to skip the if statement checking boilerplate hashes if no boilerplate
+        for file in files:
+            with open(file.filename, "r") as student_source:
+                vs = CPPAnalyzer(student_source)
+            file.base = vs
+            file.fingerprintssetup = winnow(vs.parsed_code, k, w)
+            for fp in list(file.fingerprintssetup.keys()):
+                allfingerprints[fp][file] = []
+                for pos in file.fingerprintssetup[fp]:
+                    substr = vs.get_code_from_parsed(pos, k)
+                    newfp = Fingerprint(fp, pos, substr)
+                    allfingerprints[fp][file].append(newfp)
+    else:
+        for file in files:
+            with open(file.filename, "r") as student_source:
+                vs = CPPAnalyzer(student_source)
+            file.base = vs
+            file.fingerprintssetup = winnow(vs.parsed_code, k, w)
+            for fp in list(file.fingerprintssetup.keys()):
+                if fp in bpfingerprints:  # don't consider boilerplate hashes/fingerprints
+                    continue
+                allfingerprints[fp][file] = []
+                for pos in file.fingerprintssetup[fp]:
+                    substr = vs.get_code_from_parsed(pos, k)
+                    newfp = Fingerprint(fp, pos, substr)
+                    allfingerprints[fp][file].append(newfp)
+
+    # fill the file's similarto dictionary with the necessary fingerprints
+    for file in files:
+        for fp in list(file.fingerprintssetup.keys()):
+            commonfiles = allfingerprints.get(fp)
+            if (commonfiles == None):
+                continue
+            elif len(commonfiles) > 1:
+                for commonfile in commonfiles:
+                    if file != commonfile:  # put it into similarto if it's a different file
+                        if commonfile in file.similarto: #fp blocks may be able to be determined here to be faster
+                            file.similarto[commonfile].append((allfingerprints[fp][file], allfingerprints[fp][commonfile]))
+                        else:
+                            file.similarto[commonfile] = [(allfingerprints[fp][file], allfingerprints[fp][commonfile])]
+        # clear similarto element if less than ignorecount
+        for comfile in list(file.similarto.keys()):
+            count = 0
+            for uniquefp in file.similarto[comfile]:
+                for pos in uniquefp[0]:
+                    count += 1
+            if count <= ignorecount:
+                file.similarto.pop(comfile)
+        # this is no longer used (and and I don't think I could get it to work)  but the idea was to use the more in
+        # depth algorithm if the similar fingerints was > ignorecount
+        """for file in files:
+            newsimilarto = file.similarto.copy()
+            for simfile in list(file.similarto.keys()):
+                simfps = 0
+                for simfp in file.similarto[simfile]:
+                    for fp in simfp[0]:
+                        simfps += 1
+                if simfps > ignorecount:
+                    newf1common = []
+                    with open(file.filename, "r") as student_source:
+                        vs = PyAnalyzer(student_source)
+                    file.fingerprintssetup = compute_all(vs.parsed_code, k, w)
+                    with open(file.filename, "r") as student_source:
+                        vb = PyAnalyzer(student_source)
+                    simfilefingerprintssetup = compute_all(vb.parsed_code, k, w)
+                    f2prints = list(simfilefingerprintssetup.keys())
+                    for fp in list(file.fingerprintssetup.keys()):
+                        if fp in bpfingerprints:
+                            continue
+                        if fp in f2prints:
+                            fps1 = []
+                            fps2 = []
+                            for pos in file.fingerprintssetup[fp]:
+                                vs.get_code_from_parsed(k, pos)
+                                newfp = Fingerprint(fp, pos, substr)
+                                fps1.append(newfp)
+                            for pos in simfilefingerprintssetup[fp]:
+                                vb.get_code_from_parsed(k, pos)
+                                newfp = Fingerprint(fp, pos, substr)
+                                fps2.append(newfp)
+                            newf1common.append((fps1, fps2))
+                    newsimilarto[simfile] = newf1common
+            file.similarto = newsimilarto"""
+    return files
+
 
 # for the future
 """def compare_files_cpp(student_filename1, student_filename2, k, w):
